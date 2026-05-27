@@ -45,7 +45,7 @@ const manifest = {
   }))
 };
 
-const out = process.env.TSL_ZK_MANIFEST_OUT ?? "docs/zk-artifact-manifest.json";
+const out = process.env.TSL_ZK_MANIFEST_OUT ?? "reports/zk-artifact-manifest.json";
 mkdirSync(dirname(out), { recursive: true });
 writeFileSync(out, `${JSON.stringify(manifest, null, 2)}\n`);
 process.stdout.write(`${JSON.stringify(manifest, null, 2)}\n`);

@@ -3489,9 +3489,6 @@ tsl/
     scoring-reference/
     graph-features/
     anomaly-detection/
-  docs/
-    protocol.md
-    threat-model.md
 \end{lstlisting}
 
 \subsection{First 90 Days}
@@ -3600,10 +3597,6 @@ tsl/
     docker-compose.yml
     k8s/
     terraform/
-  docs/
-    protocol.md
-    threat-model.md
-    operations.md
 \end{lstlisting}
 
 % ============================================================
@@ -5301,7 +5294,7 @@ Know whether the person, business, wallet, or AI agent contacting you has real c
 \section{Implementation Completeness Addendum: Buildable Product Specification}
 % ============================================================
 
-This addendum is normative for implementation planning. The preceding sections define the research architecture, protocol objects, privacy model, trust-scoring science, graph geometry, threat model, and product thesis. This section defines when those ideas become buildable, testable, versioned, auditable, and release-candidate-compliant.
+This addendum is normative for implementation planning. The preceding sections define the research architecture, protocol objects, privacy model, trust-scoring science, graph geometry, threat model, and product thesis. This section defines when those ideas become buildable, testable, versioned, auditable, and architecture-compliant.
 
 \begin{principlebox}{Architecture-to-Implementation Bridge}
 A concept in this specification is not implementation-complete until it has: (1) a machine-readable schema, (2) deterministic validation rules, (3) a canonicalization rule, (4) at least one valid example, (5) at least three invalid examples, (6) a test vector, and (7) a migration rule for future versions.
@@ -5495,21 +5488,6 @@ tsl/
       drift-v0/
       metadata-fingerprints-v0/
       delegation-v0/
-  algorithms/
-    reference-scorer-v0.md
-    graph-construction-v0.md
-    drift-baseline-v0.md
-    sybil-simulation-v0.md
-    calibration-v0.md
-    leakage-score-v0.md
-    delegation-authorization-v0.md
-  conformance/
-    tsl-rc0.md
-    tsl-rc1.md
-    tsl-rc2.md
-    tsl-rc3.md
-    tsl-rc4.md
-    tsl-mainnet.md
 \end{lstlisting}
 
 \subsection{Machine-Readable Schema Requirements}
@@ -6439,7 +6417,7 @@ function verifyDelegatedAgentActionV0(action, delegationChain, resolver, atTime)
 
 \subsection{Required Test Vectors}
 
-The following test vectors MUST be added before the v2 object set is marked release-candidate.
+The following test vectors MUST be added before the v2 object set is marked architecture-complete.
 
 
 \begin{lstlisting}[style=tslcode]
@@ -6835,7 +6813,7 @@ Professional identity & Privacy and defamation safety & No public high-risk labe
 
 \subsection{Implementation Alignment and Conformance Levels}
 
-The reference implementation MAY initially implement only a release-candidate subset of this specification. The v2 scoring, graph geometry, metadata fingerprint, Sybil, drift, governance, and agent-delegation systems SHOULD be tracked as separate conformance levels.
+The reference implementation MAY initially implement only an architecture-defined subset of this specification. The v2 scoring, graph geometry, metadata fingerprint, Sybil, drift, governance, and agent-delegation systems SHOULD be tracked as separate conformance levels.
 
 \begin{center}
 \begin{tabularx}{\textwidth}{>{\bfseries}p{0.22\textwidth} p{0.34\textwidth} X}

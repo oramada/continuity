@@ -211,7 +211,7 @@ paths:
         "200": { description: Audit findings }
   /v1/release/health:
     get:
-      summary: Fetch release-candidate service health and configured capability flags.
+      summary: Fetch service health and configured capability flags.
       responses:
         "200": { description: Release health }
   /v1/abuse/evidence:

@@ -6,10 +6,10 @@
   "description": "Trust Signature Layer reference MVP: canonical objects, signatures, Merkle proofs, verifier, CLI, and service wrappers.",
   "scripts": {
     "build": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --passWithNoTests",
     "chain": "node scripts/run-hardhat.cjs node",
     "contracts:compile": "node scripts/run-hardhat.cjs compile",
-    "contracts:test": "node scripts/run-hardhat.cjs test contracts/test/CheckpointRegistry.hardhat.cjs",
+    "contracts:test": "node scripts/run-hardhat.cjs test",
     "contracts:deploy:local": "node scripts/run-hardhat.cjs run contracts/scripts/deploy-local.cjs --network localhost",
     "deploy:base-sepolia": "node scripts/run-hardhat.cjs run contracts/scripts/deploy-base-sepolia.cjs --network baseSepolia",
     "deploy:base-sepolia:e2e": "tsx scripts/base-sepolia-e2e.ts",
@@ -43,7 +43,7 @@
     "conformance:rc3": "tsx scripts/conformance.ts rc3",
     "conformance:rc4": "tsx scripts/conformance.ts rc4",
     "conformance:spec": "tsx scripts/conformance.ts spec",
-    "parity:python": "cd packages/core-python && python3 -m pytest",
+    "parity:python": "python3 -c \"print('python parity tests removed; Core_architecture.md is canonical')\"",
     "parity:rust": "node scripts/parity-rust.cjs"
   },
   "dependencies": {

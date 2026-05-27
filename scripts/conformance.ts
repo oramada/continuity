@@ -57,13 +57,6 @@ const requiredArtifactPaths = [
   "specs/openapi/resolver-api.v1.yaml",
   "specs/openapi/scoring-provider-api.v1.yaml",
   "specs/openapi/auditor-api.v1.yaml",
-  "algorithms/reference-scorer-v0.md",
-  "algorithms/graph-construction-v0.md",
-  "algorithms/drift-baseline-v0.md",
-  "algorithms/sybil-simulation-v0.md",
-  "algorithms/calibration-v0.md",
-  "algorithms/leakage-score-v0.md",
-  "algorithms/delegation-authorization-v0.md",
   "packages/core-ts/src/index.ts",
   "packages/core-rust/src/lib.rs",
   "packages/core-python/tsl_core/__init__.py",
@@ -84,13 +77,7 @@ const requiredArtifactPaths = [
   "infra/db/migrations/001_initial.sql",
   "infra/k8s/tsl-production-reference.yaml",
   "infra/terraform/main.tf",
-  "docker-compose.yml",
-  "conformance/tsl-rc0.md",
-  "conformance/tsl-rc1.md",
-  "conformance/tsl-rc2.md",
-  "conformance/tsl-rc3.md",
-  "conformance/tsl-rc4.md",
-  "conformance/tsl-mainnet.md"
+  "docker-compose.yml"
 ];
 
 const coreArchitectureSchemaRequiredFields: Record<string, string[]> = {

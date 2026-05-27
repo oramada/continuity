@@ -13,6 +13,6 @@
     "schema_valid": true,
     "canonical_hash": "0x5d37b0ac7c274d1005504d56ec78433096c783124f2503ce86e4ea77f3c0724a",
     "signature_valid": true,
-    "error_code": null
+    "error_code": "TSL_DELEGATION_SCOPE_VIOLATION"
   }
 }
