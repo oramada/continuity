@@ -51,7 +51,6 @@ const levels =
 
 const requiredArtifactPaths = [
   "Core_architecture.md",
-  "specs/latex/Trust_Signature_Layer_full_implementation_v3.tex",
   "specs/error-codes.v1.json",
   "specs/openapi/relay-api.v1.yaml",
   "specs/openapi/verifier-api.v1.yaml",
@@ -94,7 +93,7 @@ const requiredArtifactPaths = [
   "conformance/tsl-mainnet.md"
 ];
 
-const latexSchemaRequiredFields: Record<string, string[]> = {
+const coreArchitectureSchemaRequiredFields: Record<string, string[]> = {
   "attestation.v2": [
     "attestation_id",
     "claim_class",
@@ -120,14 +119,14 @@ const latexSchemaRequiredFields: Record<string, string[]> = {
   "evaluation_report.v1": ["metrics"]
 };
 
-const latexApiEndpoints = [
+const coreArchitectureApiEndpoints = [
   "/v1/proof-bundles/{bundleId}",
   "/v1/scoring-profiles/{profileId}",
   "/v1/model-cards/{modelId}",
   "/v1/delegations/verify"
 ];
 
-const latexDatabaseTables = [
+const coreArchitectureDatabaseTables = [
   "scoring_profiles_v2",
   "feature_definitions_v2",
   "domain_policies_v1",
@@ -157,25 +156,25 @@ function checkArtifactTree(): void {
   }
 }
 
-function checkLatexRequiredShapes(): void {
-  for (const [objectType, fields] of Object.entries(latexSchemaRequiredFields)) {
+function checkCoreArchitectureRequiredShapes(): void {
+  for (const [objectType, fields] of Object.entries(coreArchitectureSchemaRequiredFields)) {
     const schema = readJson(`specs/json-schema/${objectType}.schema.json`) as { required?: string[]; properties?: Record<string, unknown> };
     for (const field of fields) {
-      assert(schema.required?.includes(field), `${objectType} must require ${field} from the LaTeX spec`);
-      assert(schema.properties && field in schema.properties, `${objectType} must define ${field} from the LaTeX spec`);
+      assert(schema.required?.includes(field), `${objectType} must require ${field} from Core_architecture.md`);
+      assert(schema.properties && field in schema.properties, `${objectType} must define ${field} from Core_architecture.md`);
     }
   }
 
-  const openapiText = latexApiEndpoints.map((endpoint) => endpoint).join("\n");
+  const openapiText = coreArchitectureApiEndpoints.map((endpoint) => endpoint).join("\n");
   const openapiFiles = fs.readdirSync(path.join(root, "specs/openapi")).map((file) => fs.readFileSync(path.join(root, "specs/openapi", file), "utf8")).join("\n");
-  for (const endpoint of latexApiEndpoints) {
-    assert(openapiFiles.includes(endpoint), `Missing LaTeX endpoint ${endpoint}`);
+  for (const endpoint of coreArchitectureApiEndpoints) {
+    assert(openapiFiles.includes(endpoint), `Missing Core_architecture.md endpoint ${endpoint}`);
   }
-  assert(openapiText.length > 0, "LaTeX endpoint registry cannot be empty");
+  assert(openapiText.length > 0, "Core_architecture.md endpoint registry cannot be empty");
 
   const migration = fs.readFileSync(path.join(root, "infra/db/migrations/001_initial.sql"), "utf8");
-  for (const table of latexDatabaseTables) {
-    assert(new RegExp(`CREATE TABLE IF NOT EXISTS ${table}\\b`).test(migration), `Missing LaTeX database table ${table}`);
+  for (const table of coreArchitectureDatabaseTables) {
+    assert(new RegExp(`CREATE TABLE IF NOT EXISTS ${table}\\b`).test(migration), `Missing Core_architecture.md database table ${table}`);
   }
 }
 
@@ -243,7 +242,7 @@ function checkObject(entry: { objectType: string; schemaName: SchemaName; vector
 }
 
 checkArtifactTree();
-checkLatexRequiredShapes();
+checkCoreArchitectureRequiredShapes();
 checkErrorRegistry();
 for (const level of levels) {
   for (const entry of requiredByLevel[level] ?? []) checkObject(entry);

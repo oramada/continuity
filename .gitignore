@@ -13,3 +13,10 @@ docs/*.log
 docs/*.out
 docs/*.toc
 docs/*.synctex.gz
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.toc
+*.synctex.gz

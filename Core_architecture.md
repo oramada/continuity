@@ -3490,7 +3490,6 @@ tsl/
     graph-features/
     anomaly-detection/
   docs/
-    whitepaper.tex
     protocol.md
     threat-model.md
 \end{lstlisting}
@@ -3602,7 +3601,6 @@ tsl/
     k8s/
     terraform/
   docs/
-    implementation-spec.tex
     protocol.md
     threat-model.md
     operations.md
@@ -5448,13 +5446,12 @@ tsl.agent_action.v2
 \subsection{Mandatory Artifact Tree}
 
 
-The repository MUST be structured so the LaTeX specification, schemas, examples, tests, algorithms, and conformance levels remain synchronized.
+The repository MUST be structured so \texttt{Core\_architecture.md}, schemas, examples, tests, algorithms, and conformance levels remain synchronized.
 
 \begin{lstlisting}[style=tslcode]
 tsl/
   specs/
-    latex/
-      Trust_Signature_Layer_full_implementation_v3.tex
+    Core_architecture.md
     json-schema/
       identity.v1.schema.json
       event_commitment.v1.schema.json

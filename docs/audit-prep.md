@@ -2,7 +2,7 @@
 
 Release-candidate audit inputs:
 
-- LaTeX/core architecture spec,
+- `Core_architecture.md` architecture spec,
 - JSON schemas and deterministic vectors,
 - TypeScript, Rust, and Python parity test outputs,
 - contract tests and deployment artifacts,

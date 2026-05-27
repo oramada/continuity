@@ -44,10 +44,7 @@
     "conformance:rc4": "tsx scripts/conformance.ts rc4",
     "conformance:spec": "tsx scripts/conformance.ts spec",
     "parity:python": "cd packages/core-python && python3 -m pytest",
-    "parity:rust": "node scripts/parity-rust.cjs",
-    "docs:tex": "node scripts/generate-release-candidate-tex.cjs",
-    "docs:pdf": "npm run docs:tex && latexmk -pdf -interaction=nonstopmode -halt-on-error -outdir=docs docs/tsl-release-candidate.tex",
-    "docs:release": "npm run release:production-check && npm run docs:pdf"
+    "parity:rust": "node scripts/parity-rust.cjs"
   },
   "dependencies": {
     "@noble/curves": "^1.9.7",

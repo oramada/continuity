@@ -23,7 +23,7 @@ The deployment command writes `deployments/base-sepolia.json`. The E2E command s
 
 ## ZK Artifact Reproducibility
 
-Two Groth16 circuits are included for the LaTeX selective-disclosure roadmap:
+Two Groth16 circuits are included for the `Core_architecture.md` selective-disclosure roadmap:
 
 - `identity_age_days >= threshold`
 - `reciprocal_receipt_count >= threshold`
