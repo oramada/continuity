@@ -1,10 +1,10 @@
 {
   "type": "tsl.integration_evidence.cli_sidecar_v2_smoke.v1",
   "status": "passed",
-  "generated_at": "2026-05-28T21:25:28.192Z",
+  "generated_at": "2026-05-29T16:50:56.025Z",
   "cli": {
-    "policy_hash": "0xb18874b756731859e4b3d572537604176a7c7835c65c011c631ac3c3558aae01",
-    "action_hash": "0xc52fc14bcc5363092a5e9d9dcefcf19845f949df8809df6e0829500a2a85bd08",
+    "policy_hash": "0x8a033d8bb7f9acfc8714f687883060b494d9563fdb24783672a4e4a4c98bc5a2",
+    "action_hash": "0x186e10c5a56cd1069982ff89dccee3225917871fb78605dc203cee4dd89e0221",
     "inside_status": "agent_inside_scope",
     "outside_status": "agent_outside_scope",
     "outside_error_code": "TSL_DELEGATION_CONSTRAINT_VIOLATION"

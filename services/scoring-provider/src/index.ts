@@ -60,7 +60,7 @@ function signedByIdentity(input: {
 function normalizeFeaturesFromProfiles(input: {
   featureRegistry: { feature_ids: string[] };
   normalizationProfile: { feature_ranges_bps: Record<string, { min_bps: number; max_bps: number; missing_bps: number }> };
-  weightProfile: { weights_bps: Record<string, number> };
+  weightProfile: { weights_bps: Record<string, number>; feature_directions?: Record<string, "positive" | "penalty"> };
   rawFeatures: Record<string, number | undefined>;
 }): { normalized: Record<string, number>; weights: Record<string, number>; errors: string[] } {
   const normalized: Record<string, number> = {};
@@ -80,7 +80,8 @@ function normalizeFeaturesFromProfiles(input: {
     const raw = input.rawFeatures[featureId];
     const value = typeof raw === "number" ? raw : range.missing_bps;
     const span = Math.max(1, range.max_bps - range.min_bps);
-    normalized[featureId] = Math.max(0, Math.min(10000, Math.floor(((value - range.min_bps) * 10000) / span)));
+    const normalizedValue = Math.max(0, Math.min(10000, Math.floor(((value - range.min_bps) * 10000) / span)));
+    normalized[featureId] = input.weightProfile.feature_directions?.[featureId] === "penalty" ? 10000 - normalizedValue : normalizedValue;
     weights[featureId] = Math.max(0, Math.min(10000, Math.trunc(weight)));
   }
   return { normalized, weights, errors };
@@ -227,6 +228,60 @@ export function createScoringProvider() {
       res.status(422).json({ error: { code: "TSL_GRAPH_ARTIFACTS_INVALID", message: errors.join("; ") || "At least one graph, Sybil, or drift artifact is required" } });
       return;
     }
+    if (process.env.TSL_DEV_GRAPH_ARTIFACTS !== "true") {
+      const bundle = req.body.proof_bundle;
+      const identities = [
+        bundle?.identity,
+        req.body.identity,
+        ...(Array.isArray(req.body.identities) ? req.body.identities : []),
+        ...(Array.isArray(bundle?.identities) ? bundle.identities : [])
+      ].filter(Boolean) as IdentityDocumentV1[];
+      const identityMap = new Map(identities.map((identity) => [identity.id, identity]));
+      const verifyInput: VerifyTSLInput | null = (bundle ?? req.body.envelope)
+        ? {
+            proof_bundle: bundle,
+            envelope: req.body.envelope ?? bundle?.envelope,
+            proof: req.body.proof ?? bundle?.proof,
+            checkpoint: req.body.checkpoint ?? bundle?.checkpoint,
+            redaction_manifest: req.body.redaction_manifest ?? bundle?.redaction_manifest,
+            receipts: req.body.receipts ?? bundle?.receipts,
+            attestations: req.body.attestations ?? bundle?.attestations,
+            attestations_v2: req.body.attestations_v2 ?? bundle?.attestations_v2,
+            receipt_disputes: req.body.receipt_disputes ?? bundle?.receipt_disputes,
+            graph_profile: graphProfile,
+            graph_feature_vector: graphFeatureVector,
+            sybil_assessment: sybilAssessment,
+            sybil_profile: req.body.sybil_profile,
+            drift_report: driftReport,
+            drift_feature_history: req.body.drift_feature_history,
+            trusted_seeds: req.body.trusted_seeds,
+            adversarial_seeds: req.body.adversarial_seeds,
+            trusted_seed_governance: req.body.trusted_seed_governance,
+            adversarial_seed_governance: req.body.adversarial_seed_governance,
+            event_receivers: req.body.event_receivers,
+            disclosure_consents: req.body.disclosure_consents ?? bundle?.disclosure_consents
+          }
+        : null;
+      if (!verifyInput?.envelope || !identities.length) {
+        res.status(422).json({ error: { code: "TSL_GRAPH_ARTIFACT_REQUIRED", message: "Production graph artifact submission requires evidence and resolver identities for recomputation" } });
+        return;
+      }
+      const verification = await verifyTSL(
+        verifyInput,
+        { resolveTrustID: (trustId: string) => identityMap.get(trustId) ?? null },
+        {
+          require_graph_artifacts: true,
+          require_research_graph_algorithm: req.body.require_research_graph_algorithm === true,
+          require_seed_governance_opening: req.body.require_seed_governance_opening === true,
+          require_full_covariance_drift: Boolean(driftReport),
+          require_sybil_provider_issuer: Boolean(sybilAssessment)
+        }
+      );
+      if (!verification.verified) {
+        res.status(422).json({ error: { code: "TSL_GRAPH_ARTIFACTS_INVALID", message: verification.errors.join("; "), checks: verification.checks } });
+        return;
+      }
+    }
     const artifactId = String(
       graphFeatureVector?.feature_commitment ??
         graphFeatureVector?.recomputation_commitment ??
@@ -268,6 +323,7 @@ export function createScoringProvider() {
             envelope: bundle.envelope,
             proof: bundle.proof,
             checkpoint: bundle.checkpoint,
+            settlement_evidence: bundle.settlement_evidence,
             redaction_manifest: bundle.redaction_manifest,
             receipts: bundle.receipts,
             attestations: bundle.attestations,
@@ -283,6 +339,7 @@ export function createScoringProvider() {
               envelope: req.body.envelope,
               proof: req.body.proof,
               checkpoint: req.body.checkpoint,
+              settlement_evidence: req.body.settlement_evidence,
               redaction_manifest: req.body.redaction_manifest,
               receipts: req.body.receipts,
               attestations: req.body.attestations,
@@ -328,12 +385,61 @@ export function createScoringProvider() {
             high_risk_bps: 1500
           }
         };
+      const subject = String(req.body.subject ?? verifyInput.envelope.sender);
+      const issuer = String(req.body.issuer ?? process.env.TSL_SCORING_PROVIDER_ID ?? "did:tsl:provider:local");
       const verification = await verifyTSL(verifyInput, resolver, {
         require_inclusion: true,
         require_checkpoint: true,
-        require_settlement: domainPolicy.requires_settlement
+        require_settlement: domainPolicy.requires_settlement,
+        verifier_or_provider: issuer,
+        disclosure_purpose: "scoring_assessment"
       });
       if (!verification.verified) {
+        const privateBoundaryErrors = new Set([
+          "TSL_DISCLOSURE_CONSENT_REQUIRED",
+          "TSL_RECEIPT_INVALID",
+          "TSL_RECEIPT_INCLUSION_INVALID",
+          "TSL_ATTESTATION_INVALID",
+          "TSL_REDACTION_MANIFEST_INVALID"
+        ]);
+        const privateBoundaryFailed = verification.errors.some((error) => privateBoundaryErrors.has(error));
+        if (!privateBoundaryFailed) {
+          const evidenceCoverage = computeEvidenceCoverageV0({
+            subject,
+            valid_signed_event_count: verification.checks.signature_valid ? 1 : 0,
+            valid_receipt_count: 0,
+            unique_counterparty_count: 0,
+            computed_at: now.toISOString()
+          });
+          const unsignedFailure = computeReferenceScoreV0({
+            subject,
+            issuer,
+            scoring_profile_id: String(req.body.scoring_profile?.profile_id ?? req.body.scoring_profile_id ?? "did:tsl:provider:local/profile/reference-rc4"),
+            model_version: String(req.body.scoring_profile?.model_version ?? req.body.model_version ?? "reference-rc4.0.0"),
+            gate_result: {
+              schema_valid: verification.checks.schema_valid,
+              canonicalization_valid: verification.checks.schema_valid,
+              signature_valid: verification.checks.signature_valid,
+              key_active: verification.checks.key_active,
+              not_revoked: verification.checks.not_revoked,
+              included_in_log: verification.checks.included_in_log,
+              checkpoint_valid: verification.checks.checkpoint_matches_proof,
+              settlement_satisfied: domainPolicy.requires_settlement ? verification.checks.checkpoint_settled === true : true,
+              delegation_valid: domainPolicy.requires_delegation_check ? verification.checks.delegated_action_valid === true : true
+            },
+            evidence_coverage: evidenceCoverage,
+            normalized_features_bps: {},
+            weights_bps: {},
+            has_adverse_evidence: false,
+            domain_policy: domainPolicy,
+            issued_at: now.toISOString()
+          });
+          const failureAssessment = signTrustAssessmentV2(unsignedFailure, process.env.TSL_SCORING_PROVIDER_SEED_HEX);
+          if (repo) await repo.insertTrustAssessmentV2(failureAssessment);
+          else if (allowMemoryStore) assessmentStore.set(failureAssessment.assessment_id, failureAssessment);
+          res.status(200).json({ status: "accepted", assessment: failureAssessment, verification_errors: verification.errors });
+          return;
+        }
         res.status(422).json({
           error: {
             code: "TSL_SCORING_EVIDENCE_VERIFICATION_FAILED",
@@ -344,8 +450,6 @@ export function createScoringProvider() {
         });
         return;
       }
-      const subject = String(req.body.subject ?? verifyInput.envelope.sender);
-      const issuer = String(req.body.issuer ?? process.env.TSL_SCORING_PROVIDER_ID ?? "did:tsl:provider:local");
       const callerFeatureOverride =
         req.body.evidence_coverage !== undefined || req.body.normalized_features_bps !== undefined || req.body.weights_bps !== undefined;
       const allowCallerFeatures = process.env["TSL_" + "DEV_SCORING_INPUTS"] === "true";
@@ -354,6 +458,15 @@ export function createScoringProvider() {
           error: {
             code: "TSL_CALLER_SUPPLIED_SCORING_FEATURES_REJECTED",
             message: "v2 scoring derives evidence coverage, normalized features, and weights from verified evidence/profile unless explicit dev mode is enabled"
+          }
+        });
+        return;
+      }
+      if (!allowCallerFeatures && req.body.local_relationship_bps !== undefined) {
+        res.status(400).json({
+          error: {
+            code: "TSL_DISCLOSURE_CONSENT_REQUIRED",
+            message: "local_relationship is verifier-local private context and cannot be uploaded to production scoring without a dedicated consented local feature artifact"
           }
         });
         return;
@@ -376,6 +489,12 @@ export function createScoringProvider() {
           ...schemaValidOrErrors("confidenceProfileV1", confidenceProfile)
         ];
         const providerIdentity = identityMap.get(issuer);
+        const governanceSignatureValid = signedByIdentity({
+          identity: providerIdentity,
+          issuedAt: String(governance?.issued_at ?? scoringProfile?.issued_at ?? now.toISOString()),
+          hash: governance ? unsignedObjectHash(governance) : "",
+          signature: governance?.signature
+        });
         const profileCommitmentsValid =
           scoringProfile &&
           featureRegistry &&
@@ -407,11 +526,12 @@ export function createScoringProvider() {
           governance.model_registered !== true ||
           governance.promotion_gate_result !== "pass" ||
           governance.red_team_result !== "pass" ||
+          !governanceSignatureValid ||
           Number(governance.privacy_leakage_bps) > 1000
         ) {
           res.status(400).json({
             error: {
-              code: "TSL_PROVIDER_GOVERNANCE_REQUIRED",
+              code: "TSL_SCORING_GOVERNANCE_INVALID",
               message: "Production v2 scoring requires active provider governance, registered model, promotion pass, red-team pass, and privacy leakage gate"
             }
           });
@@ -454,9 +574,10 @@ export function createScoringProvider() {
           drift_report: req.body.drift_report,
           verification_checks: verification.checks,
           valid_signed_event_count: verification.checks.signature_valid ? 1 : 0,
-          clustered_receipt_count: receiptCounterparties.size,
+          clustered_receipt_count: new Set((verifyInput.receipts ?? []).map((receipt) => receipt.metadata_commitment ?? receipt.receiver)).size,
           cadence_intervals_ms: Array.isArray(req.body.cadence_intervals_ms) ? req.body.cadence_intervals_ms.map(Number) : undefined,
           local_relationship_bps: req.body.local_relationship_bps !== undefined ? Number(req.body.local_relationship_bps) : undefined,
+          local_relationship_disclosed: allowCallerFeatures,
           computed_at: now.toISOString()
         }),
         evidence_coverage: evidenceCoverage.coverage_bps

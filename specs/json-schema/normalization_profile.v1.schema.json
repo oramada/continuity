@@ -1,7 +1,7 @@
 {
   "$id": "https://spec.tsl.network/schemas/normalization_profile.v1.schema.json",
   "type": "object",
-  "required": ["type", "profile_id", "feature_ranges_bps", "issued_at"],
+  "required": ["type", "profile_id", "feature_ranges_bps", "missing_value_policy", "time_split_fit_status", "issued_at"],
   "additionalProperties": false,
   "properties": {
     "type": { "const": "tsl.normalization_profile.v1" },
@@ -19,6 +19,30 @@
         }
       }
     },
+    "training_window": {
+      "type": "object",
+      "required": ["start", "end"],
+      "additionalProperties": false,
+      "properties": {
+        "start": { "type": "string", "format": "date-time" },
+        "end": { "type": "string", "format": "date-time" }
+      }
+    },
+    "percentiles_bps": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["p05_bps", "p50_bps", "p95_bps"],
+        "additionalProperties": false,
+        "properties": {
+          "p05_bps": { "type": "integer", "minimum": 0, "maximum": 10000 },
+          "p50_bps": { "type": "integer", "minimum": 0, "maximum": 10000 },
+          "p95_bps": { "type": "integer", "minimum": 0, "maximum": 10000 }
+        }
+      }
+    },
+    "missing_value_policy": { "enum": ["impute_zero_with_coverage_penalty", "impute_median_with_uncertainty", "reject"] },
+    "time_split_fit_status": { "enum": ["not_declared", "train_validation_test_split", "rolling_window_validated"] },
     "issued_at": { "type": "string", "format": "date-time" },
     "signature": { "type": "string", "pattern": "^0x[0-9a-f]+$" }
   }

@@ -194,7 +194,36 @@ function manifestForProof(input: {
 }
 
 function isDevCircuitId(circuitId?: string): boolean {
-  return !circuitId || circuitId.startsWith("dev_") || circuitId.includes(":dev") || circuitId.includes("fixture") || circuitId.includes("prototype");
+  return (
+    !circuitId ||
+    circuitId.startsWith("dev_") ||
+    circuitId.includes(":dev") ||
+    circuitId.includes("fixture") ||
+    circuitId.includes("prototype") ||
+    circuitId === "identity-age-threshold-v1" ||
+    circuitId === "reciprocal-receipt-count-threshold-v1" ||
+    circuitId === "revocation-set-non-membership-v1" ||
+    circuitId === "agent-scope-compliance-v1"
+  );
+}
+
+const REQUIRED_WITNESS_FIELDS: Record<string, string[]> = {
+  identity_age_days: ["creation_proof", "salt", "registry_path"],
+  reciprocal_receipt_count: ["receipt_leaves", "counterparty_salts", "counterparties", "merkle_paths"],
+  dispute_rate_bound: ["completed_receipt_leaves", "disputed_receipt_leaves", "merkle_paths"],
+  set_membership: ["membership_leaf", "salt", "merkle_path"],
+  revocation_set_non_membership: ["sparse_merkle_non_membership_path", "leaf_index", "value_commitment"],
+  organization_membership: ["attestation_witness", "issuer_path"],
+  agent_scope_compliance: ["parameter_values", "policy_witness", "delegation_path"],
+  private_graph_distance: ["committed_local_neighborhood", "aggregate_proof", "seed_commitments"]
+};
+
+function manifestDeclaresWitnessInterface(manifest: ZkCircuitReleaseManifestV1): boolean {
+  const required = REQUIRED_WITNESS_FIELDS[manifest.claim] ?? [];
+  const schema = manifest.private_witness_schema ?? {};
+  const properties = (schema.properties ?? {}) as Record<string, unknown>;
+  const requiredList = Array.isArray(schema.required) ? schema.required.map(String) : [];
+  return required.every((field) => field in properties || requiredList.includes(field));
 }
 
 export function zkProofUsesRegisteredCircuit(input: {
@@ -204,6 +233,10 @@ export function zkProofUsesRegisteredCircuit(input: {
 }): boolean {
   const manifest = manifestForProof(input);
   if (!manifest || manifest.status !== "active") return false;
+  if (isDevCircuitId(manifest.circuit_id) || isDevCircuitId(input.proof.circuit_id)) return false;
+  if (!manifest.signature || !input.registry?.signature) return false;
+  if (!manifest.public_signal_schema || !manifest.private_witness_schema || !manifest.soundness_bits || !manifest.privacy_notes?.length) return false;
+  if (manifest.soundness_bits < 100 || !manifestDeclaresWitnessInterface(manifest)) return false;
   const manifestHash = zkCircuitReleaseManifestHash(manifest);
   if (!input.registry) return false;
   return input.registry.active_manifest_hashes.includes(manifestHash) && !input.registry.revoked_manifest_hashes.includes(manifestHash);

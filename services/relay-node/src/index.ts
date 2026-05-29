@@ -415,9 +415,13 @@ export function createRelayNode() {
 
   app.post("/v1/verify", async (req, res) => {
     try {
+      const bundleIdentity = req.body.proof_bundle?.identity;
+      const bundleResolver = bundleIdentity ? new MemoryTrustResolver([bundleIdentity]) : null;
       const resolver = repo
-        ? new CompositeTrustResolver([store.resolver, new PostgresTrustResolver(repo)])
-        : store.resolver;
+        ? new CompositeTrustResolver([...(bundleResolver ? [bundleResolver] : []), store.resolver, new PostgresTrustResolver(repo)])
+        : bundleResolver
+          ? new CompositeTrustResolver([bundleResolver, store.resolver])
+          : store.resolver;
       const result = await verifyTSL(
         {
           proof_bundle: req.body.proof_bundle,
@@ -425,6 +429,7 @@ export function createRelayNode() {
           proof: req.body.proof ?? req.body.proof_bundle?.proof,
           receipt_proofs: req.body.receipt_proofs,
           checkpoint: req.body.checkpoint ?? req.body.proof_bundle?.checkpoint,
+          settlement_evidence: req.body.settlement_evidence ?? req.body.proof_bundle?.settlement_evidence,
           redaction_manifest: req.body.redaction_manifest ?? req.body.proof_bundle?.redaction_manifest,
           message_disclosure: req.body.message_disclosure ?? req.body.proof_bundle?.message_disclosure,
           receipts: req.body.receipts ?? req.body.proof_bundle?.receipts,
@@ -461,7 +466,7 @@ export function createRelayNode() {
           disclosure_consents: req.body.disclosure_consents ?? req.body.proof_bundle?.disclosure_consents
         },
         resolver,
-	        req.body.policy ?? {
+	        req.body.verifier_policy ?? req.body.policy ?? {
 	          require_inclusion: Boolean(req.body.proof ?? req.body.proof_bundle?.proof),
 	          require_checkpoint: Boolean(req.body.checkpoint ?? req.body.proof_bundle?.checkpoint),
 	          require_settlement: false

@@ -19,7 +19,7 @@ import { findVerificationMethod, keyActiveAt, notRevokedAt } from "./identity";
 import { verifyInclusion } from "./merkle";
 import { verifyNonMembershipProof } from "./nonMembership";
 import { checkpointHash, legacyCheckpointHashV0 } from "./relayStore";
-import type { SettlementBackend } from "./settlement";
+import { contractCheckpointFieldsHashForCheckpoint, type SettlementBackend } from "./settlement";
 import type {
   BatchCheckpointV1,
   Hex32,
@@ -169,13 +169,18 @@ function actualRedactionState(input: VerifyTSLInput): ProofBundleV1["redaction_m
     input.attestations?.some((attestation) => attestation.visibility !== "public") ||
       input.attestations_v2?.some((attestation) => attestation.visibility !== "public")
   );
+  const privateGraph = Boolean(input.graph_feature_vector && !["aggregate_only", "public"].includes(input.graph_feature_vector.privacy_disclosure_level));
+  const privateMetadata = Boolean(input.metadata_fingerprints?.some((fingerprint) => fingerprint.scope_class !== "public_commitment"));
   const redacted = new Set<string>(input.redaction_manifest?.metadata_fields_redacted ?? []);
   if (!rawContent) redacted.add("raw_content");
   if (!contentSalt) redacted.add("content_salt");
   if (!exactCounterparties) redacted.add("exact_counterparties");
   if (!restrictedAttestations) redacted.add("restricted_attestations");
+  if (!privateGraph) redacted.add("private_graph");
+  if (!privateMetadata) redacted.add("private_metadata");
   return {
-    raw_content_included: rawContent || contentSalt,
+    raw_content_included: rawContent,
+    content_salt_included: contentSalt,
     exact_counterparties_included: exactCounterparties,
     metadata_fields_redacted: [...redacted].sort()
   };
@@ -193,10 +198,18 @@ function redactionManifestMatches(input: VerifyTSLInput): boolean {
   }
   const actual = actualRedactionState(input);
   if (input.redaction_manifest.raw_content_included !== actual.raw_content_included) return false;
+  if (input.redaction_manifest.content_salt_included !== undefined && input.redaction_manifest.content_salt_included !== actual.content_salt_included) return false;
   if (input.redaction_manifest.exact_counterparties_included !== actual.exact_counterparties_included) return false;
   const declared = new Set(input.redaction_manifest.metadata_fields_redacted);
-  if (!actual.raw_content_included && (!declared.has("raw_content") || !declared.has("content_salt"))) return false;
+  if (!actual.raw_content_included && !declared.has("raw_content")) return false;
+  if (actual.raw_content_included && declared.has("raw_content")) return false;
+  if (!actual.content_salt_included && !declared.has("content_salt")) return false;
+  if (actual.content_salt_included && declared.has("content_salt")) return false;
   if (!actual.exact_counterparties_included && !declared.has("exact_counterparties")) return false;
+  for (const field of ["platform", "ip_address", "user_agent"]) {
+    if (input.proof_bundle && !declared.has(field)) return false;
+  }
+  if (!actual.metadata_fields_redacted.includes("private_graph") && declared.has("private_graph")) return false;
   return true;
 }
 
@@ -208,9 +221,33 @@ function checkpointRootForKind(checkpoint: BatchCheckpointV1, kind: string): str
   return undefined;
 }
 
+function settlementEvidenceMatchesCheckpoint(input: VerifyTSLInput, checkpointHashValue: Hex32): boolean {
+  if (!input.checkpoint || !input.settlement_evidence?.length) return false;
+  const expectedFieldsHash = contractCheckpointFieldsHashForCheckpoint(input.checkpoint);
+  const expectedBackend = input.checkpoint.settlement_backend;
+  return input.settlement_evidence.some((evidence) => {
+    const validation = validateSchema("settlementEvidenceV1", evidence);
+    if (!validation.valid) return false;
+    const identityMatches =
+      evidence.checkpoint_hash === checkpointHashValue &&
+      evidence.checkpoint_identity_hash === checkpointHashValue;
+    const fieldsHashMatches =
+      evidence.contract_checkpoint_fields_hash === expectedFieldsHash &&
+      (evidence.contract_checkpoint_hash === undefined || evidence.contract_checkpoint_hash === expectedFieldsHash);
+    const backendMatches = !expectedBackend || evidence.settlement_backend === expectedBackend;
+    const receiptProofPresent =
+      evidence.receipt_status === "success" &&
+      Boolean(evidence.transaction_receipt_hash) &&
+      Boolean(evidence.chain_proof_commitment) &&
+      evidence.settlement_tx === evidence.transaction_receipt_hash;
+    return identityMatches && fieldsHashMatches && backendMatches && evidence.status === "settled" && receiptProofPresent;
+  });
+}
+
 async function disclosureConsentAllows(input: VerifyTSLInput, fieldClasses: string[], resolver: TrustResolver, policy: VerifierPolicy): Promise<boolean> {
   const consents = input.disclosure_consents ?? [];
-  const at = Date.parse(input.envelope.timestamp);
+  if (!policy.verifier_or_provider || !policy.disclosure_purpose) return false;
+  const at = Date.parse(policy.disclosure_checked_at ?? input.proof_bundle?.created_at ?? new Date().toISOString());
   for (const consent of consents) {
     const validation = validateSchema("disclosureConsentV1", consent);
     if (!validation.valid || consent.subject !== input.envelope.sender) continue;
@@ -232,6 +269,12 @@ async function disclosureConsentAllows(input: VerifyTSLInput, fieldClasses: stri
 
 function seedGovernanceProfileHash(profile: SeedGovernanceProfileV1) {
   const unsigned = { ...profile } as Record<string, unknown>;
+  delete unsigned.signature;
+  return sha256Hex(canonicalBytes(unsigned));
+}
+
+function unsignedObjectHash(value: Record<string, unknown>): Hex32 {
+  const unsigned = { ...value };
   delete unsigned.signature;
   return sha256Hex(canonicalBytes(unsigned));
 }
@@ -275,6 +318,11 @@ export async function verifyTSL(
     for (const flag of ["ALLOW_UNSAFE_CHECKPOINT_SIGNATURE_FIXTURES", "ALLOW_UNSAFE_ZK_HASH_FIXTURES", "ALLOW_LEGACY_CHECKPOINT_HASH_V0"]) {
       if (process.env[flag] === "true") errors.push("TSL_UNSAFE_FIXTURE_POLICY_ENABLED");
     }
+  }
+  if (input.proof_bundle) {
+    const bundleValidation = validateSchema("proofBundleV1", input.proof_bundle);
+    if (!bundleValidation.valid) errors.push("TSL_PROOF_BUNDLE_INVALID", ...bundleValidation.errors);
+    if (input.proof_bundle.identity.id !== input.proof_bundle.envelope.sender) errors.push("TSL_PROOF_BUNDLE_IDENTITY_MISMATCH");
   }
   checks.redaction_manifest_valid = redactionManifestMatches(input);
   if (!checks.redaction_manifest_valid) errors.push("TSL_REDACTION_MANIFEST_INVALID");
@@ -376,10 +424,11 @@ export async function verifyTSL(
       errors.push("TSL_DISCLOSURE_CONSENT_REQUIRED");
     }
     checks.content_commitment_matches =
-      input.message_disclosure.raw_message !== undefined &&
-      input.message_disclosure.content_salt !== undefined &&
-      checks.disclosure_consent_valid &&
-      contentCommitment(input.message_disclosure.raw_message, input.message_disclosure.content_salt) === input.envelope.content_commitment;
+      input.message_disclosure.raw_message === undefined
+        ? undefined
+        : input.message_disclosure.content_salt !== undefined &&
+          checks.disclosure_consent_valid &&
+          contentCommitment(input.message_disclosure.raw_message, input.message_disclosure.content_salt) === input.envelope.content_commitment;
     if (checks.content_commitment_matches) {
       explanation.push("Disclosed message matches content commitment");
     }
@@ -503,7 +552,7 @@ export async function verifyTSL(
         continue;
       }
       const issuerIdentity = await resolver.resolveTrustID(attestation.issuer, attestation.issued_at);
-      const issuerKey = issuerIdentity?.verification_methods.find((method) => keyActiveAt(method, attestation.issued_at));
+      const issuerKey = issuerIdentity ? findVerificationMethod(issuerIdentity, attestation.signing_key_id) : null;
       const valid =
         attestation.subject === input.envelope.sender &&
         issuerKey?.type === "ed25519" &&
@@ -514,6 +563,18 @@ export async function verifyTSL(
       }
     }
     if (checks.attestation_valid) explanation.push("v2 attestation signatures valid");
+  }
+
+  if (policy.require_disclosure_consent_for_private_fields !== false) {
+    const privateFieldClasses = [
+      ...(input.metadata_fingerprints?.some((fingerprint) => fingerprint.scope_class !== "public_commitment") ? ["private_metadata"] : []),
+      ...(input.graph_feature_vector && !["aggregate_only", "public"].includes(input.graph_feature_vector.privacy_disclosure_level) ? ["private_graph"] : [])
+    ];
+    if (privateFieldClasses.length) {
+      const consent = await disclosureConsentAllows(input, privateFieldClasses, resolver, policy);
+      checks.disclosure_consent_valid = checks.disclosure_consent_valid !== false && consent;
+      if (!consent) errors.push("TSL_DISCLOSURE_CONSENT_REQUIRED");
+    }
   }
 
   if (input.assessment) {
@@ -608,6 +669,12 @@ export async function verifyTSL(
       const governance = input.provider_governance_status;
       const governanceValidation = governance ? validateSchema("providerGovernanceStatusV1", governance) : { valid: false, errors: [] };
       const expectedProvider = input.scoring_profile?.provider ?? input.assessment_v2?.issuer;
+      const providerIdentity = expectedProvider && governance ? await resolver.resolveTrustID(expectedProvider, governance.issued_at) : null;
+      const providerKey = providerIdentity?.verification_methods.find((method) => keyActiveAt(method, governance!.issued_at) && notRevokedAt(method, governance!.issued_at));
+      const governanceSignatureValid =
+        governance?.signature && providerKey?.type === "ed25519"
+          ? verifyEd25519(providerKey.public_key, unsignedObjectHash(governance as unknown as Record<string, unknown>), governance.signature)
+          : false;
       checks.provider_governance_valid = Boolean(
         governance &&
           governanceValidation.valid &&
@@ -616,10 +683,13 @@ export async function verifyTSL(
           governance.model_registered === true &&
           governance.promotion_gate_result === "pass" &&
           governance.red_team_result === "pass" &&
-          governance.privacy_leakage_bps <= 1000
+          governance.privacy_leakage_bps <= 1000 &&
+          governanceSignatureValid
       );
       if (!checks.provider_governance_valid) {
         errors.push(...governanceValidation.errors);
+        errors.push("TSL_SCORING_GOVERNANCE_INVALID");
+        if (!governanceSignatureValid) errors.push("TSL_PROVIDER_GOVERNANCE_SIGNATURE_INVALID");
         errors.push("TSL_PROVIDER_INACTIVE");
         if (governance?.model_registered === false) errors.push("TSL_MODEL_NOT_REGISTERED");
       }
@@ -691,12 +761,19 @@ export async function verifyTSL(
     }
   }
 
-  if (input.graph_profile || input.graph_feature_vector || input.sybil_assessment || input.drift_report || policy.require_graph_artifacts) {
+  const graphScoped = Boolean(input.graph_profile || input.graph_feature_vector || input.sybil_assessment || input.drift_report || policy.require_graph_artifacts);
+  if (graphScoped) {
     const graphProfileValidation = input.graph_profile ? validateSchema("graphProfileV2", input.graph_profile) : undefined;
     const graphVectorValidation = input.graph_feature_vector ? validateSchema("graphFeatureVectorV1", input.graph_feature_vector) : undefined;
     const sybilValidation = input.sybil_assessment ? validateSchema("sybilAssessmentV1", input.sybil_assessment) : undefined;
     const driftValidation = input.drift_report ? validateSchema("driftReportV1", input.drift_report) : undefined;
+    const requireGraphArtifacts = Boolean(policy.require_graph_artifacts || policy.require_exact_graph_formulas);
+    if (requireGraphArtifacts && (!input.graph_profile || !input.graph_feature_vector)) {
+      checks.graph_artifacts_valid = false;
+      errors.push("TSL_GRAPH_ARTIFACT_REQUIRED");
+    }
     checks.graph_artifacts_valid = Boolean(
+      checks.graph_artifacts_valid !== false &&
       (!input.graph_profile || graphProfileValidation?.valid) &&
         (!input.graph_feature_vector || graphVectorValidation?.valid) &&
         (!input.sybil_assessment || sybilValidation?.valid) &&
@@ -718,6 +795,17 @@ export async function verifyTSL(
       checks.research_graph_algorithm_valid = algorithm === "louvain_modularity_v1" || algorithm === "leiden_refinement_v1";
       if (!checks.research_graph_algorithm_valid) errors.push("TSL_GRAPH_ARTIFACTS_INVALID");
       checks.graph_artifacts_valid = checks.graph_artifacts_valid && checks.research_graph_algorithm_valid;
+    }
+    if (policy.require_exact_graph_formulas && input.graph_feature_vector) {
+      const manifoldFieldsPresent =
+        input.graph_feature_vector.ppr_distance_bps !== undefined &&
+        input.graph_feature_vector.trusted_manifold_distance_bps !== undefined &&
+        input.graph_feature_vector.adversarial_manifold_distance_bps !== undefined &&
+        input.graph_feature_vector.cluster_distance_bps !== undefined;
+      if (!manifoldFieldsPresent) {
+        checks.graph_artifacts_valid = false;
+        errors.push("TSL_MANIFOLD_PROFILE_UNSUPPORTED");
+      }
     }
     if (policy.require_seed_governance_opening) {
       const trustedSeeds = [...(input.trusted_seeds ?? [])].sort();
@@ -768,6 +856,11 @@ export async function verifyTSL(
       checks.graph_artifacts_valid = checks.graph_artifacts_valid && checks.sybil_assessment_valid;
     }
     if (input.drift_report) {
+      if (policy.require_core_drift_formula && (!input.drift_report.issuer || input.drift_report.signature === "0x00")) {
+        checks.drift_report_valid = false;
+        checks.graph_artifacts_valid = false;
+        errors.push("TSL_DRIFT_RECOMPUTATION_REQUIRED");
+      }
       const issuerOrSubject = input.drift_report.issuer ?? input.drift_report.subject;
       const issuerIdentity = await resolver.resolveTrustID(issuerOrSubject, input.drift_report.computed_at);
       const issuerKey = issuerIdentity?.verification_methods.find((method) => keyActiveAt(method, input.drift_report!.computed_at));
@@ -796,7 +889,13 @@ export async function verifyTSL(
 	        });
 	      } catch (error) {
 	        checks.graph_artifacts_valid = false;
-	        errors.push(error instanceof Error && error.message === "TSL_NEGATIVE_EVIDENCE_INCOMPLETE" ? "TSL_NEGATIVE_EVIDENCE_INCOMPLETE" : "TSL_GRAPH_EVIDENCE_INVALID");
+	        errors.push(
+	          error instanceof Error && error.message === "TSL_NEGATIVE_EVIDENCE_INCOMPLETE"
+	            ? "TSL_NEGATIVE_EVIDENCE_INCOMPLETE"
+	            : error instanceof Error && error.message === "TSL_GRAPH_EVENT_REPLAY_DETECTED"
+	              ? "TSL_GRAPH_EVENT_REPLAY_DETECTED"
+	              : "TSL_GRAPH_EVIDENCE_INVALID"
+	        );
 	      }
 	    }
     if (input.graph_profile && input.graph_feature_vector && evidenceGraph) {
@@ -893,6 +992,11 @@ export async function verifyTSL(
 	        checks.graph_artifacts_valid = checks.graph_artifacts_valid && sybilMatches && (!policy.require_behavioral_sybil_tiers || tierEvidencePresent);
         if (!sybilMatches) errors.push("TSL_SYBIL_ARTIFACT_INVALID");
     }
+      if (input.drift_report && policy.require_core_drift_formula && !input.drift_feature_history?.length) {
+        checks.drift_report_valid = false;
+        checks.graph_artifacts_valid = false;
+        errors.push("TSL_DRIFT_RECOMPUTATION_REQUIRED");
+      }
       if (input.drift_report && input.drift_feature_history) {
         const recomputedDrift = computeDriftReportV0({
           subject: input.drift_report.subject,
@@ -938,7 +1042,7 @@ export async function verifyTSL(
         if (!checks.full_covariance_drift_valid) errors.push("TSL_FULL_COVARIANCE_DRIFT_REQUIRED");
         checks.graph_artifacts_valid = checks.graph_artifacts_valid && checks.full_covariance_drift_valid;
       }
-    if (policy.require_graph_artifacts && !checks.graph_artifacts_valid) {
+    if (requireGraphArtifacts && !checks.graph_artifacts_valid) {
       errors.push("TSL_GRAPH_ARTIFACTS_INVALID");
       if (graphProfileValidation) errors.push(...graphProfileValidation.errors);
       if (graphVectorValidation) errors.push(...graphVectorValidation.errors);
@@ -1195,7 +1299,19 @@ export async function verifyTSL(
     if (checks.checkpoint_matches_proof) explanation.push("Checkpoint root matches inclusion proof");
   }
 
-  if (input.checkpoint && settlementBackend) {
+  if (input.checkpoint && input.settlement_evidence?.length) {
+    checks.settlement_evidence_valid = settlementEvidenceMatchesCheckpoint(input, checkpointHashForPolicy(input.checkpoint));
+    checks.checkpoint_settled = checks.settlement_evidence_valid;
+    if (checks.settlement_evidence_valid) {
+      settlementStatus = "settled";
+      explanation.push("Checkpoint settlement evidence is valid");
+    } else {
+      errors.push("TSL_SETTLEMENT_EVIDENCE_INVALID");
+      settlementStatus = "mismatch";
+    }
+  }
+
+  if (input.checkpoint && settlementBackend && !checks.checkpoint_settled) {
     const settlement = await settlementBackend.verifyCheckpointSettlement(input.checkpoint);
     checks.checkpoint_settled = settlement.settled;
     if (settlement.settled) {
@@ -1270,8 +1386,9 @@ export async function verifyTSL(
     checks.full_covariance_drift_valid !== false &&
     checks.authorized_relay_valid !== false &&
     checks.governance_policy_valid !== false &&
-    checks.audit_consistency_valid !== false &&
-    !errors.includes("TSL_UNSAFE_FIXTURE_POLICY_ENABLED") &&
+	    checks.audit_consistency_valid !== false &&
+	    errors.length === 0 &&
+	    !errors.includes("TSL_UNSAFE_FIXTURE_POLICY_ENABLED") &&
     (!policy.require_chain_revocation || checks.chain_revocation_checked === true) &&
     (!policy.require_zk_claims?.length || checks.zk_valid === true) &&
     (!policy.require_agent_scope || checks.agent_scope_valid === true) &&

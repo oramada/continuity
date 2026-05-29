@@ -251,6 +251,9 @@
         "raw_content_included": {
           "type": "boolean"
         },
+        "content_salt_included": {
+          "type": "boolean"
+        },
         "exact_counterparties_included": {
           "type": "boolean"
         },

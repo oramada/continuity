@@ -2,6 +2,7 @@
   "type": "tsl.attestation.v2",
   "attestation_id": "0xdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
   "issuer": "did:tsl:provider:continuity-labs",
+  "signing_key_id": "#provider-risk",
   "subject": "did:tsl:test:alice",
   "claim_class": "provider_risk_flag",
   "claim_polarity": "negative",

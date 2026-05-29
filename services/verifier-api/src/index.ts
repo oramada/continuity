@@ -46,18 +46,20 @@ export function createVerifierApi() {
   app.post("/v1/verify", async (req, res) => {
     try {
       const identities: IdentityDocumentV1[] = [];
+      const bundle = req.body.proof_bundle;
+      if (bundle?.identity) identities.push(bundle.identity);
       if (req.body.identity) identities.push(req.body.identity);
       if (req.body.identity_document) identities.push(req.body.identity_document);
       if (Array.isArray(req.body.identities)) identities.push(...req.body.identities);
 
       const resolver = await durableResolver(identities);
-      const bundle = req.body.proof_bundle;
       const input: VerifyTSLInput = {
         proof_bundle: bundle,
         envelope: req.body.envelope ?? bundle?.envelope,
         proof: req.body.proof ?? bundle?.proof,
         receipt_proofs: req.body.receipt_proofs,
         checkpoint: req.body.checkpoint ?? bundle?.checkpoint,
+        settlement_evidence: req.body.settlement_evidence ?? bundle?.settlement_evidence,
         redaction_manifest: req.body.redaction_manifest ?? bundle?.redaction_manifest,
         message_disclosure: req.body.message_disclosure ?? bundle?.message_disclosure,
         receipts: req.body.receipts ?? bundle?.receipts,
@@ -93,7 +95,7 @@ export function createVerifierApi() {
         governance_policy: req.body.governance_policy ?? bundle?.governance_policy,
         disclosure_consents: req.body.disclosure_consents ?? bundle?.disclosure_consents
       };
-	      const policy: VerifierPolicy = req.body.policy ?? {
+	      const policy: VerifierPolicy = req.body.verifier_policy ?? req.body.policy ?? {
 	        require_inclusion: Boolean(req.body.proof ?? bundle?.proof),
 	        require_checkpoint: Boolean(req.body.checkpoint ?? bundle?.checkpoint),
 	        require_settlement: false

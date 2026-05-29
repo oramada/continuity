@@ -29,7 +29,10 @@
           "local_context",
           "aggregate_counts",
           "receipt_thresholds",
-          "attestation_status"
+          "attestation_status",
+          "attestations",
+          "restricted_attestations",
+          "private_graph"
         ]
       },
       "uniqueItems": true
@@ -46,7 +49,8 @@
           "protected_attributes",
           "ip_address",
           "user_agent",
-          "precise_location"
+          "precise_location",
+          "private_graph"
         ]
       },
       "uniqueItems": true

@@ -5,6 +5,7 @@
     "type",
     "attestation_id",
     "issuer",
+    "signing_key_id",
     "subject",
     "claim_class",
     "claim_polarity",
@@ -32,6 +33,10 @@
     "issuer": {
       "type": "string",
       "pattern": "^did:tsl:"
+    },
+    "signing_key_id": {
+      "type": "string",
+      "minLength": 1
     },
     "subject": {
       "type": "string",

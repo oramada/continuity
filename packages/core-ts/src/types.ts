@@ -166,13 +166,19 @@ export interface BatchCheckpointV1 {
 export interface SettlementEvidenceV1 {
   type: "tsl.settlement_evidence.v1";
   checkpoint_hash: Hex32;
-  checkpoint_identity_hash?: Hex32;
+  checkpoint_identity_hash: Hex32;
   settlement_backend: string;
-  chain_id?: number;
-  contract_address?: string;
+  chain_id: number;
+  contract_address: string;
   contract_checkpoint_hash?: Hex32;
-  contract_checkpoint_fields_hash?: Hex32;
+  contract_checkpoint_fields_hash: Hex32;
   settlement_tx: string;
+  transaction_receipt_hash?: Hex32;
+  block_hash?: Hex32;
+  block_number?: number;
+  receipt_status?: "success" | "reverted" | "unknown";
+  chain_proof_commitment?: Hex32;
+  submitter: string;
   submitted_at: RFC3339;
   status: "submitted" | "settled" | "failed";
 }
@@ -584,6 +590,7 @@ export interface AttestationV2 {
   type: "tsl.attestation.v2";
   attestation_id: Hex32;
   issuer: TrustID;
+  signing_key_id: string;
   subject: TrustID;
   claim_class: string;
   claim_polarity: "positive" | "negative" | "neutral";
@@ -685,6 +692,10 @@ export interface ZkCircuitReleaseManifestV1 {
   verification_key_id: string;
   verification_key_hash: Hex32;
   verification_key?: unknown;
+  public_signal_schema?: Record<string, unknown>;
+  private_witness_schema?: Record<string, unknown>;
+  soundness_bits?: number;
+  privacy_notes?: string[];
   ceremony_transcript_hash: Hex32;
   auditor: TrustID;
   reviewer: TrustID;
@@ -727,6 +738,13 @@ export interface FeatureRegistryV1 {
   type: "tsl.feature_registry.v1";
   registry_id: string;
   feature_ids: string[];
+  feature_definitions?: Array<{
+    feature_id: string;
+    value_type: "bps" | "boolean" | "count" | "duration" | "commitment";
+    privacy_class: "public" | "aggregate" | "pairwise" | "local_only" | "private";
+    attack_model?: string[];
+    source: "verified_event" | "receipt" | "attestation" | "graph" | "sybil" | "drift" | "local_context";
+  }>;
   issued_at: RFC3339;
   signature?: HexSig;
 }
@@ -735,6 +753,10 @@ export interface NormalizationProfileV1 {
   type: "tsl.normalization_profile.v1";
   profile_id: string;
   feature_ranges_bps: Record<string, { min_bps: number; max_bps: number; missing_bps: number }>;
+  training_window?: { start: RFC3339; end: RFC3339 };
+  percentiles_bps?: Record<string, { p05_bps: number; p50_bps: number; p95_bps: number }>;
+  missing_value_policy?: "impute_zero_with_coverage_penalty" | "impute_median_with_uncertainty" | "reject";
+  time_split_fit_status?: "not_declared" | "train_validation_test_split" | "rolling_window_validated";
   issued_at: RFC3339;
   signature?: HexSig;
 }
@@ -743,6 +765,7 @@ export interface WeightProfileV1 {
   type: "tsl.weight_profile.v1";
   profile_id: string;
   weights_bps: Record<string, number>;
+  feature_directions?: Record<string, "positive" | "penalty">;
   issued_at: RFC3339;
   signature?: HexSig;
 }
@@ -759,6 +782,7 @@ export interface ConfidenceProfileV1 {
   type: "tsl.confidence_profile.v1";
   profile_id: string;
   method?: "analytic_profile_v1" | "deterministic_bootstrap_v1" | "dev_heuristic_v0";
+  bootstrap_unit?: "feature" | "edge_counterparty_attestation";
   min_width_bps: number;
   max_width_bps: number;
   coverage_weight_bps: number;
@@ -892,6 +916,7 @@ export interface ProofBundleV1 {
   governance_policy?: GovernancePolicyV1;
   redaction_manifest: {
     raw_content_included: boolean;
+    content_salt_included?: boolean;
     exact_counterparties_included: boolean;
     metadata_fields_redacted: string[];
   };
@@ -952,6 +977,7 @@ export interface VerifierPolicy {
   verifier_or_provider?: TrustID;
   disclosure_purpose?: string;
   revoked_disclosure_pointers?: string[];
+  disclosure_checked_at?: RFC3339;
   max_assessment_age_ms?: number;
 }
 
@@ -966,6 +992,7 @@ export interface VerificationChecks {
   checkpoint_valid: boolean;
   checkpoint_matches_proof: boolean;
   checkpoint_settled: boolean;
+  settlement_evidence_valid?: boolean;
   receipt_valid?: boolean;
   attestation_valid?: boolean;
   revocation_state_valid?: boolean;

@@ -18,6 +18,7 @@ async function main() {
   const revocationRegistry = await deploy("RevocationRegistry");
   const providerRegistry = await deploy("ProviderRegistry");
   const governanceRegistry = await deploy("GovernanceRegistry");
+  await (await revocationRegistry.setTrustIDRegistry(await trustIDRegistry.getAddress())).wait();
   const relayIds = [
     ethers.id("did:tsl:relay:dev"),
     ethers.id("did:tsl:relay:test")

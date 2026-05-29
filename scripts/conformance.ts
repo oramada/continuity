@@ -11,6 +11,7 @@ import {
   computeGraphFeatureVectorV0,
   computeMetadataFingerprintCommitmentV0,
   computeReferenceScoreV0,
+  extractReferenceFeatureVectorV0,
 	  computeSybilAssessmentV0,
 	  constructGraphFromEvidenceV0,
 	  constructGraphV0,
@@ -199,6 +200,7 @@ const requiredMainnetArtifactPaths = [
 const coreArchitectureSchemaRequiredFields: Record<string, string[]> = {
   "attestation.v2": [
     "attestation_id",
+    "signing_key_id",
     "claim_class",
     "claim_polarity",
     "severity",
@@ -440,7 +442,7 @@ function checkErrorRegistry(): void {
   const codePattern = /TSL_[A-Z0-9_]+/g;
   const nonErrorCodePatterns = [
     /^TSL_.*_(ADDRESS|URL|URI|KEY|KEY_URI|SEED_HEX|PRIVATE_KEY|RPC_URL|DEPLOYMENT|OUT|COUNT|SAMPLES|CONCURRENCY|RETRIES|BATCH|BATCH_SIZE|RUN_ID|ID|IDS|TRUST_ID|CHAIN_ID|CONTRACTS|STREAMS|MS)$/,
-    /^TSL_(DATABASE_URL|EPOCH_MS|ENV_FILE|LOAD_ENV_IN_TESTS|TIMESTAMP_WINDOW_MS|GOSSIP_PEERS|LOG_CONSUMER_GROUP|RELAY_ID|RELAY_SIGNATURE|VERIFY_CONTRACTS|SCORING_PERSISTENCE|SCORING_ALLOW_MEMORY_STORE|NETWORK|DEV_SCORING_INPUTS)$/
+    /^TSL_(DATABASE_URL|EPOCH_MS|ENV_FILE|LOAD_ENV_IN_TESTS|TIMESTAMP_WINDOW_MS|GOSSIP_PEERS|LOG_CONSUMER_GROUP|RELAY_ID|RELAY_SIGNATURE|VERIFY_CONTRACTS|SCORING_PERSISTENCE|SCORING_ALLOW_MEMORY_STORE|NETWORK|DEV_SCORING_INPUTS|DEV_GRAPH_ARTIFACTS)$/
   ];
   for (const searchRoot of searchRoots) {
     const fullRoot = path.join(root, searchRoot);
@@ -620,6 +622,22 @@ async function checkSemanticConformance(): Promise<void> {
   const adverseScore = computeReferenceScoreV0({ ...scoringBase, normalized_features_bps: { trust: 10000 }, weights_bps: { trust: 4000 }, has_adverse_evidence: true });
   assert(noAdverseScore.label === "unknown_caution", `Suspicious label must require adverse evidence: ${noAdverseScore.label}`);
   assert(adverseScore.label === "suspicious", `Adverse-evidence suspicious label mismatch: ${adverseScore.label}`);
+  const bootstrapScore = computeReferenceScoreV0({
+    ...scoringBase,
+    normalized_features_bps: { event: 8000, receipt: 7000, attestation: 6000 },
+    weights_bps: { event: 3000, receipt: 3000, attestation: 3000 },
+    confidence_profile: {
+      method: "deterministic_bootstrap_v1" as const,
+      bootstrap_unit: "edge_counterparty_attestation" as const,
+      bootstrap_rounds: 16,
+      bootstrap_seed: fakeHash,
+      min_width_bps: 1,
+      max_width_bps: 2000,
+      coverage_weight_bps: 0
+    },
+    bootstrap_evidence_hashes: [sha256Hex("edge"), sha256Hex("counterparty"), sha256Hex("attestation")]
+  });
+  assert(bootstrapScore.confidence_interval_bps?.[0] !== undefined && bootstrapScore.confidence_interval_bps[0] < bootstrapScore.score_bps!, "Bootstrap confidence must produce a deterministic 95% interval");
   assertThrows(
     () =>
       computeReferenceScoreV0({
@@ -637,6 +655,18 @@ async function checkSemanticConformance(): Promise<void> {
       }),
     "Calibration profile must reject non-monotone mappings"
   );
+  const extractedFeatures = extractReferenceFeatureVectorV0({
+    subject: bundleIdentity.id,
+    identity: bundleIdentity,
+    envelope: bundleEvent.envelope,
+    receipts: [bundleReceipt, { ...bundleReceipt, metadata_commitment: fakeHash }],
+    verification_checks: { signature_valid: true, key_active: true, not_revoked: true },
+    cadence_intervals_ms: [1000, 1000, 1200, 900],
+    computed_at: "2026-05-27T12:00:00Z"
+  });
+  assert(extractedFeatures.identity_age !== undefined && extractedFeatures.identity_age > 0, "Scoring feature extractor must compute exponential identity age");
+  assert(extractedFeatures.receipt_count !== undefined && extractedFeatures.receipt_count > 0, "Scoring feature extractor must compute clustered receipt counts");
+  assert(extractedFeatures.local_relationship === undefined, "Local relationship must remain local unless explicitly disclosed");
 
   const aSeed = "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f";
   const bSeed = "0101010101010101010101010101010101010101010101010101010101010101";
@@ -960,7 +990,7 @@ async function checkZkProductionConformance(): Promise<void> {
   assert(zkVerificationKeyObjectHash({ ...verificationKey, alpha_g1: ["1", "3"] }) !== verificationKeyHash, "ZK verification-key object hash must reject key mutation");
   const manifest = {
     type: "tsl.zk.circuit_release_manifest.v1" as const,
-    circuit_id: "identity-age-threshold-v1",
+    circuit_id: "tsl.identity_age_days.production_interface.v1",
     claim: "identity_age_days" as const,
     version: "1.0.0",
     circuit_hash: sha256Hex("circuit"),
@@ -970,11 +1000,19 @@ async function checkZkProductionConformance(): Promise<void> {
     verification_key_id: "identity-age-vkey-v1",
     verification_key_hash: verificationKeyHash,
     verification_key: verificationKey,
+    public_signal_schema: { required: ["subject_hash", "threshold", "registry_root"] },
+    private_witness_schema: {
+      required: ["creation_proof", "salt", "registry_path"],
+      properties: { creation_proof: {}, salt: {}, registry_path: {} }
+    },
+    soundness_bits: 128,
+    privacy_notes: ["test manifest with registered verification key"],
     ceremony_transcript_hash: sha256Hex("ceremony"),
     auditor: "did:tsl:auditor:test",
     reviewer: "did:tsl:reviewer:test",
     status: "active" as const,
-    issued_at: "2026-05-27T12:00:00Z"
+    issued_at: "2026-05-27T12:00:00Z",
+    signature: "0x11" as const
   };
   const releaseHash = zkCircuitReleaseManifestHash(manifest);
   const proof = {
@@ -994,9 +1032,17 @@ async function checkZkProductionConformance(): Promise<void> {
     zkProofUsesRegisteredCircuit({
       proof,
       manifests: [manifest],
-      registry: { type: "tsl.zk.verification_key_registry.v1", registry_id: "registry", active_manifest_hashes: [releaseHash], revoked_manifest_hashes: [], issued_at: manifest.issued_at }
+      registry: { type: "tsl.zk.verification_key_registry.v1", registry_id: "registry", active_manifest_hashes: [releaseHash], revoked_manifest_hashes: [], issued_at: manifest.issued_at, signature: "0x22" as const }
     }),
     "Production ZK proof must bind to active circuit release registry"
+  );
+  assert(
+    !zkProofUsesRegisteredCircuit({
+      proof: { ...proof, circuit_id: "dev_identity_age_threshold_v1" },
+      manifests: [{ ...manifest, circuit_id: "dev_identity_age_threshold_v1" }],
+      registry: { type: "tsl.zk.verification_key_registry.v1", registry_id: "registry", active_manifest_hashes: [zkCircuitReleaseManifestHash({ ...manifest, circuit_id: "dev_identity_age_threshold_v1" })], revoked_manifest_hashes: [], issued_at: manifest.issued_at, signature: "0x22" as const }
+    }),
+    "Production ZK conformance must reject dev circuit ids"
   );
 	  const tree = buildSparseMerkleTree([sha256Hex("revoked-a"), sha256Hex("revoked-b")], { tree_id: "revocation-set-v1", tree_depth: 8 });
 	  const nonMembership = proveSparseMerkleNonMembership(sha256Hex("not-revoked"), tree, "did:tsl:a", "2026-05-27T12:00:00Z");

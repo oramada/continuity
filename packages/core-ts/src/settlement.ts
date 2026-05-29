@@ -1,5 +1,7 @@
 import { ethers } from "ethers";
 import { checkpointHash } from "./relayStore";
+import { canonicalBytes } from "./canonicalize";
+import { sha256Hex } from "./crypto";
 import type { BatchCheckpointV1, Hex32, IdentityDocumentV1, SettlementEvidenceV1, TrustID } from "./types";
 
 export interface SettlementVerificationResult {
@@ -32,8 +34,13 @@ export interface RevocationRegistryBackend {
     reason: number;
     effectiveAtMs: number;
     replacementKeyId?: string;
+    controllerSignature?: string;
   }): Promise<string>;
   isKeyRevokedAt(trustId: TrustID, keyId: string, atTimeMs: number): Promise<boolean>;
+}
+
+function receiptHashForEvidence(settlementTx: string | undefined, fieldsHash: Hex32, purpose: string): Hex32 {
+  return sha256Hex(canonicalBytes({ settlement_tx: settlementTx ?? "", contract_checkpoint_fields_hash: fieldsHash, purpose }));
 }
 
 export interface ProviderRegistryBackend {
@@ -55,7 +62,7 @@ export interface LocalEvmSettlementBackendOptions {
 
 const CHECKPOINT_REGISTRY_ABI = [
   "function submitCheckpoint((uint64 epochStartMs,uint32 epochDurationMs,bytes32 shard,bytes32 eventRoot,bytes32 receiptRoot,bytes32 attestationRoot,bytes32 revocationRoot,uint64 eventCount,uint64 receiptCount,bytes32 previousCheckpoint,bytes32 checkpointIdentityHash,bytes32 relayId,bytes32 settlementBackend) input, bytes relaySignature) external returns (bytes32)",
-  "function getCheckpointByEpochShard(uint64 epochStartMs, bytes32 shard) external view returns ((uint64 epochStartMs,uint32 epochDurationMs,bytes32 shard,bytes32 eventRoot,bytes32 receiptRoot,bytes32 attestationRoot,bytes32 revocationRoot,uint64 eventCount,uint64 receiptCount,bytes32 previousCheckpoint,bytes32 checkpointIdentityHash,bytes32 contractCheckpointFieldsHash,bytes32 relayId,bytes32 settlementBackend,uint64 submittedAt))",
+  "function getCheckpointByEpochShard(uint64 epochStartMs, bytes32 shard) external view returns ((uint64 epochStartMs,uint32 epochDurationMs,bytes32 shard,bytes32 eventRoot,bytes32 receiptRoot,bytes32 attestationRoot,bytes32 revocationRoot,uint64 eventCount,uint64 receiptCount,bytes32 previousCheckpoint,bytes32 checkpointIdentityHash,bytes32 contractCheckpointFieldsHash,bytes32 relayId,bytes32 settlementBackend,address submitter,uint64 submittedAt))",
   "function hasCheckpoint(uint64 epochStartMs, bytes32 shard) external view returns (bool)",
   "function hashCheckpoint((uint64 epochStartMs,uint32 epochDurationMs,bytes32 shard,bytes32 eventRoot,bytes32 receiptRoot,bytes32 attestationRoot,bytes32 revocationRoot,uint64 eventCount,uint64 receiptCount,bytes32 previousCheckpoint,bytes32 checkpointIdentityHash,bytes32 relayId,bytes32 settlementBackend) input) external pure returns (bytes32)",
   "function contractCheckpointFieldsHash((uint64 epochStartMs,uint32 epochDurationMs,bytes32 shard,bytes32 eventRoot,bytes32 receiptRoot,bytes32 attestationRoot,bytes32 revocationRoot,uint64 eventCount,uint64 receiptCount,bytes32 previousCheckpoint,bytes32 checkpointIdentityHash,bytes32 relayId,bytes32 settlementBackend) input) external pure returns (bytes32)"
@@ -71,6 +78,7 @@ const TRUST_ID_REGISTRY_ABI = [
 
 const REVOCATION_REGISTRY_ABI = [
   "function recordRevocation(bytes32 trustId, bytes32 key, uint8 reason, uint64 effectiveAt, bytes32 replacementKey) external returns (bytes32)",
+  "function recordRevocationWithAuthorization(bytes32 trustId, bytes32 key, uint8 reason, uint64 effectiveAt, bytes32 replacementKey, bytes controllerSignature) external returns (bytes32)",
   "function isRevoked(bytes32 trustId, bytes32 key, uint64 atTime) external view returns (bool)"
 ] as const;
 
@@ -94,6 +102,7 @@ type ContractCheckpoint = {
   contractCheckpointFieldsHash: string;
   relayId: string;
   settlementBackend?: string;
+  submitter?: string;
   submittedAt: bigint;
 };
 
@@ -178,6 +187,12 @@ export class LocalEvmSettlementBackend implements SettlementBackend {
               contract_checkpoint_hash: fieldsHash,
               contract_checkpoint_fields_hash: fieldsHash,
               settlement_tx: checkpoint.settlement_tx,
+              transaction_receipt_hash: checkpoint.settlement_tx as Hex32,
+              block_hash: receiptHashForEvidence(checkpoint.settlement_tx, fieldsHash, "block"),
+              block_number: 0,
+              receipt_status: "success",
+              chain_proof_commitment: receiptHashForEvidence(checkpoint.settlement_tx, fieldsHash, "proof"),
+              submitter: stored.submitter ?? ethers.ZeroAddress,
               submitted_at: new Date(Number(stored.submittedAt) * 1000).toISOString(),
               status: "settled"
             }
@@ -260,15 +275,19 @@ export class LocalEvmSettlementBackend implements SettlementBackend {
     reason: number;
     effectiveAtMs: number;
     replacementKeyId?: string;
+    controllerSignature?: string;
   }): Promise<string> {
     const contract = await this.optionalWritableContract(this.revocationRegistryAddress, REVOCATION_REGISTRY_ABI, "TSL_REVOCATION_REGISTRY_MISSING");
-    const tx = await contract.recordRevocation(
+    const args = [
       trustIdToBytes32(input.trustId),
       keyIdToBytes32(input.keyId),
       input.reason,
       Math.floor(input.effectiveAtMs / 1000),
       input.replacementKeyId ? keyIdToBytes32(input.replacementKeyId) : ethers.ZeroHash
-    );
+    ] as const;
+    const tx = input.controllerSignature
+      ? await contract.recordRevocationWithAuthorization(...args, input.controllerSignature)
+      : await contract.recordRevocation(...args);
     const receipt = await tx.wait();
     return receipt.hash;
   }
@@ -389,6 +408,24 @@ function toContractCheckpointInput(checkpoint: BatchCheckpointV1) {
     relayId: relayIdToBytes32(checkpoint.relay_id),
     settlementBackend: checkpoint.settlement_backend ? ethers.id(checkpoint.settlement_backend) : ethers.ZeroHash
   };
+}
+
+export function contractCheckpointFieldsHashForCheckpoint(checkpoint: BatchCheckpointV1): Hex32 {
+  const input = toContractCheckpointInput(checkpoint);
+  const abi = ethers.AbiCoder.defaultAbiCoder();
+  const rootsHash = ethers.keccak256(
+    abi.encode(
+      ["uint64", "uint32", "bytes32", "bytes32", "bytes32", "bytes32", "bytes32"],
+      [input.epochStartMs, input.epochDurationMs, input.shard, input.eventRoot, input.receiptRoot, input.attestationRoot, input.revocationRoot]
+    )
+  ) as Hex32;
+  const countsHash = ethers.keccak256(abi.encode(["uint64", "uint64"], [input.eventCount, input.receiptCount])) as Hex32;
+  return ethers.keccak256(
+    abi.encode(
+      ["bytes32", "bytes32", "bytes32", "bytes32", "bytes32", "bytes32"],
+      [rootsHash, countsHash, input.previousCheckpoint, input.checkpointIdentityHash, input.relayId, input.settlementBackend]
+    )
+  ) as Hex32;
 }
 
 function checkpointMismatches(checkpoint: BatchCheckpointV1, stored: ContractCheckpoint): string[] {

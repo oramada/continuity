@@ -21,4 +21,38 @@ export * from "./validation";
 export * from "./verifier";
 export * from "./zk";
 export * from "./agent";
-export * from "./v2";
+export {
+  V2_DOMAIN_TAGS,
+  scoringProfileV2Hash,
+  buildScoringProfileV2,
+  signScoringProfileV2,
+  verifyScoringProfileV2,
+  trustAssessmentV2Hash,
+  buildTrustAssessmentV2,
+  signTrustAssessmentV2,
+  verifyTrustAssessmentV2,
+  disclosureConsentV1Hash,
+  attestationV2Hash,
+  computeEvidenceCoverageV0,
+  extractReferenceFeatureVectorV0,
+  computeReferenceScoreV0,
+  constructGraphV0,
+  constructGraphFromEvidenceV0,
+  computeGraphFeatureVectorV0,
+  graphFeatureVectorV1Hash,
+  computeSybilAssessmentV0,
+  sybilAssessmentV1Hash,
+  computeDriftReportV0,
+  driftReportV1Hash,
+  computeMetadataFingerprintCommitmentV0,
+  metadataFingerprintCommitmentV1Hash,
+  buildDelegationPolicyV2,
+  delegationPolicyV2Hash,
+  signDelegationPolicyV2,
+  buildAgentActionV2,
+  agentActionV2Hash,
+  signAgentActionV2,
+  verifyDelegatedAgentActionV0,
+  signaturePlaceholder
+} from "./v2";
+export type { ReferenceScoreV0Input, ReferenceFeatureVectorV0Input, GraphEdgeV0, GraphV0 } from "./v2";

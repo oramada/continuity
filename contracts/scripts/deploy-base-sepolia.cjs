@@ -29,6 +29,7 @@ async function main() {
   const revocationRegistry = await deploy("RevocationRegistry");
   const providerRegistry = await deploy("ProviderRegistry");
   const governanceRegistry = await deploy("GovernanceRegistry");
+  await (await revocationRegistry.setTrustIDRegistry(await trustIDRegistry.getAddress())).wait();
 
   const relayIds = (process.env.TSL_BASE_SEPOLIA_RELAY_IDS ?? "did:tsl:relay:base-sepolia")
     .split(",")

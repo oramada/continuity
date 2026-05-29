@@ -1,7 +1,7 @@
 {
   "$id": "https://spec.tsl.network/schemas/confidence_profile.v1.schema.json",
   "type": "object",
-  "required": ["type", "profile_id", "min_width_bps", "max_width_bps", "coverage_weight_bps", "issued_at"],
+  "required": ["type", "profile_id", "method", "bootstrap_unit", "min_width_bps", "max_width_bps", "coverage_weight_bps", "issued_at"],
   "additionalProperties": false,
   "properties": {
     "type": { "const": "tsl.confidence_profile.v1" },
@@ -13,6 +13,7 @@
     "bootstrap_seed": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
     "bootstrap_rounds": { "type": "integer", "minimum": 8, "maximum": 256 },
     "method": { "enum": ["analytic_profile_v1", "deterministic_bootstrap_v1", "dev_heuristic_v0"] },
+    "bootstrap_unit": { "enum": ["feature", "edge_counterparty_attestation"] },
     "issued_at": { "type": "string", "format": "date-time" },
     "signature": { "type": "string", "pattern": "^0x[0-9a-f]+$" }
   }

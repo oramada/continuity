@@ -70,11 +70,16 @@ const releaseManifests = artifacts.map((artifact) => ({
   verification_key_id: `${artifact.claim}-vkey-v1`,
   verification_key_hash: verificationKeyHash(artifact.verification_key),
   verification_key: readVerificationKey(artifact.verification_key),
+  public_signal_schema: { claim: artifact.claim, fields: ["subject_hash", "threshold"] },
+  private_witness_schema: { witness_interface: "dev_fixture_witness_v1", audited: false },
+  soundness_bits: 1,
+  privacy_notes: ["Development fixture circuit; production use requires audited witness-complete release."],
   ceremony_transcript_hash: sha256(process.env["TSL_" + "ZK_CEREMONY_TRANSCRIPT"] ?? "evidence/zk/ceremony-transcript-placeholder.md"),
   auditor: process.env["TSL_" + "ZK_AUDITOR_ID"] ?? "did:tsl:auditor:placeholder",
   reviewer: process.env["TSL_" + "ZK_REVIEWER_ID"] ?? "did:tsl:reviewer:placeholder",
   status,
-  issued_at: issuedAt
+  issued_at: issuedAt,
+  signature: sha256(`${artifact.claim}:dev-manifest-signature`)
 }));
 
 const releaseHashes = releaseManifests.map((release) => hashDomain("tsl.zk.circuit_release_manifest.v1", canonicalBytes(release)));
@@ -105,7 +110,8 @@ const manifest = {
     registry_id: "tsl-zk-registry-local",
     active_manifest_hashes: status === "active" ? releaseHashes : [],
     revoked_manifest_hashes: [],
-    issued_at: issuedAt
+    issued_at: issuedAt,
+    signature: sha256("dev-registry-signature")
   }
 };
 

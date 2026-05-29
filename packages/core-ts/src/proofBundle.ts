@@ -66,29 +66,52 @@ export function filterProofBundleDisclosures(
     options.include_attestations === true &&
     proofBundleAllowsFieldClass(subject, ["attestations"], options);
   const canDiscloseRawContent =
-    Boolean(bundle.message_disclosure?.raw_message || bundle.message_disclosure?.content_salt) &&
-    proofBundleAllowsFieldClass(subject, ["raw_content", "content_salt"], options);
+    Boolean(bundle.message_disclosure?.raw_message) &&
+    proofBundleAllowsFieldClass(subject, ["raw_content"], options);
+  const canDiscloseContentSalt =
+    Boolean(bundle.message_disclosure?.content_salt) &&
+    proofBundleAllowsFieldClass(subject, ["content_salt"], options);
+  const canDisclosePrivateGraph =
+    !bundle.graph_feature_vector ||
+    bundle.graph_feature_vector.privacy_disclosure_level === "aggregate_only" ||
+    bundle.graph_feature_vector.privacy_disclosure_level === "public" ||
+    proofBundleAllowsFieldClass(subject, ["private_graph"], options);
+  const canDisclosePrivateMetadata =
+    !bundle.metadata_fingerprints?.some((fingerprint) => fingerprint.scope_class !== "public_commitment") ||
+    proofBundleAllowsFieldClass(subject, ["private_metadata"], options);
 
   const receipts = canDiscloseCounterparties ? bundle.receipts : undefined;
   const attestations = filterAttestations(bundle.attestations, canDiscloseRestrictedAttestations);
+  const graphFeatureVector = canDisclosePrivateGraph ? bundle.graph_feature_vector : undefined;
+  const metadataFingerprints = canDisclosePrivateMetadata ? bundle.metadata_fingerprints : undefined;
   const metadataFieldsRedacted = new Set<string>();
-  if (!canDiscloseRawContent) {
-    metadataFieldsRedacted.add("raw_content");
-    metadataFieldsRedacted.add("content_salt");
-  }
+  if (!canDiscloseRawContent) metadataFieldsRedacted.add("raw_content");
+  if (!canDiscloseContentSalt) metadataFieldsRedacted.add("content_salt");
   if (!canDiscloseCounterparties) metadataFieldsRedacted.add("exact_counterparties");
   if (!canDiscloseRestrictedAttestations && (bundle.attestations ?? []).some((attestation) => attestation.visibility !== "public")) {
     metadataFieldsRedacted.add("restricted_attestations");
   }
+  if (!canDisclosePrivateGraph && bundle.graph_feature_vector) metadataFieldsRedacted.add("private_graph");
+  if (!canDisclosePrivateMetadata && bundle.metadata_fingerprints?.length) metadataFieldsRedacted.add("private_metadata");
   for (const field of ["platform", "ip_address", "user_agent"]) metadataFieldsRedacted.add(field);
 
+  const message_disclosure =
+    canDiscloseRawContent || canDiscloseContentSalt
+      ? {
+          ...(canDiscloseRawContent ? { raw_message: bundle.message_disclosure?.raw_message } : {}),
+          ...(canDiscloseContentSalt ? { content_salt: bundle.message_disclosure?.content_salt } : {})
+        }
+      : undefined;
   const redacted: ProofBundleV1 = {
     ...bundle,
     ...(receipts ? { receipts } : { receipts: undefined }),
     ...(attestations.length ? { attestations } : { attestations: undefined }),
-    ...(canDiscloseRawContent ? {} : { message_disclosure: undefined }),
+    ...(metadataFingerprints ? { metadata_fingerprints: metadataFingerprints } : { metadata_fingerprints: undefined }),
+    ...(graphFeatureVector ? { graph_feature_vector: graphFeatureVector } : { graph_feature_vector: undefined }),
+    ...(message_disclosure ? { message_disclosure } : { message_disclosure: undefined }),
     redaction_manifest: {
       raw_content_included: canDiscloseRawContent,
+      content_salt_included: canDiscloseContentSalt,
       exact_counterparties_included: Boolean(receipts?.length),
       metadata_fields_redacted: [...metadataFieldsRedacted].sort()
     }
@@ -108,10 +131,16 @@ export function proofBundleHasPrivateDisclosureWithoutConsent(bundle: ProofBundl
   const subject = bundle.envelope.sender;
   const hasReceipts = Boolean(bundle.receipts?.length);
   const hasRestrictedAttestations = Boolean(bundle.attestations?.some((attestation) => attestation.visibility !== "public"));
-  const hasRawContent = Boolean(bundle.message_disclosure?.raw_message || bundle.message_disclosure?.content_salt);
+  const hasRawContent = Boolean(bundle.message_disclosure?.raw_message);
+  const hasContentSalt = Boolean(bundle.message_disclosure?.content_salt);
+  const hasPrivateGraph = Boolean(bundle.graph_feature_vector && !["aggregate_only", "public"].includes(bundle.graph_feature_vector.privacy_disclosure_level));
+  const hasPrivateMetadata = Boolean(bundle.metadata_fingerprints?.some((fingerprint) => fingerprint.scope_class !== "public_commitment"));
   return (
     (hasReceipts && !proofBundleAllowsFieldClass(subject, ["exact_counterparties"], options)) ||
     (hasRestrictedAttestations && !proofBundleAllowsFieldClass(subject, ["attestations"], options)) ||
-    (hasRawContent && !proofBundleAllowsFieldClass(subject, ["raw_content", "content_salt"], options))
+    (hasRawContent && !proofBundleAllowsFieldClass(subject, ["raw_content"], options)) ||
+    (hasContentSalt && !proofBundleAllowsFieldClass(subject, ["content_salt"], options)) ||
+    (hasPrivateGraph && !proofBundleAllowsFieldClass(subject, ["private_graph"], options)) ||
+    (hasPrivateMetadata && !proofBundleAllowsFieldClass(subject, ["private_metadata"], options))
   );
 }

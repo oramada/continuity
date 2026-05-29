@@ -54,6 +54,12 @@ contract TrustIDRegistry {
         return identities[trustId].activeKey;
     }
 
+    function getController(bytes32 trustId) external view returns (address) {
+        TrustIdentity memory identity = identities[trustId];
+        if (identity.createdAt == 0) revert TrustIDNotFound(trustId);
+        return identity.controller;
+    }
+
     function isRevoked(bytes32 trustId, bytes32 key) external view returns (bool) {
         return revokedKeys[trustId][key];
     }

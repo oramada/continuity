@@ -108,7 +108,7 @@ def main():
     hex32 = "0x" + "11" * 32
     check_schema_value("zk_circuit_release_manifest.v1.schema.json", {
         "type": "tsl.zk.circuit_release_manifest.v1",
-        "circuit_id": "identity-age-threshold-v1",
+        "circuit_id": "tsl.identity_age_days.production_interface.v1",
         "claim": "identity_age_days",
         "version": "1.0.0",
         "circuit_hash": hex32,
@@ -118,10 +118,15 @@ def main():
         "verification_key_id": "identity-age-vkey-v1",
         "verification_key_hash": hex32,
         "ceremony_transcript_hash": hex32,
+        "public_signal_schema": {"required": ["subject_hash", "threshold", "registry_root"]},
+        "private_witness_schema": {"required": ["creation_proof", "salt", "registry_path"], "properties": {"creation_proof": {}, "salt": {}, "registry_path": {}}},
+        "soundness_bits": 128,
+        "privacy_notes": ["dev-only parity manifest"],
         "auditor": "did:tsl:auditor:test",
         "reviewer": "did:tsl:reviewer:test",
         "status": "active",
         "issued_at": "2026-05-27T12:00:00Z",
+        "signature": "0x" + "22" * 64,
     })
     check_schema_value("zk_verification_key_registry.v1.schema.json", {
         "type": "tsl.zk.verification_key_registry.v1",
@@ -129,13 +134,14 @@ def main():
         "active_manifest_hashes": [hex32],
         "revoked_manifest_hashes": [],
         "issued_at": "2026-05-27T12:00:00Z",
+        "signature": "0x" + "33" * 64,
     })
     for schema_name, value in [
-        ("feature_registry.v1.schema.json", {"type": "tsl.feature_registry.v1", "registry_id": "features", "feature_ids": ["a"], "issued_at": "2026-05-27T12:00:00Z"}),
-        ("normalization_profile.v1.schema.json", {"type": "tsl.normalization_profile.v1", "profile_id": "norm", "feature_ranges_bps": {"a": {"min_bps": 0, "max_bps": 10000, "missing_bps": 0}}, "issued_at": "2026-05-27T12:00:00Z"}),
+        ("feature_registry.v1.schema.json", {"type": "tsl.feature_registry.v1", "registry_id": "features", "feature_ids": ["a"], "feature_definitions": [{"feature_id": "a", "value_type": "bps", "privacy_class": "aggregate", "source": "verified_event"}], "issued_at": "2026-05-27T12:00:00Z"}),
+        ("normalization_profile.v1.schema.json", {"type": "tsl.normalization_profile.v1", "profile_id": "norm", "feature_ranges_bps": {"a": {"min_bps": 0, "max_bps": 10000, "missing_bps": 0}}, "missing_value_policy": "impute_zero_with_coverage_penalty", "time_split_fit_status": "train_validation_test_split", "issued_at": "2026-05-27T12:00:00Z"}),
         ("weight_profile.v1.schema.json", {"type": "tsl.weight_profile.v1", "profile_id": "weights", "weights_bps": {"a": 10000}, "issued_at": "2026-05-27T12:00:00Z"}),
         ("calibration_profile.v1.schema.json", {"type": "tsl.calibration_profile.v1", "profile_id": "cal", "points": [{"raw_bps": 0, "calibrated_bps": 0}, {"raw_bps": 10000, "calibrated_bps": 10000}], "issued_at": "2026-05-27T12:00:00Z"}),
-        ("confidence_profile.v1.schema.json", {"type": "tsl.confidence_profile.v1", "profile_id": "conf", "min_width_bps": 100, "max_width_bps": 1000, "coverage_weight_bps": 500, "issued_at": "2026-05-27T12:00:00Z"}),
+        ("confidence_profile.v1.schema.json", {"type": "tsl.confidence_profile.v1", "profile_id": "conf", "method": "deterministic_bootstrap_v1", "bootstrap_unit": "edge_counterparty_attestation", "min_width_bps": 100, "max_width_bps": 1000, "coverage_weight_bps": 500, "issued_at": "2026-05-27T12:00:00Z"}),
         ("provider_governance_status.v1.schema.json", {"type": "tsl.provider_governance_status.v1", "provider": "did:tsl:provider:test", "status": "active", "model_registered": True, "evaluation_report_commitment": hex32, "red_team_result": "pass", "privacy_leakage_bps": 100, "promotion_gate_result": "pass", "issued_at": "2026-05-27T12:00:00Z"}),
     ]:
         check_schema_value(schema_name, value)

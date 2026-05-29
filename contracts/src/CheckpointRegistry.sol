@@ -8,6 +8,8 @@ contract CheckpointRegistry {
     error EmptyRelaySignature();
     error InvalidRelaySignature(bytes32 relayId, address recoveredSigner);
     error CheckpointConflict(bytes32 existingCheckpointHash, bytes32 newCheckpointHash);
+    error PreviousCheckpointMismatch(bytes32 expectedPreviousCheckpoint, bytes32 suppliedPreviousCheckpoint);
+    error CheckpointEpochNotMonotonic(uint64 latestEpochStartMs, uint64 suppliedEpochStartMs);
 
     struct CheckpointInput {
         uint64 epochStartMs;
@@ -40,6 +42,7 @@ contract CheckpointRegistry {
         bytes32 contractCheckpointFieldsHash;
         bytes32 relayId;
         bytes32 settlementBackend;
+        address submitter;
         uint64 submittedAt;
     }
 
@@ -49,6 +52,8 @@ contract CheckpointRegistry {
     mapping(bytes32 => address) public relaySigners;
     mapping(bytes32 => Checkpoint) public checkpointsByHash;
     mapping(bytes32 => bytes32) public checkpointHashByEpochShard;
+    mapping(bytes32 => bytes32) public latestCheckpointByShard;
+    mapping(bytes32 => uint64) public latestEpochStartByShard;
 
     event SubmitterAuthorizationUpdated(address indexed submitter, bool authorized);
     event RelayAuthorizationUpdated(bytes32 indexed relayId, bool authorized);
@@ -114,6 +119,20 @@ contract CheckpointRegistry {
             return checkpointHash;
         }
 
+        bytes32 latestForShard = latestCheckpointByShard[input.shard];
+        if (latestForShard == bytes32(0)) {
+            if (input.previousCheckpoint != bytes32(0)) {
+                revert PreviousCheckpointMismatch(bytes32(0), input.previousCheckpoint);
+            }
+        } else {
+            if (input.epochStartMs <= latestEpochStartByShard[input.shard]) {
+                revert CheckpointEpochNotMonotonic(latestEpochStartByShard[input.shard], input.epochStartMs);
+            }
+            if (input.previousCheckpoint != latestForShard) {
+                revert PreviousCheckpointMismatch(latestForShard, input.previousCheckpoint);
+            }
+        }
+
         Checkpoint storage checkpoint = checkpointsByHash[checkpointHash];
         checkpoint.epochStartMs = input.epochStartMs;
         checkpoint.epochDurationMs = input.epochDurationMs;
@@ -129,8 +148,11 @@ contract CheckpointRegistry {
         checkpoint.contractCheckpointFieldsHash = fieldsHash;
         checkpoint.relayId = input.relayId;
         checkpoint.settlementBackend = input.settlementBackend;
+        checkpoint.submitter = msg.sender;
         checkpoint.submittedAt = uint64(block.timestamp);
         checkpointHashByEpochShard[key] = checkpointHash;
+        latestCheckpointByShard[input.shard] = checkpointHash;
+        latestEpochStartByShard[input.shard] = input.epochStartMs;
 
         emit CheckpointSubmitted(checkpointHash, fieldsHash, input.epochStartMs, input.shard, input.eventRoot, msg.sender);
     }

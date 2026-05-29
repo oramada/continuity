@@ -1,0 +1,40 @@
+{
+  "$id": "https://spec.tsl.network/schemas/settlement_evidence.v1.schema.json",
+  "type": "object",
+  "required": [
+    "type",
+    "checkpoint_hash",
+    "checkpoint_identity_hash",
+    "settlement_backend",
+    "chain_id",
+    "contract_address",
+    "contract_checkpoint_fields_hash",
+    "settlement_tx",
+    "transaction_receipt_hash",
+    "receipt_status",
+    "chain_proof_commitment",
+    "submitter",
+    "submitted_at",
+    "status"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "type": { "const": "tsl.settlement_evidence.v1" },
+    "checkpoint_hash": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
+    "checkpoint_identity_hash": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
+    "settlement_backend": { "type": "string", "minLength": 1 },
+    "chain_id": { "type": "integer", "minimum": 0 },
+    "contract_address": { "type": "string" },
+    "contract_checkpoint_hash": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
+    "contract_checkpoint_fields_hash": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
+    "settlement_tx": { "type": "string", "minLength": 1 },
+    "transaction_receipt_hash": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
+    "block_hash": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
+    "block_number": { "type": "integer", "minimum": 0 },
+    "receipt_status": { "enum": ["success", "reverted", "unknown"] },
+    "chain_proof_commitment": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
+    "submitter": { "type": "string", "minLength": 1 },
+    "submitted_at": { "type": "string", "format": "date-time" },
+    "status": { "enum": ["submitted", "settled", "failed"] }
+  }
+}

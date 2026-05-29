@@ -451,6 +451,7 @@ describe("semantic compliance hardening", () => {
       type: "tsl.attestation.v2" as const,
       attestation_id: sha256Hex("negative-attestation"),
       issuer: issuer.id,
+      signing_key_id: "default",
       subject: alice.id,
       claim_class: "scam_warning",
       claim_polarity: "negative" as const,
@@ -772,13 +773,14 @@ describe("semantic compliance hardening", () => {
       forbidden_field_classes: ["ip_address", "user_agent"],
       purpose: "verification_opening",
       issued_at: "2026-05-27T00:00:00Z",
-      expires_at: "2026-05-28T00:00:00Z",
+      expires_at: "2026-06-28T00:00:00Z",
       revocation_pointer: "rev:consent:1",
       signature: "0x00" as const
     };
 	    const consent = { ...unsignedConsent, signature: signEd25519(disclosureConsentV1Hash(unsignedConsent), aliceSeed) };
 	    const disclosureManifest = {
 	      raw_content_included: true,
+	      content_salt_included: true,
 	      exact_counterparties_included: false,
 	      metadata_fields_redacted: ["exact_counterparties", "platform", "ip_address", "user_agent"]
 	    };
@@ -839,7 +841,7 @@ describe("semantic compliance hardening", () => {
   it("binds production ZK proofs to active circuit release manifests", () => {
     const manifest = {
       type: "tsl.zk.circuit_release_manifest.v1" as const,
-      circuit_id: "identity-age-threshold-v1",
+      circuit_id: "tsl.identity_age_days.production_interface.v1",
       claim: "identity_age_days" as const,
       version: "1.0.0",
       circuit_hash: sha256Hex("circuit"),
@@ -848,11 +850,19 @@ describe("semantic compliance hardening", () => {
       zkey_hash: sha256Hex("zkey"),
       verification_key_id: "identity-age-vkey-v1",
       verification_key_hash: sha256Hex("vkey"),
+      public_signal_schema: { required: ["subject_hash", "threshold", "registry_root"] },
+      private_witness_schema: {
+        required: ["creation_proof", "salt", "registry_path"],
+        properties: { creation_proof: {}, salt: {}, registry_path: {} }
+      },
+      soundness_bits: 128,
+      privacy_notes: ["test manifest with registered verification key"],
       ceremony_transcript_hash: sha256Hex("ceremony"),
       auditor: "did:tsl:auditor:test",
       reviewer: "did:tsl:reviewer:test",
       status: "active" as const,
-      issued_at: at
+      issued_at: at,
+      signature: "0x11" as const
     };
     const releaseManifestHash = zkCircuitReleaseManifestHash(manifest);
     const proof = {
@@ -877,7 +887,8 @@ describe("semantic compliance hardening", () => {
           registry_id: "zk-registry-test",
           active_manifest_hashes: [releaseManifestHash],
           revoked_manifest_hashes: [],
-          issued_at: at
+          issued_at: at,
+          signature: "0x22" as const
         }
       })
     ).toBe(true);
@@ -890,7 +901,8 @@ describe("semantic compliance hardening", () => {
           registry_id: "zk-registry-test",
           active_manifest_hashes: [releaseManifestHash],
           revoked_manifest_hashes: [],
-          issued_at: at
+          issued_at: at,
+          signature: "0x22" as const
         }
       })
     ).toBe(false);
@@ -917,7 +929,7 @@ describe("semantic compliance hardening", () => {
       type: "tsl.batch_checkpoint.v1",
       epoch_start_ms: Date.parse(at),
       epoch_duration_ms: 300000,
-      shard: "test",
+      shard: "0001",
       event_root: zero,
       receipt_root: zero,
       attestation_root: zero,
