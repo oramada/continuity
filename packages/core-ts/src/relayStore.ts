@@ -223,13 +223,14 @@ export class InMemoryRelayStore {
       receipt_root: receiptTree.root,
       attestation_root: attestationTree.root,
       revocation_root: revocationTree.root,
-	      event_count: commitments.length,
-	      receipt_count: receiptCommitments.length,
-	      previous_checkpoint: this.previousCheckpointHash(epoch_start_ms, shard),
-	      ...(this.settlement_backend?.settlementBackendId ? { settlement_backend: this.settlement_backend.settlementBackendId } : {}),
-	      relay_id: this.relay_id,
-	      relay_signature: "0x00"
-	    };
+      event_count: commitments.length,
+      receipt_count: receiptCommitments.length,
+      previous_checkpoint: this.previousCheckpointHash(epoch_start_ms, shard),
+      ...(this.settlement_backend?.settlementBackendId ? { settlement_backend: this.settlement_backend.settlementBackendId } : {}),
+      relay_id: this.relay_id,
+      relay_signature: "0x00"
+    };
+    checkpoint.checkpoint_identity_hash = checkpointHash(checkpoint);
     return this.relay_signing_seed_hex ? signCheckpointWithSeed(checkpoint, this.relay_signing_seed_hex) : {
       ...checkpoint,
       relay_signature: pseudoRelaySignature({
@@ -289,7 +290,9 @@ export function shardForTrustID(trustId: TrustID): string {
 }
 
 export function checkpointHash(checkpoint: BatchCheckpointV1): Hex32 {
-  const payload = withoutField(withoutField(checkpoint as unknown as Record<string, unknown>, "relay_signature"), "settlement_tx");
+  let payload = withoutField(checkpoint as unknown as Record<string, unknown>, "relay_signature");
+  payload = withoutField(payload, "settlement_tx");
+  payload = withoutField(payload, "checkpoint_identity_hash");
   return hashDomain(DOMAIN_TAGS.CHECKPOINT_V1, new TextEncoder().encode(canonicalize(payload)));
 }
 

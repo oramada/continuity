@@ -26,13 +26,17 @@
       "enum": [
         "identity_age_days",
         "reciprocal_receipt_count",
+        "dispute_rate_bound",
         "organization_membership",
         "set_membership",
         "revocation_set_non_membership",
-        "agent_scope_compliance"
+        "agent_scope_compliance",
+        "private_graph_distance"
       ]
     },
     "version": { "type": "string" },
+    "hash_suite": { "type": "string" },
+    "witness_interface": { "type": "string" },
     "circuit_hash": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
     "r1cs_hash": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
     "wasm_hash": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },

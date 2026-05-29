@@ -687,7 +687,7 @@ export class PostgresRepository {
     const result = await this.pool.query("SELECT * FROM checkpoints WHERE epoch_start_ms = $1 AND shard = $2", [epochStartMs, shard]);
     const row = result.rows[0];
     if (!row) return null;
-    return {
+    const checkpoint: BatchCheckpointV1 = {
       type: "tsl.batch_checkpoint.v1",
       epoch_start_ms: Number(row.epoch_start_ms),
       epoch_duration_ms: Number(row.epoch_duration_ms),
@@ -704,6 +704,8 @@ export class PostgresRepository {
       relay_id: row.relay_id,
       relay_signature: row.relay_signature
     };
+    checkpoint.checkpoint_identity_hash = row.checkpoint_hash ?? checkpointHash(checkpoint);
+    return checkpoint;
   }
 
   async buildInclusionProofFor(treeKind: "event" | "receipt" | "attestation" | "revocation", commitment: Hex32): Promise<{
@@ -865,7 +867,7 @@ export class PostgresRepository {
     await this.persistMerkleNodes(epochStartMs, shard, "receipt", receiptTree.levels);
     await this.persistMerkleNodes(epochStartMs, shard, "attestation", attestationTree.levels);
     await this.persistMerkleNodes(epochStartMs, shard, "revocation", revocationTree.levels);
-    return {
+    const checkpoint: BatchCheckpointV1 = {
       type: "tsl.batch_checkpoint.v1",
       epoch_start_ms: epochStartMs,
       epoch_duration_ms: epochDurationMs,
@@ -880,6 +882,8 @@ export class PostgresRepository {
       relay_id: relayId,
       relay_signature: relaySignature as `0x${string}`
     };
+    checkpoint.checkpoint_identity_hash = checkpointHash(checkpoint);
+    return checkpoint;
   }
 
   async listPendingCheckpoints(limit = 100): Promise<BatchCheckpointV1[]> {
@@ -887,7 +891,8 @@ export class PostgresRepository {
       "SELECT * FROM checkpoints WHERE settlement_status = 'pending' ORDER BY created_at LIMIT $1",
       [limit]
     );
-    return result.rows.map((row) => ({
+    return result.rows.map((row) => {
+      const checkpoint: BatchCheckpointV1 = {
       type: "tsl.batch_checkpoint.v1",
       epoch_start_ms: Number(row.epoch_start_ms),
       epoch_duration_ms: Number(row.epoch_duration_ms),
@@ -901,7 +906,10 @@ export class PostgresRepository {
       previous_checkpoint: row.previous_checkpoint,
       relay_id: row.relay_id,
       relay_signature: row.relay_signature
-    }));
+      };
+      checkpoint.checkpoint_identity_hash = row.checkpoint_hash ?? checkpointHash(checkpoint);
+      return checkpoint;
+    });
   }
 
   async markCheckpointSettled(checkpoint: BatchCheckpointV1): Promise<void> {

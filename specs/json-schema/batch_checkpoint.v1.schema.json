@@ -29,6 +29,7 @@
     "event_count": { "type": "integer", "minimum": 0 },
     "receipt_count": { "type": "integer", "minimum": 0 },
     "previous_checkpoint": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
+    "checkpoint_identity_hash": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
     "settlement_backend": { "type": "string" },
     "settlement_tx": { "type": "string" },
     "relay_id": { "type": "string", "pattern": "^did:tsl:" },

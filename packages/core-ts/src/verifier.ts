@@ -823,9 +823,13 @@ export async function verifyTSL(
         recomputed.conductance_bps === input.graph_feature_vector.conductance_bps &&
         recomputed.trusted_neighbor_mass_bps === input.graph_feature_vector.trusted_neighbor_mass_bps &&
         recomputed.trusted_seed_distance_bps === input.graph_feature_vector.trusted_seed_distance_bps &&
-        recomputed.adversarial_seed_distance_bps === input.graph_feature_vector.adversarial_seed_distance_bps &&
-        recomputed.pagerank_bps === input.graph_feature_vector.pagerank_bps &&
-        recomputed.ppr_lite_bps === input.graph_feature_vector.ppr_lite_bps &&
+	        recomputed.adversarial_seed_distance_bps === input.graph_feature_vector.adversarial_seed_distance_bps &&
+	        recomputed.pagerank_bps === input.graph_feature_vector.pagerank_bps &&
+	        recomputed.ppr_lite_bps === input.graph_feature_vector.ppr_lite_bps &&
+	        recomputed.ppr_distance_bps === input.graph_feature_vector.ppr_distance_bps &&
+	        recomputed.trusted_manifold_distance_bps === input.graph_feature_vector.trusted_manifold_distance_bps &&
+	        recomputed.adversarial_manifold_distance_bps === input.graph_feature_vector.adversarial_manifold_distance_bps &&
+	        recomputed.cluster_distance_bps === input.graph_feature_vector.cluster_distance_bps &&
 	        recomputed.modularity_bps === input.graph_feature_vector.modularity_bps &&
 	        recomputed.community_pass_count === input.graph_feature_vector.community_pass_count &&
 	        recomputed.cluster_concentration_bps === input.graph_feature_vector.cluster_concentration_bps;
@@ -869,10 +873,24 @@ export async function verifyTSL(
 	          JSON.stringify(recomputedSybil.compromise_signals ?? {}) === JSON.stringify(input.sybil_assessment.compromise_signals ?? {}) &&
 	          JSON.stringify(recomputedSybil.issuer_collusion_signals ?? {}) === JSON.stringify(input.sybil_assessment.issuer_collusion_signals ?? {}) &&
 	          JSON.stringify(recomputedSybil.infrastructure_collusion_signals ?? {}) === JSON.stringify(input.sybil_assessment.infrastructure_collusion_signals ?? {}) &&
+	          JSON.stringify(recomputedSybil.compromise_evidence ?? {}) === JSON.stringify(input.sybil_assessment.compromise_evidence ?? {}) &&
+	          JSON.stringify(recomputedSybil.issuer_collusion_evidence ?? {}) === JSON.stringify(input.sybil_assessment.issuer_collusion_evidence ?? {}) &&
+	          JSON.stringify(recomputedSybil.infrastructure_collusion_evidence ?? {}) === JSON.stringify(input.sybil_assessment.infrastructure_collusion_evidence ?? {}) &&
 	          JSON.stringify(recomputedSybil.scenario_evidence_checks ?? []) === JSON.stringify(input.sybil_assessment.scenario_evidence_checks ?? []) &&
 	          recomputedSybil.risk_score_bps === input.sybil_assessment.risk_score_bps &&
 	          recomputedSybil.risk_label === input.sybil_assessment.risk_label;
-        checks.graph_artifacts_valid = checks.graph_artifacts_valid && sybilMatches;
+	        const tierEvidencePresent =
+	          input.sybil_assessment.adversary_tier_assumed === "B3"
+	            ? Boolean(input.sybil_assessment.compromise_evidence)
+	            : input.sybil_assessment.adversary_tier_assumed === "B4"
+	              ? Boolean(input.sybil_assessment.issuer_collusion_evidence)
+	              : input.sybil_assessment.adversary_tier_assumed === "B5"
+	                ? Boolean(input.sybil_assessment.infrastructure_collusion_evidence)
+	                : true;
+	        if (policy.require_behavioral_sybil_tiers && !tierEvidencePresent) {
+	          errors.push("TSL_SYBIL_EVIDENCE_INCOMPLETE");
+	        }
+	        checks.graph_artifacts_valid = checks.graph_artifacts_valid && sybilMatches && (!policy.require_behavioral_sybil_tiers || tierEvidencePresent);
         if (!sybilMatches) errors.push("TSL_SYBIL_ARTIFACT_INVALID");
     }
       if (input.drift_report && input.drift_feature_history) {
@@ -895,9 +913,13 @@ export async function verifyTSL(
           recomputedDrift.drift_score_bps === input.drift_report.drift_score_bps &&
           recomputedDrift.drift_label === input.drift_report.drift_label &&
           recomputedDrift.action === input.drift_report.action &&
-          recomputedDrift.feature_history_commitment === input.drift_report.feature_history_commitment &&
-          recomputedDrift.baseline_profile_commitment === input.drift_report.baseline_profile_commitment &&
-          recomputedDrift.covariance_profile_commitment === input.drift_report.covariance_profile_commitment &&
+	          recomputedDrift.feature_history_commitment === input.drift_report.feature_history_commitment &&
+	          recomputedDrift.baseline_profile_commitment === input.drift_report.baseline_profile_commitment &&
+	          recomputedDrift.covariance_profile_commitment === input.drift_report.covariance_profile_commitment &&
+	          recomputedDrift.robust_covariance_commitment === input.drift_report.robust_covariance_commitment &&
+	          recomputedDrift.mahalanobis_bps === input.drift_report.mahalanobis_bps &&
+	          recomputedDrift.cohort_baseline_profile_commitment === input.drift_report.cohort_baseline_profile_commitment &&
+	          recomputedDrift.uncertainty_widening_bps === input.drift_report.uncertainty_widening_bps &&
           recomputedDrift.sparse_mode === input.drift_report.sparse_mode &&
           recomputedDrift.recomputation_status === input.drift_report.recomputation_status &&
           recomputedDrift.last_verified_event_at === input.drift_report.last_verified_event_at &&
@@ -943,10 +965,11 @@ export async function verifyTSL(
       if (valid) {
         if (policy.require_registered_zk_circuit) checks.zk_circuit_registered = true;
         validClaims.add(proof.claim);
-      } else {
-        checks.zk_valid = false;
-        errors.push("TSL_ZK_PROOF_INVALID", ...validation.errors);
-      }
+	      } else {
+	        checks.zk_valid = false;
+	        if (policy.reject_dev_zk_circuits && (!proof.circuit_id || proof.circuit_id.startsWith("dev_"))) errors.push("TSL_ZK_DEV_CIRCUIT_REJECTED");
+	        errors.push("TSL_ZK_PROOF_INVALID", ...validation.errors);
+	      }
     }
     for (const requiredClaim of policy.require_zk_claims ?? []) {
       if (!validClaims.has(requiredClaim)) {
@@ -1136,8 +1159,12 @@ export async function verifyTSL(
     checks.checkpoint_valid = checkpointValidation.valid;
     if (!checkpointValidation.valid) {
       errors.push("TSL_CHECKPOINT_INVALID", ...checkpointValidation.errors);
-    } else {
-      const relayIdentity = await resolver.resolveTrustID(input.checkpoint.relay_id, input.envelope.timestamp);
+	    } else {
+	      if (input.checkpoint.checkpoint_identity_hash && input.checkpoint.checkpoint_identity_hash !== checkpointHashForPolicy(input.checkpoint)) {
+	        checks.checkpoint_valid = false;
+	        errors.push("TSL_CHECKPOINT_IDENTITY_MISMATCH");
+	      }
+	      const relayIdentity = await resolver.resolveTrustID(input.checkpoint.relay_id, input.envelope.timestamp);
       const relayKey = relayIdentity?.verification_methods.find((method) => keyActiveAt(method, input.envelope.timestamp));
       const unsafeFixtureSignatureAllowed =
         process.env.ALLOW_UNSAFE_CHECKPOINT_SIGNATURE_FIXTURES === "true" &&

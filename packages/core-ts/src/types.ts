@@ -156,6 +156,7 @@ export interface BatchCheckpointV1 {
   event_count: number;
   receipt_count: number;
   previous_checkpoint: Hex32;
+  checkpoint_identity_hash?: Hex32;
   settlement_backend?: string;
   settlement_tx?: string;
   relay_id: TrustID;
@@ -165,10 +166,12 @@ export interface BatchCheckpointV1 {
 export interface SettlementEvidenceV1 {
   type: "tsl.settlement_evidence.v1";
   checkpoint_hash: Hex32;
+  checkpoint_identity_hash?: Hex32;
   settlement_backend: string;
   chain_id?: number;
   contract_address?: string;
   contract_checkpoint_hash?: Hex32;
+  contract_checkpoint_fields_hash?: Hex32;
   settlement_tx: string;
   submitted_at: RFC3339;
   status: "submitted" | "settled" | "failed";
@@ -439,6 +442,10 @@ export interface GraphFeatureVectorV1 {
   adversarial_seed_distance_bps?: number;
   pagerank_bps?: number;
   ppr_lite_bps?: number;
+  ppr_distance_bps?: number;
+  trusted_manifold_distance_bps?: number;
+  adversarial_manifold_distance_bps?: number;
+  cluster_distance_bps?: number;
   modularity_bps?: number;
   community_pass_count?: number;
   cluster_concentration_bps?: number;
@@ -471,29 +478,32 @@ export interface SybilAssessmentV1 {
   seed_contamination_bps?: number;
   receipt_symmetry_bps?: number;
   attack_cost_minor_units: number;
-	  cost_components: {
-	    identity_cost_minor_units: number;
-	    time_aging_cost_minor_units: number;
-	    external_receipt_cost_minor_units: number;
-	    attestation_cost_minor_units: number;
-	    compromise_cost_minor_units: number;
-	    evasion_cost_minor_units: number;
-	    issuer_collusion_cost_minor_units?: number;
-	    infrastructure_consistency_cost_minor_units?: number;
-	  };
-	  expected_benefit_minor_units: number;
-	  attack_scenario: string;
-	  compromise_signals?: SybilCompromiseSignalsV1;
-	  issuer_collusion_signals?: SybilIssuerCollusionSignalsV1;
-	  infrastructure_collusion_signals?: SybilInfrastructureCollusionSignalsV1;
-	  scenario_evidence_checks?: string[];
-	  risk_score_bps: number;
-	  risk_label: "low" | "medium" | "elevated" | "high" | "insufficient_evidence";
-	  privacy_level: "cluster_commitment_only" | "aggregate_only" | "local_only";
-	  signature: HexSig;
-	}
+  cost_components: {
+    identity_cost_minor_units: number;
+    time_aging_cost_minor_units: number;
+    external_receipt_cost_minor_units: number;
+    attestation_cost_minor_units: number;
+    compromise_cost_minor_units: number;
+    evasion_cost_minor_units: number;
+    issuer_collusion_cost_minor_units?: number;
+    infrastructure_consistency_cost_minor_units?: number;
+  };
+  expected_benefit_minor_units: number;
+  attack_scenario: string;
+  compromise_signals?: SybilCompromiseSignalsV1;
+  issuer_collusion_signals?: SybilIssuerCollusionSignalsV1;
+  infrastructure_collusion_signals?: SybilInfrastructureCollusionSignalsV1;
+  compromise_evidence?: SybilCompromiseEvidenceV1;
+  issuer_collusion_evidence?: SybilIssuerCollusionEvidenceV1;
+  infrastructure_collusion_evidence?: SybilInfrastructureCollusionEvidenceV1;
+  scenario_evidence_checks?: string[];
+  risk_score_bps: number;
+  risk_label: "low" | "medium" | "elevated" | "high" | "insufficient_evidence";
+  privacy_level: "cluster_commitment_only" | "aggregate_only" | "local_only";
+  signature: HexSig;
+}
 
-	export type SybilAssessmentUnsignedV1 = Omit<SybilAssessmentV1, "signature">;
+export type SybilAssessmentUnsignedV1 = Omit<SybilAssessmentV1, "signature">;
 
 export interface SybilCompromiseSignalsV1 {
   key_revocation_bps?: number;
@@ -514,6 +524,29 @@ export interface SybilInfrastructureCollusionSignalsV1 {
   settlement_anomaly_bps?: number;
 }
 
+export interface SybilCompromiseEvidenceV1 {
+  evidence_commitment: Hex32;
+  key_revocation_count?: number;
+  severe_drift_count?: number;
+  recovery_anomaly_count?: number;
+}
+
+export interface SybilIssuerCollusionEvidenceV1 {
+  evidence_commitment: Hex32;
+  issuer_reversal_count?: number;
+  low_quality_issuer_count?: number;
+  false_attestation_count?: number;
+  collusion_indicator_count?: number;
+}
+
+export interface SybilInfrastructureCollusionEvidenceV1 {
+  evidence_commitment: Hex32;
+  checkpoint_conflict_count?: number;
+  provider_auditor_disagreement_count?: number;
+  settlement_anomaly_count?: number;
+  selective_visibility_count?: number;
+}
+
 export interface DriftReportV1 {
   type: "tsl.drift_report.v1";
   subject: TrustID;
@@ -529,6 +562,10 @@ export interface DriftReportV1 {
   feature_history_commitment?: Hex32;
   baseline_profile_commitment?: Hex32;
   covariance_profile_commitment?: Hex32;
+  robust_covariance_commitment?: Hex32;
+  mahalanobis_bps?: number;
+  cohort_baseline_profile_commitment?: Hex32;
+  uncertainty_widening_bps?: number;
   last_verified_event_at?: RFC3339;
   days_since_last_verified_event?: number;
   sparse_mode?: "none" | "insufficient_baseline" | "cohort_baseline";
@@ -609,10 +646,12 @@ export interface ZkThresholdProofV1 {
   claim:
     | "identity_age_days"
     | "reciprocal_receipt_count"
-    | "organization_membership"
-    | "set_membership"
-    | "revocation_set_non_membership"
-    | "agent_scope_compliance";
+	    | "organization_membership"
+	    | "set_membership"
+	    | "dispute_rate_bound"
+	    | "revocation_set_non_membership"
+	    | "agent_scope_compliance"
+	    | "private_graph_distance";
   subject: TrustID;
   threshold: number;
   witness_commitment: Hex32;
@@ -636,8 +675,10 @@ export interface ZkCircuitReleaseManifestV1 {
   type: "tsl.zk.circuit_release_manifest.v1";
   circuit_id: string;
   claim: ZkThresholdProofV1["claim"];
-  version: string;
-  circuit_hash: Hex32;
+	  version: string;
+	  hash_suite?: string;
+	  witness_interface?: string;
+	  circuit_hash: Hex32;
   r1cs_hash: Hex32;
   wasm_hash: Hex32;
   zkey_hash: Hex32;
@@ -1014,13 +1055,16 @@ export interface VerifyTSLInput {
     attestation_cost_minor_units?: number;
     compromise_cost_minor_units?: number;
     evasion_cost_minor_units?: number;
-	    internal_edge_cost_minor_units?: number;
-	    expected_benefit_minor_units?: number;
-	    attack_scenario?: string;
-	    compromise_signals?: SybilCompromiseSignalsV1;
-	    issuer_collusion_signals?: SybilIssuerCollusionSignalsV1;
-	    infrastructure_collusion_signals?: SybilInfrastructureCollusionSignalsV1;
-	  };
+    internal_edge_cost_minor_units?: number;
+    expected_benefit_minor_units?: number;
+    attack_scenario?: string;
+    compromise_signals?: SybilCompromiseSignalsV1;
+    issuer_collusion_signals?: SybilIssuerCollusionSignalsV1;
+    infrastructure_collusion_signals?: SybilInfrastructureCollusionSignalsV1;
+    compromise_evidence?: SybilCompromiseEvidenceV1;
+    issuer_collusion_evidence?: SybilIssuerCollusionEvidenceV1;
+    infrastructure_collusion_evidence?: SybilInfrastructureCollusionEvidenceV1;
+  };
   drift_report?: DriftReportV1;
   drift_feature_history?: Array<{
     timestamp: RFC3339;

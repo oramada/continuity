@@ -108,6 +108,26 @@
       "minimum": 0,
       "maximum": 10000
     },
+    "ppr_distance_bps": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "trusted_manifold_distance_bps": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "adversarial_manifold_distance_bps": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "cluster_distance_bps": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
     "modularity_bps": {
       "type": "integer",
       "minimum": 0,

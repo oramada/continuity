@@ -73,6 +73,24 @@
       "type": "string",
       "pattern": "^0x[0-9a-f]{64}$"
     },
+    "robust_covariance_commitment": {
+      "type": "string",
+      "pattern": "^0x[0-9a-f]{64}$"
+    },
+    "mahalanobis_bps": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "cohort_baseline_profile_commitment": {
+      "type": "string",
+      "pattern": "^0x[0-9a-f]{64}$"
+    },
+    "uncertainty_widening_bps": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000
+    },
     "last_verified_event_at": {
       "type": "string",
       "format": "date-time"

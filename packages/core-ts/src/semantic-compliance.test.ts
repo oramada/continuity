@@ -172,10 +172,14 @@ describe("semantic compliance hardening", () => {
     expect(vector.effective_counterparty_count_milli).toBe(1384);
     expect(vector.seed_escape_bps).toBe(1000);
     expect(vector.adversarial_proximity_bps).toBe(9000);
-    expect(vector.community_escape_bps).toBe(0);
-    expect(vector.trusted_neighbor_mass_bps).toBe(1000);
-    expect(vector.ppr_lite_bps).toBeGreaterThan(0);
-  });
+	    expect(vector.community_escape_bps).toBe(0);
+	    expect(vector.trusted_neighbor_mass_bps).toBe(1000);
+	    expect(vector.ppr_lite_bps).toBeGreaterThan(0);
+	    expect(vector.ppr_distance_bps).toBe(10000 - (vector.ppr_lite_bps ?? 0));
+	    expect(vector.trusted_manifold_distance_bps).toBeDefined();
+	    expect(vector.adversarial_manifold_distance_bps).toBeDefined();
+	    expect(vector.cluster_distance_bps).toBeDefined();
+	  });
 
   it("constructs protocol graph edges only from verified evidence", async () => {
     const alice = buildIdentityFromSeed({ trust_id: "did:tsl:test:alice", key_id: "#alice", seed_hex: aliceSeed, created_at: "2026-01-01T00:00:00Z" });
@@ -589,17 +593,18 @@ describe("semantic compliance hardening", () => {
         negative_edge_policy: { requires_evidence_commitment: true, requires_appeal_uri: true, max_single_negative_weight_bps: 1500, decay_days: 30 },
         privacy_policy: { raw_counterparty_upload_required: false, allows_pairwise_private_features: true }
       },
-      sybil_profile: {
-        profile_id: "sybil-b3-compromise",
-        adversary_tier: "B3",
-        compromise_cost_minor_units: 50000,
-        compromise_signals: { key_revocation_bps: 8000, severe_drift_bps: 7000, recovery_anomaly_bps: 6000 }
-      },
-      computed_at: at
-    });
-    expect(compromised.compromise_signals?.key_revocation_bps).toBe(8000);
-    expect(compromised.scenario_evidence_checks).toContain("key_revocation");
-    expect(["elevated", "high"]).toContain(compromised.risk_label);
+	      sybil_profile: {
+	        profile_id: "sybil-b3-compromise",
+	        adversary_tier: "B3",
+	        compromise_cost_minor_units: 50000,
+	        compromise_evidence: { evidence_commitment: zero, key_revocation_count: 3, severe_drift_count: 2, recovery_anomaly_count: 1 }
+	      },
+	      computed_at: at
+	    });
+	    expect(compromised.compromise_signals?.key_revocation_bps).toBe(10000);
+	    expect(compromised.compromise_evidence?.evidence_commitment).toBe(zero);
+	    expect(compromised.scenario_evidence_checks).toContain("key_revocation");
+	    expect(["elevated", "high"]).toContain(compromised.risk_label);
 
     const collusive = computeSybilAssessmentV0({
       subject: "did:tsl:a",
@@ -614,15 +619,16 @@ describe("semantic compliance hardening", () => {
         negative_edge_policy: { requires_evidence_commitment: true, requires_appeal_uri: true, max_single_negative_weight_bps: 1500, decay_days: 30 },
         privacy_policy: { raw_counterparty_upload_required: false, allows_pairwise_private_features: true }
       },
-      sybil_profile: {
-        profile_id: "sybil-b5-infra",
-        adversary_tier: "B5",
-        infrastructure_collusion_signals: { checkpoint_conflict_bps: 9000, provider_auditor_disagreement_bps: 8000, settlement_anomaly_bps: 7000 }
-      },
-      computed_at: at
-    });
-    expect(collusive.risk_label).toBe("high");
-    expect(collusive.scenario_evidence_checks).toContain("settlement_anomaly");
+	      sybil_profile: {
+	        profile_id: "sybil-b5-infra",
+	        adversary_tier: "B5",
+	        infrastructure_collusion_evidence: { evidence_commitment: zero, checkpoint_conflict_count: 3, provider_auditor_disagreement_count: 3, settlement_anomaly_count: 3 }
+	      },
+	      computed_at: at
+	    });
+	    expect(collusive.risk_label).toBe("high");
+	    expect(collusive.infrastructure_collusion_evidence?.evidence_commitment).toBe(zero);
+	    expect(collusive.scenario_evidence_checks).toContain("settlement_anomaly");
 
 	    const drift = computeDriftReportV0({
       subject: "did:tsl:a",
@@ -637,7 +643,9 @@ describe("semantic compliance hardening", () => {
       dormant_days: 1,
       computed_at: at
     });
-    expect(drift.drift_label).toBe("dormant_reactivation");
+	    expect(drift.drift_label).toBe("dormant_reactivation");
+	    expect(drift.mahalanobis_bps).toBeDefined();
+	    expect(drift.robust_covariance_commitment).toMatch(/^0x[0-9a-f]{64}$/);
     expect(drift.action).toBe("step_up");
     expect(drift.drift_score_bps).toBeGreaterThanOrEqual(8000);
     expect(drift.feature_history_commitment).toMatch(/^0x[0-9a-f]{64}$/);

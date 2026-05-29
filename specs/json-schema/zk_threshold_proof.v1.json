@@ -18,10 +18,12 @@
       "enum": [
         "identity_age_days",
         "reciprocal_receipt_count",
+        "dispute_rate_bound",
         "organization_membership",
         "set_membership",
         "revocation_set_non_membership",
-        "agent_scope_compliance"
+        "agent_scope_compliance",
+        "private_graph_distance"
       ]
     },
     "subject": { "type": "string", "pattern": "^did:tsl:" },

@@ -54,10 +54,11 @@ export interface LocalEvmSettlementBackendOptions {
 }
 
 const CHECKPOINT_REGISTRY_ABI = [
-  "function submitCheckpoint((uint64 epochStartMs,uint32 epochDurationMs,bytes32 shard,bytes32 eventRoot,bytes32 receiptRoot,bytes32 attestationRoot,bytes32 revocationRoot,uint64 eventCount,uint64 receiptCount,bytes32 previousCheckpoint,bytes32 relayId,bytes32 settlementBackend) input, bytes relaySignature) external returns (bytes32)",
-  "function getCheckpointByEpochShard(uint64 epochStartMs, bytes32 shard) external view returns ((uint64 epochStartMs,uint32 epochDurationMs,bytes32 shard,bytes32 eventRoot,bytes32 receiptRoot,bytes32 attestationRoot,bytes32 revocationRoot,uint64 eventCount,uint64 receiptCount,bytes32 previousCheckpoint,bytes32 relayId,bytes32 settlementBackend,uint64 submittedAt))",
+  "function submitCheckpoint((uint64 epochStartMs,uint32 epochDurationMs,bytes32 shard,bytes32 eventRoot,bytes32 receiptRoot,bytes32 attestationRoot,bytes32 revocationRoot,uint64 eventCount,uint64 receiptCount,bytes32 previousCheckpoint,bytes32 checkpointIdentityHash,bytes32 relayId,bytes32 settlementBackend) input, bytes relaySignature) external returns (bytes32)",
+  "function getCheckpointByEpochShard(uint64 epochStartMs, bytes32 shard) external view returns ((uint64 epochStartMs,uint32 epochDurationMs,bytes32 shard,bytes32 eventRoot,bytes32 receiptRoot,bytes32 attestationRoot,bytes32 revocationRoot,uint64 eventCount,uint64 receiptCount,bytes32 previousCheckpoint,bytes32 checkpointIdentityHash,bytes32 contractCheckpointFieldsHash,bytes32 relayId,bytes32 settlementBackend,uint64 submittedAt))",
   "function hasCheckpoint(uint64 epochStartMs, bytes32 shard) external view returns (bool)",
-  "function hashCheckpoint((uint64 epochStartMs,uint32 epochDurationMs,bytes32 shard,bytes32 eventRoot,bytes32 receiptRoot,bytes32 attestationRoot,bytes32 revocationRoot,uint64 eventCount,uint64 receiptCount,bytes32 previousCheckpoint,bytes32 relayId,bytes32 settlementBackend) input) external pure returns (bytes32)"
+  "function hashCheckpoint((uint64 epochStartMs,uint32 epochDurationMs,bytes32 shard,bytes32 eventRoot,bytes32 receiptRoot,bytes32 attestationRoot,bytes32 revocationRoot,uint64 eventCount,uint64 receiptCount,bytes32 previousCheckpoint,bytes32 checkpointIdentityHash,bytes32 relayId,bytes32 settlementBackend) input) external pure returns (bytes32)",
+  "function contractCheckpointFieldsHash((uint64 epochStartMs,uint32 epochDurationMs,bytes32 shard,bytes32 eventRoot,bytes32 receiptRoot,bytes32 attestationRoot,bytes32 revocationRoot,uint64 eventCount,uint64 receiptCount,bytes32 previousCheckpoint,bytes32 checkpointIdentityHash,bytes32 relayId,bytes32 settlementBackend) input) external pure returns (bytes32)"
 ] as const;
 
 const TRUST_ID_REGISTRY_ABI = [
@@ -89,6 +90,8 @@ type ContractCheckpoint = {
   eventCount: bigint;
   receiptCount: bigint;
   previousCheckpoint: string;
+  checkpointIdentityHash: string;
+  contractCheckpointFieldsHash: string;
   relayId: string;
   settlementBackend?: string;
   submittedAt: bigint;
@@ -121,6 +124,7 @@ export class LocalEvmSettlementBackend implements SettlementBackend {
       ...checkpoint,
       settlement_backend: checkpoint.settlement_backend ?? this.settlementBackendId
     };
+    portableCheckpoint.checkpoint_identity_hash = checkpointHash(portableCheckpoint);
     const input = toContractCheckpointInput(portableCheckpoint);
     const contractRelaySignature = await this.signRelayCheckpoint(contract, input);
     const tx = await contract.submitCheckpoint(input, contractRelaySignature);
@@ -131,6 +135,7 @@ export class LocalEvmSettlementBackend implements SettlementBackend {
 
     return {
       ...portableCheckpoint,
+      checkpoint_identity_hash: checkpointHash(portableCheckpoint),
       settlement_tx: receipt.hash
     };
   }
@@ -144,6 +149,11 @@ export class LocalEvmSettlementBackend implements SettlementBackend {
 
       const comparableCheckpoint = { ...checkpoint, settlement_backend: checkpoint.settlement_backend ?? this.settlementBackendId };
       const mismatches = checkpointMismatches(comparableCheckpoint, stored);
+      const identityHash = checkpointHash(comparableCheckpoint);
+      const fieldsHash = (await this.readableContract().contractCheckpointFieldsHash(toContractCheckpointInput(comparableCheckpoint))) as Hex32;
+      if (stored.checkpointIdentityHash !== identityHash || stored.contractCheckpointFieldsHash !== fieldsHash) {
+        mismatches.push("checkpoint_identity_hash");
+      }
       if (mismatches.length > 0) {
         return {
           settled: false,
@@ -160,11 +170,13 @@ export class LocalEvmSettlementBackend implements SettlementBackend {
         settlement_evidence: checkpoint.settlement_tx
           ? {
               type: "tsl.settlement_evidence.v1",
-              checkpoint_hash: checkpointHash(comparableCheckpoint),
+              checkpoint_hash: identityHash,
+              checkpoint_identity_hash: identityHash,
               settlement_backend: this.settlementBackendId,
               chain_id: this.chainId,
               contract_address: this.registryAddress,
-              contract_checkpoint_hash: (await this.readableContract().hashCheckpoint(toContractCheckpointInput(comparableCheckpoint))) as Hex32,
+              contract_checkpoint_hash: fieldsHash,
+              contract_checkpoint_fields_hash: fieldsHash,
               settlement_tx: checkpoint.settlement_tx,
               submitted_at: new Date(Number(stored.submittedAt) * 1000).toISOString(),
               status: "settled"
@@ -303,7 +315,7 @@ export class LocalEvmSettlementBackend implements SettlementBackend {
   }
 
   private async signRelayCheckpoint(contract: ethers.Contract, input: ReturnType<typeof toContractCheckpointInput>): Promise<string> {
-    const checkpointHash = (await contract.hashCheckpoint(input)) as string;
+    const checkpointHash = input.checkpointIdentityHash;
     const signer = await this.writeSigner();
     return signer.signMessage(ethers.getBytes(checkpointHash));
   }
@@ -373,6 +385,7 @@ function toContractCheckpointInput(checkpoint: BatchCheckpointV1) {
     eventCount: BigInt(checkpoint.event_count),
     receiptCount: BigInt(checkpoint.receipt_count),
     previousCheckpoint: checkpoint.previous_checkpoint,
+    checkpointIdentityHash: checkpointHash(checkpoint),
     relayId: relayIdToBytes32(checkpoint.relay_id),
     settlementBackend: checkpoint.settlement_backend ? ethers.id(checkpoint.settlement_backend) : ethers.ZeroHash
   };

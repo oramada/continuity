@@ -20,6 +20,7 @@ contract CheckpointRegistry {
         uint64 eventCount;
         uint64 receiptCount;
         bytes32 previousCheckpoint;
+        bytes32 checkpointIdentityHash;
         bytes32 relayId;
         bytes32 settlementBackend;
     }
@@ -35,6 +36,8 @@ contract CheckpointRegistry {
         uint64 eventCount;
         uint64 receiptCount;
         bytes32 previousCheckpoint;
+        bytes32 checkpointIdentityHash;
+        bytes32 contractCheckpointFieldsHash;
         bytes32 relayId;
         bytes32 settlementBackend;
         uint64 submittedAt;
@@ -52,6 +55,7 @@ contract CheckpointRegistry {
     event RelaySignerUpdated(bytes32 indexed relayId, address indexed signer);
     event CheckpointSubmitted(
         bytes32 indexed checkpointHash,
+        bytes32 contractCheckpointFieldsHash,
         uint64 indexed epochStartMs,
         bytes32 indexed shard,
         bytes32 eventRoot,
@@ -94,7 +98,8 @@ contract CheckpointRegistry {
         if (relaySignature.length == 0) revert EmptyRelaySignature();
 
         bytes32 key = epochShardKey(input.epochStartMs, input.shard);
-        checkpointHash = hashCheckpoint(input);
+        checkpointHash = input.checkpointIdentityHash;
+        bytes32 fieldsHash = contractCheckpointFieldsHash(input);
         address recoveredSigner = recoverRelaySigner(checkpointHash, relaySignature);
         if (relaySigners[input.relayId] == address(0) || relaySigners[input.relayId] != recoveredSigner) {
             revert InvalidRelaySignature(input.relayId, recoveredSigner);
@@ -109,24 +114,25 @@ contract CheckpointRegistry {
             return checkpointHash;
         }
 
-        checkpointsByHash[checkpointHash] = Checkpoint({
-            epochStartMs: input.epochStartMs,
-            epochDurationMs: input.epochDurationMs,
-            shard: input.shard,
-            eventRoot: input.eventRoot,
-            receiptRoot: input.receiptRoot,
-            attestationRoot: input.attestationRoot,
-            revocationRoot: input.revocationRoot,
-            eventCount: input.eventCount,
-            receiptCount: input.receiptCount,
-            previousCheckpoint: input.previousCheckpoint,
-            relayId: input.relayId,
-            settlementBackend: input.settlementBackend,
-            submittedAt: uint64(block.timestamp)
-        });
+        Checkpoint storage checkpoint = checkpointsByHash[checkpointHash];
+        checkpoint.epochStartMs = input.epochStartMs;
+        checkpoint.epochDurationMs = input.epochDurationMs;
+        checkpoint.shard = input.shard;
+        checkpoint.eventRoot = input.eventRoot;
+        checkpoint.receiptRoot = input.receiptRoot;
+        checkpoint.attestationRoot = input.attestationRoot;
+        checkpoint.revocationRoot = input.revocationRoot;
+        checkpoint.eventCount = input.eventCount;
+        checkpoint.receiptCount = input.receiptCount;
+        checkpoint.previousCheckpoint = input.previousCheckpoint;
+        checkpoint.checkpointIdentityHash = checkpointHash;
+        checkpoint.contractCheckpointFieldsHash = fieldsHash;
+        checkpoint.relayId = input.relayId;
+        checkpoint.settlementBackend = input.settlementBackend;
+        checkpoint.submittedAt = uint64(block.timestamp);
         checkpointHashByEpochShard[key] = checkpointHash;
 
-        emit CheckpointSubmitted(checkpointHash, input.epochStartMs, input.shard, input.eventRoot, msg.sender);
+        emit CheckpointSubmitted(checkpointHash, fieldsHash, input.epochStartMs, input.shard, input.eventRoot, msg.sender);
     }
 
     function getCheckpoint(bytes32 checkpointHash) external view returns (Checkpoint memory) {
@@ -147,6 +153,23 @@ contract CheckpointRegistry {
     }
 
     function hashCheckpoint(CheckpointInput calldata input) public pure returns (bytes32) {
+        return input.checkpointIdentityHash;
+    }
+
+    function contractCheckpointFieldsHash(CheckpointInput calldata input) public pure returns (bytes32) {
+        return keccak256(
+            abi.encode(
+                checkpointRootsHash(input),
+                checkpointCountsHash(input),
+                input.previousCheckpoint,
+                input.checkpointIdentityHash,
+                input.relayId,
+                input.settlementBackend
+            )
+        );
+    }
+
+    function checkpointRootsHash(CheckpointInput calldata input) public pure returns (bytes32) {
         return keccak256(
             abi.encode(
                 input.epochStartMs,
@@ -155,14 +178,13 @@ contract CheckpointRegistry {
                 input.eventRoot,
                 input.receiptRoot,
                 input.attestationRoot,
-                input.revocationRoot,
-                input.eventCount,
-                input.receiptCount,
-                input.previousCheckpoint,
-                input.relayId,
-                input.settlementBackend
+                input.revocationRoot
             )
         );
+    }
+
+    function checkpointCountsHash(CheckpointInput calldata input) public pure returns (bytes32) {
+        return keccak256(abi.encode(input.eventCount, input.receiptCount));
     }
 
     function relayMessageHash(bytes32 checkpointHash) public pure returns (bytes32) {

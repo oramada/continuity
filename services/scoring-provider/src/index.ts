@@ -8,10 +8,13 @@ import {
   referenceScoreBps,
   scoreInputFromFeatureVector,
   labelForScore,
-		  computeEvidenceCoverageV0,
-		  computeReferenceScoreV0,
-		  extractReferenceFeatureVectorV0,
-	  sha256Hex,
+			  computeEvidenceCoverageV0,
+			  computeReferenceScoreV0,
+			  extractReferenceFeatureVectorV0,
+			  eventHash,
+			  receiptHash,
+			  attestationHash,
+		  sha256Hex,
   scoringProfileV2Hash,
 	  signTrustAssessmentV2,
 	  signTrustAssessmentObject,
@@ -325,23 +328,23 @@ export function createScoringProvider() {
             high_risk_bps: 1500
           }
         };
-	      const verification = await verifyTSL(verifyInput, resolver, {
-	        require_inclusion: true,
-	        require_checkpoint: true,
-	        require_settlement: domainPolicy.requires_settlement
-	      });
-	      if (!verification.verified) {
-	        res.status(422).json({
-	          error: {
-	            code: "TSL_SCORING_EVIDENCE_VERIFICATION_FAILED",
-	            message: "v2 scoring requires verified evidence before private receipts, disclosures, or counterparties can be used for feature extraction",
-	            verification_errors: verification.errors,
-	            checks: verification.checks
-	          }
-	        });
-	        return;
-	      }
-	      const subject = String(req.body.subject ?? verifyInput.envelope.sender);
+      const verification = await verifyTSL(verifyInput, resolver, {
+        require_inclusion: true,
+        require_checkpoint: true,
+        require_settlement: domainPolicy.requires_settlement
+      });
+      if (!verification.verified) {
+        res.status(422).json({
+          error: {
+            code: "TSL_SCORING_EVIDENCE_VERIFICATION_FAILED",
+            message: "v2 scoring requires verified evidence before private receipts, disclosures, or counterparties can be used for feature extraction",
+            verification_errors: verification.errors,
+            checks: verification.checks
+          }
+        });
+        return;
+      }
+      const subject = String(req.body.subject ?? verifyInput.envelope.sender);
       const issuer = String(req.body.issuer ?? process.env.TSL_SCORING_PROVIDER_ID ?? "did:tsl:provider:local");
       const callerFeatureOverride =
         req.body.evidence_coverage !== undefined || req.body.normalized_features_bps !== undefined || req.body.weights_bps !== undefined;
@@ -429,32 +432,35 @@ export function createScoringProvider() {
         allowCallerFeatures && req.body.evidence_coverage
           ? req.body.evidence_coverage
           : computeEvidenceCoverageV0({
+              subject,
+              valid_signed_event_count: verification.checks.signature_valid ? 1 : 0,
+              valid_receipt_count: verifyInput.receipts?.length ?? 0,
+              unique_counterparty_count: receiptCounterparties.size,
+              distinct_community_count: Number(req.body.distinct_community_count ?? 0),
+              attestation_count: Number(req.body.attestation_count ?? 0),
+              recent_revocation_count: Number(req.body.recent_revocation_count ?? 0),
+              computed_at: now.toISOString()
+            });
+      const rawFeatureValues = {
+        ...extractReferenceFeatureVectorV0({
           subject,
+          identity: identityMap.get(subject),
+          envelope: verifyInput.envelope,
+          receipts: verifyInput.receipts,
+          attestations: verifyInput.attestations,
+          attestations_v2: verifyInput.attestations_v2,
+          graph_feature_vector: req.body.graph_feature_vector,
+          sybil_assessment: req.body.sybil_assessment,
+          drift_report: req.body.drift_report,
+          verification_checks: verification.checks,
           valid_signed_event_count: verification.checks.signature_valid ? 1 : 0,
-          valid_receipt_count: verifyInput.receipts?.length ?? 0,
-	          unique_counterparty_count: receiptCounterparties.size,
-	          distinct_community_count: Number(req.body.distinct_community_count ?? 0),
-          attestation_count: Number(req.body.attestation_count ?? 0),
-          recent_revocation_count: Number(req.body.recent_revocation_count ?? 0),
+          clustered_receipt_count: receiptCounterparties.size,
+          cadence_intervals_ms: Array.isArray(req.body.cadence_intervals_ms) ? req.body.cadence_intervals_ms.map(Number) : undefined,
+          local_relationship_bps: req.body.local_relationship_bps !== undefined ? Number(req.body.local_relationship_bps) : undefined,
           computed_at: now.toISOString()
-        });
-	      const rawFeatureValues = {
-	        ...extractReferenceFeatureVectorV0({
-	          subject,
-	          identity: identityMap.get(subject),
-	          envelope: verifyInput.envelope,
-	          receipts: verifyInput.receipts,
-	          attestations: verifyInput.attestations,
-	          attestations_v2: verifyInput.attestations_v2,
-	          graph_feature_vector: req.body.graph_feature_vector,
-	          sybil_assessment: req.body.sybil_assessment,
-	          drift_report: req.body.drift_report,
-	          verification_checks: verification.checks,
-	          local_relationship_bps: req.body.local_relationship_bps !== undefined ? Number(req.body.local_relationship_bps) : undefined,
-	          computed_at: now.toISOString()
-	        }),
-	        evidence_coverage: evidenceCoverage.coverage_bps
-	      };
+        }),
+        evidence_coverage: evidenceCoverage.coverage_bps
+      };
       const derivedProfileFeatures =
         !allowCallerFeatures
           ? normalizeFeaturesFromProfiles({
@@ -499,9 +505,15 @@ export function createScoringProvider() {
         weights_bps: weights,
         calibration_profile: allowCallerFeatures ? req.body.scoring_profile?.calibration_profile : req.body.calibration_profile,
         confidence_profile: allowCallerFeatures ? req.body.scoring_profile?.confidence_profile : req.body.confidence_profile,
+        bootstrap_evidence_hashes: [
+          eventHash(verifyInput.envelope),
+          ...(verifyInput.receipts ?? []).map((receipt) => receiptHash(receipt)),
+          ...(verifyInput.attestations ?? []).map((attestation) => attestationHash(attestation)),
+          ...(verifyInput.attestations_v2 ?? []).map((attestation) => sha256Hex(canonicalBytes(attestation)))
+        ],
         has_adverse_evidence: Boolean(
-            req.body.has_adverse_evidence === true || req.body.sybil_assessment?.risk_label === "high" || req.body.drift_report?.drift_label === "severe"
-          ),
+          req.body.has_adverse_evidence === true || req.body.sybil_assessment?.risk_label === "high" || req.body.drift_report?.drift_label === "severe"
+        ),
         domain_policy: domainPolicy,
         issued_at: now.toISOString()
       });

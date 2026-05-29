@@ -58,9 +58,11 @@ const status = process.env["TSL_" + "ZK_RELEASE_STATUS"] ?? "dev";
 const issuedAt = new Date().toISOString();
 const releaseManifests = artifacts.map((artifact) => ({
   type: "tsl.zk.circuit_release_manifest.v1",
-  circuit_id: `${artifact.claim}-groth16-v1`,
+  circuit_id: `dev_${artifact.claim}-groth16-v1`,
   claim: artifact.claim,
   version: "1.0.0",
+  hash_suite: "dev-linear-hash-fixture-v1",
+  witness_interface: "dev_fixture_witness_v1",
   circuit_hash: sha256(artifact.circuit),
   r1cs_hash: sha256(artifact.r1cs),
   wasm_hash: sha256(artifact.wasm),

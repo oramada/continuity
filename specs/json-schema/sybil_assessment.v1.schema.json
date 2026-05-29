@@ -173,6 +173,41 @@
         "settlement_anomaly_bps": { "type": "integer", "minimum": 0, "maximum": 10000 }
       }
     },
+    "compromise_evidence": {
+      "type": "object",
+      "required": ["evidence_commitment"],
+      "additionalProperties": false,
+      "properties": {
+        "evidence_commitment": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
+        "key_revocation_count": { "type": "integer", "minimum": 0 },
+        "severe_drift_count": { "type": "integer", "minimum": 0 },
+        "recovery_anomaly_count": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "issuer_collusion_evidence": {
+      "type": "object",
+      "required": ["evidence_commitment"],
+      "additionalProperties": false,
+      "properties": {
+        "evidence_commitment": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
+        "issuer_reversal_count": { "type": "integer", "minimum": 0 },
+        "low_quality_issuer_count": { "type": "integer", "minimum": 0 },
+        "false_attestation_count": { "type": "integer", "minimum": 0 },
+        "collusion_indicator_count": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "infrastructure_collusion_evidence": {
+      "type": "object",
+      "required": ["evidence_commitment"],
+      "additionalProperties": false,
+      "properties": {
+        "evidence_commitment": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
+        "checkpoint_conflict_count": { "type": "integer", "minimum": 0 },
+        "provider_auditor_disagreement_count": { "type": "integer", "minimum": 0 },
+        "settlement_anomaly_count": { "type": "integer", "minimum": 0 },
+        "selective_visibility_count": { "type": "integer", "minimum": 0 }
+      }
+    },
     "scenario_evidence_checks": {
       "type": "array",
       "items": { "type": "string" }
