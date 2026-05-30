@@ -33,7 +33,7 @@
     {
       "if": { "properties": { "evidence_kind": { "const": "offline_receipt_log_proof" } } },
       "then": {
-        "required": ["block_header_rlp", "receipt_rlp", "receipt_proof_nodes", "finality_proof"]
+        "required": ["block_header_rlp", "receipt_rlp", "receipt_proof_nodes", "finality_proof", "event_topics", "event_data"]
       }
     }
   ],
@@ -76,6 +76,12 @@
     "settlement_event_hash": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
     "settlement_event_index": { "type": "integer", "minimum": 0 },
     "event_topic_hash": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
+    "event_topics": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" }
+    },
+    "event_data": { "type": "string", "pattern": "^0x[0-9a-fA-F]*$" },
     "log_index": { "type": "integer", "minimum": 0 },
     "receipt_proof_source_commitment": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
     "finality_source_commitment": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },

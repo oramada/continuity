@@ -22,7 +22,19 @@
     "auditor",
     "reviewer",
     "status",
+    "signature_status",
     "issued_at"
+  ],
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "active" } } },
+      "then": {
+        "properties": {
+          "signature_status": { "const": "externally_signed" }
+        },
+        "required": ["signature"]
+      }
+    }
   ],
   "additionalProperties": false,
   "properties": {
@@ -57,7 +69,8 @@
     "ceremony_transcript_hash": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
     "auditor": { "type": "string", "pattern": "^did:tsl:" },
     "reviewer": { "type": "string", "pattern": "^did:tsl:" },
-    "status": { "enum": ["dev", "candidate", "active", "revoked"] },
+    "status": { "enum": ["dev", "draft", "reviewed", "candidate", "active", "revoked"] },
+    "signature_status": { "enum": ["unsigned", "placeholder", "externally_signed"] },
     "issued_at": { "type": "string", "format": "date-time" },
     "signature": { "type": "string", "pattern": "^0x[0-9a-f]+$" }
   }

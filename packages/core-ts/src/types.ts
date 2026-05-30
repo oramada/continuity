@@ -193,6 +193,8 @@ export interface SettlementEvidenceV1 {
   settlement_event_hash?: Hex32;
   settlement_event_index?: number;
   event_topic_hash?: Hex32;
+  event_topics?: Hex32[];
+  event_data?: string;
   log_index?: number;
   receipt_proof_source_commitment?: Hex32;
   finality_source_commitment?: Hex32;
@@ -770,7 +772,8 @@ export interface ZkCircuitReleaseManifestV1 {
   ceremony_transcript_hash: Hex32;
   auditor: TrustID;
   reviewer: TrustID;
-  status: "dev" | "candidate" | "active" | "revoked";
+  status: "dev" | "draft" | "reviewed" | "candidate" | "active" | "revoked";
+  signature_status: "unsigned" | "placeholder" | "externally_signed";
   issued_at: RFC3339;
   signature?: HexSig;
 }
@@ -781,6 +784,7 @@ export interface ZkVerificationKeyRegistryV1 {
   active_manifest_hashes: Hex32[];
   revoked_manifest_hashes: Hex32[];
   issued_at: RFC3339;
+  signature_status: "unsigned" | "placeholder" | "externally_signed";
   signature?: HexSig;
 }
 
@@ -1043,6 +1047,11 @@ export interface VerifierPolicy {
   require_exact_graph_formulas?: boolean;
   require_core_drift_formula?: boolean;
   require_profile_signed_scoring?: boolean;
+  require_offline_settlement_proof?: boolean;
+  reject_rpc_attested_settlement_for_mainnet?: boolean;
+  require_active_zk_manifest?: boolean;
+  require_zk_ceremony_evidence?: boolean;
+  min_settlement_confirmations?: number;
   reject_unsafe_fixtures_on_mainnet?: boolean;
   accepted_auditors?: TrustID[];
   accepted_governance_policy?: string;

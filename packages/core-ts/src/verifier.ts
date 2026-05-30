@@ -20,6 +20,7 @@ import { verifyInclusion } from "./merkle";
 import { verifyNonMembershipProof } from "./nonMembership";
 import { checkpointHash, legacyCheckpointHashV0 } from "./relayStore";
 import { contractCheckpointFieldsHashForCheckpoint, type SettlementBackend } from "./settlement";
+import { settlementProofInternals, verifyOfflineSettlementEvidence } from "./settlementProof";
 import type {
   BatchCheckpointV1,
   Hex32,
@@ -78,6 +79,7 @@ const STRICT_POLICY_DEFAULTS: VerifierPolicy = {
   require_disclosure_consent_for_private_fields: true,
   reject_dev_zk_circuits: true,
   reject_unsafe_fixtures_on_mainnet: true,
+  reject_rpc_attested_settlement_for_mainnet: true,
   require_four_root_checkpoint: true,
   require_exact_graph_formulas: true,
   require_behavioral_sybil_tiers: true,
@@ -238,13 +240,28 @@ function settlementEventHash(evidence: NonNullable<VerifyTSLInput["settlement_ev
   );
 }
 
-function settlementEvidenceMatchesCheckpoint(input: VerifyTSLInput, checkpointHashValue: Hex32): boolean {
-  if (!input.checkpoint || !input.settlement_evidence?.length) return false;
+async function settlementEvidenceMatchesCheckpoint(input: VerifyTSLInput, checkpointHashValue: Hex32, policy: VerifierPolicy): Promise<{ ok: boolean; error_code?: string }> {
+  if (!input.checkpoint || !input.settlement_evidence?.length) return { ok: false, error_code: "TSL_SETTLEMENT_EVIDENCE_INVALID" };
   const expectedFieldsHash = contractCheckpointFieldsHashForCheckpoint(input.checkpoint);
   const expectedBackend = input.checkpoint.settlement_backend;
-  return input.settlement_evidence.some((evidence) => {
+  let lastError = "TSL_SETTLEMENT_EVIDENCE_INVALID";
+  for (const evidence of input.settlement_evidence) {
     const validation = validateSchema("settlementEvidenceV1", evidence);
-    if (!validation.valid) return false;
+    if (!validation.valid) {
+      lastError = "TSL_SETTLEMENT_EVIDENCE_INVALID";
+      continue;
+    }
+    const offline = await verifyOfflineSettlementEvidence({
+      evidence,
+      checkpoint: input.checkpoint,
+      checkpoint_hash: checkpointHashValue,
+      contract_checkpoint_fields_hash: expectedFieldsHash,
+      policy
+    });
+    if (!offline.ok) {
+      lastError = offline.error_code ?? "TSL_SETTLEMENT_EVIDENCE_INVALID";
+      continue;
+    }
     const identityMatches =
       evidence.checkpoint_hash === checkpointHashValue &&
       evidence.checkpoint_identity_hash === checkpointHashValue;
@@ -252,7 +269,12 @@ function settlementEvidenceMatchesCheckpoint(input: VerifyTSLInput, checkpointHa
       evidence.contract_checkpoint_fields_hash === expectedFieldsHash &&
       (evidence.contract_checkpoint_hash === undefined || evidence.contract_checkpoint_hash === expectedFieldsHash);
     const backendMatches = !expectedBackend || evidence.settlement_backend === expectedBackend;
-    const eventHash = evidence.settlement_event_hash ? settlementEventHash(evidence) : undefined;
+    const eventHash =
+      evidence.evidence_kind === "offline_receipt_log_proof"
+        ? settlementProofInternals.offlineSettlementEventHash(evidence)
+        : evidence.settlement_event_hash
+          ? settlementEventHash(evidence)
+          : undefined;
     const eventHashMatches = Boolean(eventHash && evidence.settlement_event_hash === eventHash);
 	    const proofCommitmentMatches =
 	      Boolean(evidence.receipt_proof_source_commitment) &&
@@ -264,20 +286,8 @@ function settlementEvidenceMatchesCheckpoint(input: VerifyTSLInput, checkpointHa
 	            finality_source_commitment: evidence.finality_source_commitment
 	          })
 	        );
-	    const offlineProofSourceCommitment =
-	      evidence.evidence_kind === "offline_receipt_log_proof"
-	        ? sha256Hex(
-	            canonicalBytes({
-	              block_header_rlp: evidence.block_header_rlp,
-	              receipt_rlp: evidence.receipt_rlp,
-	              receipt_proof_nodes: evidence.receipt_proof_nodes,
-	              receipt_root: evidence.receipt_root,
-	              transaction_index: evidence.transaction_index,
-	              log_index: evidence.log_index,
-	              finality_proof: evidence.finality_proof
-	            })
-	          )
-	        : undefined;
+    const offlineProofSourceCommitment =
+      evidence.evidence_kind === "offline_receipt_log_proof" ? settlementProofInternals.receiptProofSourceCommitment(evidence) : undefined;
 	    const offlineProofMatches =
 	      evidence.evidence_kind !== "offline_receipt_log_proof" ||
 	      (Boolean(evidence.block_header_rlp) &&
@@ -297,9 +307,13 @@ function settlementEvidenceMatchesCheckpoint(input: VerifyTSLInput, checkpointHa
       evidence.log_index !== undefined &&
       Boolean(evidence.finality_source_commitment) &&
       Boolean(evidence.chain_proof_commitment) &&
-      evidence.settlement_tx === evidence.transaction_receipt_hash;
-	    return identityMatches && fieldsHashMatches && backendMatches && eventHashMatches && proofCommitmentMatches && offlineProofMatches && evidence.status === "settled" && receiptProofPresent;
-	  });
+      Boolean(evidence.settlement_tx);
+    if (identityMatches && fieldsHashMatches && backendMatches && eventHashMatches && proofCommitmentMatches && offlineProofMatches && evidence.status === "settled" && receiptProofPresent) {
+      return { ok: true };
+    }
+    lastError = "TSL_SETTLEMENT_EVIDENCE_INVALID";
+  }
+  return { ok: false, error_code: lastError };
 	}
 
 async function disclosureConsentAllows(input: VerifyTSLInput, fieldClasses: string[], resolver: TrustResolver, policy: VerifierPolicy): Promise<boolean> {
@@ -1399,13 +1413,14 @@ export async function verifyTSL(
   }
 
   if (input.checkpoint && input.settlement_evidence?.length) {
-    checks.settlement_evidence_valid = settlementEvidenceMatchesCheckpoint(input, checkpointHashForPolicy(input.checkpoint));
+    const settlementEvidence = await settlementEvidenceMatchesCheckpoint(input, checkpointHashForPolicy(input.checkpoint), policy);
+    checks.settlement_evidence_valid = settlementEvidence.ok;
     checks.checkpoint_settled = checks.settlement_evidence_valid;
     if (checks.settlement_evidence_valid) {
       settlementStatus = "settled";
       explanation.push("Checkpoint settlement evidence is valid");
     } else {
-      errors.push("TSL_SETTLEMENT_EVIDENCE_INVALID");
+      errors.push(settlementEvidence.error_code ?? "TSL_SETTLEMENT_EVIDENCE_INVALID");
       settlementStatus = "mismatch";
     }
   }

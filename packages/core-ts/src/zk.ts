@@ -186,7 +186,7 @@ function requiredProductionCircuitInputs(claim: ZkThresholdProofV1["claim"]): st
     case "revocation_set_non_membership":
       return ["subject_hash", "key_hash", "revocation_pointer_hash", "value_commitment", "public_revocation_root", "sparse_leaf_index", "empty_leaf_commitment", "sibling_path", "path_bits"];
     case "organization_membership":
-      return ["subject_hash", "org_hash", "issuer_hash", "current_epoch_day", "public_attestation_root", "issuer_registry_root", "attestation_leaf", "attestation_siblings", "attestation_path_bits", "issuer_leaf", "issuer_siblings", "issuer_path_bits", "not_expired_epoch_day"];
+      return ["subject_hash", "org_hash", "issuer_hash", "valid_after_day", "expires_at_day", "current_epoch_day", "attestation_salt", "public_attestation_root", "issuer_registry_root", "attestation_siblings", "attestation_path_bits", "issuer_siblings", "issuer_path_bits"];
     case "agent_scope_compliance":
       return ["subject_hash", "agent_hash", "principal_hash", "action_hash", "parameter_values_hash", "policy_constraints_hash", "scope_commitment", "delegation_chain_root", "delegation_siblings", "delegation_path_bits", "human_approval_required", "human_approval_present"];
     case "private_graph_distance":
@@ -243,15 +243,15 @@ function isDevCircuitId(circuitId?: string): boolean {
   );
 }
 
-const REQUIRED_WITNESS_FIELDS: Record<string, string[]> = {
-  identity_age_days: ["creation_proof", "salt", "registry_path"],
-  reciprocal_receipt_count: ["receipt_leaves", "counterparty_salts", "counterparties", "merkle_paths"],
-  dispute_rate_bound: ["completed_receipt_leaves", "disputed_receipt_leaves", "merkle_paths"],
-  set_membership: ["membership_leaf", "salt", "merkle_path"],
-  revocation_set_non_membership: ["sparse_merkle_non_membership_path", "leaf_index", "value_commitment"],
-  organization_membership: ["attestation_witness", "issuer_path"],
-  agent_scope_compliance: ["parameter_values", "policy_witness", "delegation_path"],
-  private_graph_distance: ["committed_local_neighborhood", "aggregate_proof", "seed_commitments"]
+const REQUIRED_WITNESS_FIELDS: Record<string, string[][]> = {
+  identity_age_days: [["creation_proof", "creation_epoch_day"], ["salt", "registry_salt"], ["registry_path", "registry_siblings"]],
+  reciprocal_receipt_count: [["receipt_leaves"], ["counterparty_salts", "receipt_salts"], ["counterparties", "counterparty_commitments"], ["merkle_paths", "receipt_siblings"]],
+  dispute_rate_bound: [["completed_receipt_leaves", "completed_leaves"], ["disputed_receipt_leaves", "disputed_leaves"], ["merkle_paths", "completed_siblings"]],
+  set_membership: [["membership_leaf", "membership_salt"], ["salt", "membership_salt"], ["merkle_path", "membership_siblings"]],
+  revocation_set_non_membership: [["sparse_merkle_non_membership_path", "sibling_path"], ["leaf_index", "sparse_leaf_index"], ["value_commitment"]],
+  organization_membership: [["attestation_witness", "attestation_siblings"], ["issuer_path", "issuer_siblings"]],
+  agent_scope_compliance: [["parameter_values", "parameter_values_hash"], ["policy_witness", "policy_constraints_hash"], ["delegation_path", "delegation_siblings"]],
+  private_graph_distance: [["committed_local_neighborhood", "committed_local_neighborhood_root"], ["aggregate_proof", "aggregate_proof_commitment"], ["seed_commitments", "trusted_seed_commitment"]]
 };
 
 function manifestDeclaresWitnessInterface(manifest: ZkCircuitReleaseManifestV1): boolean {
@@ -259,7 +259,7 @@ function manifestDeclaresWitnessInterface(manifest: ZkCircuitReleaseManifestV1):
   const schema = manifest.private_witness_schema ?? {};
   const properties = (schema.properties ?? {}) as Record<string, unknown>;
   const requiredList = Array.isArray(schema.required) ? schema.required.map(String) : [];
-  return required.every((field) => field in properties || requiredList.includes(field));
+  return required.every((aliases) => aliases.some((field) => field in properties || requiredList.includes(field)));
 }
 
 export function zkProofUsesRegisteredCircuit(input: {
@@ -271,6 +271,7 @@ export function zkProofUsesRegisteredCircuit(input: {
   if (!manifest || manifest.status !== "active") return false;
   if (isDevCircuitId(manifest.circuit_id) || isDevCircuitId(input.proof.circuit_id)) return false;
   if (!manifest.signature || !input.registry?.signature) return false;
+  if (manifest.signature_status !== "externally_signed" || input.registry.signature_status !== "externally_signed") return false;
   if (!manifest.hash_suite || !manifest.witness_interface) return false;
   if (!manifest.public_signal_schema || !manifest.private_witness_schema || !manifest.soundness_bits || !manifest.privacy_notes?.length) return false;
   if (manifest.soundness_bits < 100 || !manifestDeclaresWitnessInterface(manifest)) return false;

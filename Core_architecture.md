@@ -2276,6 +2276,57 @@ Private graph distance & Distance or escape exceeds threshold & Committed local 
 \bottomrule
 \end{longtable}
 
+\subsection{Production ZK Ceremony and Release Decision}
+
+For production and \texttt{TSL-MAINNET}, the required circuit interfaces above MUST be released through a new protocol-specific ceremony. Existing local setup artifacts, development fixtures, prototype circuits, and any circuit identifier marked \texttt{dev}, \texttt{fixture}, \texttt{prototype}, or equivalent MUST NOT satisfy production policy.
+
+Each production circuit release MUST include:
+
+\begin{itemize}
+    \item circuit source hash;
+    \item R1CS hash;
+    \item WASM hash;
+    \item zkey hash;
+    \item verification-key hash;
+    \item declared hash suite;
+    \item public-signal schema;
+    \item private-witness schema;
+    \item soundness bits, with minimum \(100\);
+    \item privacy notes describing the disclosed statement and hidden witness;
+    \item ceremony transcript hash;
+    \item manifest signature;
+    \item reviewer or auditor signature.
+\end{itemize}
+
+The selected production hash suite for circuit-internal commitments is \texttt{poseidon-bn254-v1}. Off-circuit object commitments and release-manifest commitments remain canonical SHA-256 domain-separated commitments unless a later conformance level explicitly upgrades them.
+
+The production release set is:
+
+\begin{enumerate}
+    \item \texttt{identity\_age\_days}
+    \item \texttt{reciprocal\_receipt\_count}
+    \item \texttt{dispute\_rate\_bound}
+    \item \texttt{set\_membership}
+    \item \texttt{revocation\_set\_non\_membership}
+    \item \texttt{organization\_membership}
+    \item \texttt{agent\_scope\_compliance}
+    \item \texttt{private\_graph\_distance}
+\end{enumerate}
+
+The production verification-key registry MUST reject:
+
+\begin{itemize}
+    \item any unregistered circuit;
+    \item any inactive or revoked manifest;
+    \item any proof whose verification key does not hash to the registered manifest key;
+    \item any manifest without a signature;
+    \item any manifest without public and private witness schemas;
+    \item any manifest below the configured soundness threshold;
+    \item any development or fixture circuit under production policy.
+\end{itemize}
+
+Mainnet readiness for ZK proofs is blocked until a real ceremony transcript, verification-key registry, external circuit review, and protocol security approval exist. Generated text, local fixtures, or repository-only placeholders MUST NOT count as ceremony or audit evidence.
+
 \subsection{Example Threshold Proof Request}
 
 \begin{lstlisting}[style=tslcode]
@@ -4569,6 +4620,45 @@ For the \texttt{Fatal} column, \texttt{policy} means the verifier policy decides
 
 The verifier MUST be implementable as a pure library with no trusted network call. Network calls can fetch missing state, but fetched data must be independently verified.
 
+\subsubsection{Settlement Evidence Policy}
+
+\TSL{} supports two settlement evidence kinds:
+
+\begin{description}
+    \item[\texttt{rpc\_attested\_receipt}] An operational or release-candidate evidence object derived from one or more RPC providers. It MUST remain labeled as RPC-attested evidence and MUST NOT be represented as a full offline cryptographic proof.
+    \item[\texttt{offline\_receipt\_log\_proof}] A mainnet-grade evidence object that can be verified from bundle-carried data without trusted live network calls.
+\end{description}
+
+When verifier policy requires mainnet-grade settlement, the verifier MUST require \texttt{offline\_receipt\_log\_proof} or a separately approved finality-oracle evidence type. The offline proof MUST bind:
+
+\begin{itemize}
+    \item chain ID;
+    \item contract address;
+    \item transaction hash;
+    \item block hash and block number;
+    \item canonical block header or approved header commitment;
+    \item receipt root;
+    \item transaction index;
+    \item receipt RLP or canonical receipt encoding;
+    \item receipt trie proof nodes;
+    \item receipt status;
+    \item emitted checkpoint event topic/hash;
+    \item emitted checkpoint event fields;
+    \item log index;
+    \item checkpoint identity hash;
+    \item contract checkpoint fields hash;
+    \item submitter;
+    \item finality or source proof.
+\end{itemize}
+
+For Base mainnet, the production target is chain ID \texttt{8453}. The checkpoint registry, revocation registry, TrustID registry, provider registry, and governance registry addresses MUST be recorded as deployment evidence before \texttt{TSL-MAINNET}. A Base receipt/log proof MUST be bound to an accepted finality source, such as an L1-finalized source commitment or another approved finality mechanism. Until this proof path is implemented and vector-tested, RPC-attested receipts MAY be used only for RC or testnet evidence.
+
+\subsubsection{RPC-Attested Receipt Policy}
+
+When \texttt{rpc\_attested\_receipt} is allowed by verifier policy, it SHOULD include at least two independent RPC responses when practical. The evidence MUST bind provider/source commitment, chain ID, block hash, transaction hash, receipt status, contract address, event topic, checkpoint identity hash, and contract field hash. Mismatched RPC responses MUST be rejected or surfaced as settlement ambiguity. RPC-attested evidence is not sufficient by itself for \texttt{TSL-MAINNET}.
+
+\subsubsection{Algorithm Pseudocode}
+
 \begin{lstlisting}[style=tslcode]
 function verifyTSL(input, policy): VerificationResult {
   result = new VerificationResult()
@@ -6850,10 +6940,63 @@ Conformance Level & Required Scope & Excluded or Optional Scope \\
 \texttt{TSL-RC2} & Reference feature extractor, \texttt{TrustAssessmentV2}, model card, evaluation report & Advanced private graph proofs optional. \\
 \texttt{TSL-RC3} & Metadata fingerprint commitments, graph profile, Sybil assessment, drift report & ZK graph distance optional. \\
 \texttt{TSL-RC4} & Delegation policy v2, agent action v2, inside-scope verifier & Multi-agent ZK proof optional. \\
-\texttt{TSL-MAINNET} & Audits, runbooks, provider governance, appeal process, monitoring, production SLOs & Research-only circuits optional. \\
+\texttt{TSL-MAINNET} & Audits, runbooks, provider governance, appeal process, monitoring, production SLOs, approved ZK ceremony evidence, and mainnet-grade settlement evidence & Research-only circuits optional; dev fixtures never satisfy production ZK. \\
 \bottomrule
 \end{tabularx}
 \end{center}
+
+\subsection{Production Decision Record}
+
+The following production choices are normative for the mainnet path:
+
+\begin{enumerate}
+    \item ZK production requires a new protocol-specific ceremony for the eight required circuit interfaces. Existing development zkeys, local setup outputs, and toy circuits are not accepted.
+    \item Mainnet-grade settlement requires \texttt{offline\_receipt\_log\_proof}. \texttt{rpc\_attested\_receipt} is allowed only for RC, testnet, diagnostics, or an explicitly weaker verifier policy.
+    \item The default production settlement target is Base mainnet, chain ID \texttt{8453}. Base Sepolia remains the rehearsal network.
+    \item Approval is role-bound before it is person-bound. The required roles are \texttt{protocol-security-owner}, \texttt{legal-compliance-owner}, \texttt{platform-ops-owner}, \texttt{protocol-governance-owner}, \texttt{external-zk-auditor}, and \texttt{release-governance-owner}. Before release, each role MUST be mapped to a real signer identity or approval record.
+    \item Mainnet approval cannot be generated by code or documentation alone. It requires signed or otherwise auditable evidence for security, legal/compliance, operations, provider governance, deployment, monitoring, and ZK ceremony review.
+\end{enumerate}
+
+\subsection{Remaining Mainnet Implementation Plan}
+
+\subsubsection{ZK Artifact and Vector Pipeline}
+
+For each of the eight production circuits, the implementation MUST provide:
+
+\begin{itemize}
+    \item reproducible compile command;
+    \item R1CS, WASM, zkey, and verification-key artifacts;
+    \item circuit release manifest;
+    \item verification-key registry entry;
+    \item positive proof vector;
+    \item public-signal tamper vector;
+    \item witness-shape missing-field vector;
+    \item wrong-verification-key vector;
+    \item dev-circuit rejection vector.
+\end{itemize}
+
+\subsubsection{Offline Settlement Verifier}
+
+The implementation MUST add a verifier for \texttt{offline\_receipt\_log\_proof} that checks receipt status, receipt-root inclusion, event/log inclusion, checkpoint identity, contract field hash, contract address, submitter, and finality/source proof from bundle-carried data. It MUST include failure vectors for wrong transaction hash, wrong contract address, wrong event topic, wrong checkpoint identity, wrong contract field hash, reverted receipt, invalid receipt proof, invalid log proof, and insufficient finality.
+
+\subsubsection{Mainnet Evidence Package}
+
+The production-readiness evidence package MUST include:
+
+\begin{itemize}
+    \item external circuit audit or review;
+    \item ceremony transcript and participant evidence;
+    \item verification-key registry approval;
+    \item security audit and finding tracker;
+    \item legal/compliance approval;
+    \item operations and incident-response approval;
+    \item deployment addresses and environment proof;
+    \item monitoring and SLO evidence;
+    \item provider-governance approval;
+    \item final release-governance decision.
+\end{itemize}
+
+The \texttt{TSL-MAINNET} conformance gate MUST remain red while any of these items are draft, missing, rejected, or stale.
 
 \subsection{Product Requirements Document Annex}
 

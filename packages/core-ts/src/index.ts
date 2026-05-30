@@ -16,6 +16,7 @@ export * from "./resolver";
 export * from "./schemas";
 export * from "./scoring";
 export * from "./settlement";
+export * from "./settlementProof";
 export * from "./signing";
 export * from "./types";
 export * from "./validation";

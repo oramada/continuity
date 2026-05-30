@@ -1,0 +1,97 @@
+{
+  "type": "tsl.test_vector_catalog.v1",
+  "family": "zk-production",
+  "description": "Production-candidate ZK vector matrix. The setup/test pipeline emits per-circuit proof artifacts under artifacts/zk/production-candidate/<release_id>/vectors/zk-production/.",
+  "claims": [
+    "identity_age_days",
+    "reciprocal_receipt_count",
+    "dispute_rate_bound",
+    "set_membership",
+    "revocation_set_non_membership",
+    "organization_membership",
+    "agent_scope_compliance",
+    "private_graph_distance"
+  ],
+  "cases": [
+    {
+      "id": "positive",
+      "expected": {
+        "schema_valid": true,
+        "canonical_hash": null,
+        "signature_valid": true,
+        "verifier_status": true,
+        "error_code": null
+      }
+    },
+    {
+      "id": "public_signal_tamper",
+      "expected": {
+        "schema_valid": true,
+        "canonical_hash": null,
+        "signature_valid": true,
+        "verifier_status": false,
+        "error_code": "TSL_ZK_PROOF_INVALID"
+      }
+    },
+    {
+      "id": "wrong_verification_key",
+      "expected": {
+        "schema_valid": true,
+        "canonical_hash": null,
+        "signature_valid": true,
+        "verifier_status": false,
+        "error_code": "TSL_ZK_VERIFICATION_KEY_MISMATCH"
+      }
+    },
+    {
+      "id": "wrong_manifest_hash",
+      "expected": {
+        "schema_valid": true,
+        "canonical_hash": null,
+        "signature_valid": true,
+        "verifier_status": false,
+        "error_code": "TSL_ZK_PROOF_INVALID"
+      }
+    },
+    {
+      "id": "missing_private_witness_field",
+      "expected": {
+        "schema_valid": false,
+        "canonical_hash": null,
+        "signature_valid": null,
+        "verifier_status": false,
+        "error_code": "TSL_ZK_WITNESS_INTERFACE_INCOMPLETE"
+      }
+    },
+    {
+      "id": "dev_circuit_rejected",
+      "expected": {
+        "schema_valid": true,
+        "canonical_hash": null,
+        "signature_valid": true,
+        "verifier_status": false,
+        "error_code": "TSL_ZK_DEV_CIRCUIT_REJECTED"
+      }
+    },
+    {
+      "id": "revoked_manifest",
+      "expected": {
+        "schema_valid": true,
+        "canonical_hash": null,
+        "signature_valid": true,
+        "verifier_status": false,
+        "error_code": "TSL_ZK_MANIFEST_INACTIVE"
+      }
+    },
+    {
+      "id": "inactive_manifest",
+      "expected": {
+        "schema_valid": true,
+        "canonical_hash": null,
+        "signature_valid": true,
+        "verifier_status": false,
+        "error_code": "TSL_ZK_MANIFEST_INACTIVE"
+      }
+    }
+  ]
+}

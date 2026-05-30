@@ -6,6 +6,7 @@
     "registry_id",
     "active_manifest_hashes",
     "revoked_manifest_hashes",
+    "signature_status",
     "issued_at"
   ],
   "additionalProperties": false,
@@ -23,6 +24,7 @@
       "uniqueItems": true
     },
     "issued_at": { "type": "string", "format": "date-time" },
+    "signature_status": { "enum": ["unsigned", "placeholder", "externally_signed"] },
     "signature": { "type": "string", "pattern": "^0x[0-9a-f]+$" }
   }
 }

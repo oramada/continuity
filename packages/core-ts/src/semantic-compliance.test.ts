@@ -969,6 +969,7 @@ describe("semantic compliance hardening", () => {
       auditor: "did:tsl:auditor:test",
       reviewer: "did:tsl:reviewer:test",
       status: "active" as const,
+      signature_status: "externally_signed" as const,
       issued_at: at,
       signature: "0x11" as const
     };
@@ -996,6 +997,7 @@ describe("semantic compliance hardening", () => {
           active_manifest_hashes: [releaseManifestHash],
           revoked_manifest_hashes: [],
           issued_at: at,
+          signature_status: "externally_signed" as const,
           signature: "0x22" as const
         }
       })
@@ -1010,6 +1012,7 @@ describe("semantic compliance hardening", () => {
           active_manifest_hashes: [releaseManifestHash],
           revoked_manifest_hashes: [],
           issued_at: at,
+          signature_status: "externally_signed" as const,
           signature: "0x22" as const
         }
       })

@@ -183,6 +183,7 @@ fn required_fields_for_type(object_type: &str) -> Option<&'static [&'static str]
             "auditor",
             "reviewer",
             "status",
+            "signature_status",
             "issued_at",
         ]),
         "tsl.zk.verification_key_registry.v1" => Some(&[
@@ -190,6 +191,7 @@ fn required_fields_for_type(object_type: &str) -> Option<&'static [&'static str]
             "registry_id",
             "active_manifest_hashes",
             "revoked_manifest_hashes",
+            "signature_status",
             "issued_at",
         ]),
         "tsl.feature_registry.v1" => Some(&["type", "registry_id", "feature_ids", "issued_at"]),
@@ -479,7 +481,9 @@ mod tests {
             "auditor": "did:tsl:auditor:test",
             "reviewer": "did:tsl:reviewer:test",
             "status": "active",
-            "issued_at": "2026-05-27T00:00:00Z"
+            "signature_status": "externally_signed",
+            "issued_at": "2026-05-27T00:00:00Z",
+            "signature": "0x11"
         });
         assert!(validate_schema_object(&zk_manifest).is_ok());
 

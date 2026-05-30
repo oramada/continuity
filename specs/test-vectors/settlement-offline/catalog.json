@@ -1,0 +1,117 @@
+{
+  "type": "tsl.test_vector_catalog.v1",
+  "family": "settlement-offline",
+  "description": "Executable offline settlement proof vectors for receipt trie, log, event, identity, and finality binding.",
+  "cases": [
+    {
+      "id": "valid_offline_proof",
+      "expected": {
+        "schema_valid": true,
+        "canonical_hash": null,
+        "signature_valid": null,
+        "verifier_status": true,
+        "error_code": null
+      }
+    },
+    {
+      "id": "wrong_tx_hash",
+      "expected": {
+        "schema_valid": true,
+        "canonical_hash": null,
+        "signature_valid": null,
+        "verifier_status": false,
+        "error_code": "TSL_SETTLEMENT_RECEIPT_PROOF_INVALID"
+      }
+    },
+    {
+      "id": "wrong_contract_address",
+      "expected": {
+        "schema_valid": true,
+        "canonical_hash": null,
+        "signature_valid": null,
+        "verifier_status": false,
+        "error_code": "TSL_SETTLEMENT_LOG_PROOF_INVALID"
+      }
+    },
+    {
+      "id": "wrong_event_topic",
+      "expected": {
+        "schema_valid": true,
+        "canonical_hash": null,
+        "signature_valid": null,
+        "verifier_status": false,
+        "error_code": "TSL_SETTLEMENT_LOG_PROOF_INVALID"
+      }
+    },
+    {
+      "id": "wrong_checkpoint_identity",
+      "expected": {
+        "schema_valid": true,
+        "canonical_hash": null,
+        "signature_valid": null,
+        "verifier_status": false,
+        "error_code": "TSL_SETTLEMENT_LOG_PROOF_INVALID"
+      }
+    },
+    {
+      "id": "wrong_contract_fields_hash",
+      "expected": {
+        "schema_valid": true,
+        "canonical_hash": null,
+        "signature_valid": null,
+        "verifier_status": false,
+        "error_code": "TSL_SETTLEMENT_LOG_PROOF_INVALID"
+      }
+    },
+    {
+      "id": "reverted_receipt",
+      "expected": {
+        "schema_valid": true,
+        "canonical_hash": null,
+        "signature_valid": null,
+        "verifier_status": false,
+        "error_code": "TSL_SETTLEMENT_RECEIPT_PROOF_INVALID"
+      }
+    },
+    {
+      "id": "bad_receipt_trie_proof",
+      "expected": {
+        "schema_valid": true,
+        "canonical_hash": null,
+        "signature_valid": null,
+        "verifier_status": false,
+        "error_code": "TSL_SETTLEMENT_RECEIPT_PROOF_INVALID"
+      }
+    },
+    {
+      "id": "bad_log_index",
+      "expected": {
+        "schema_valid": true,
+        "canonical_hash": null,
+        "signature_valid": null,
+        "verifier_status": false,
+        "error_code": "TSL_SETTLEMENT_LOG_PROOF_INVALID"
+      }
+    },
+    {
+      "id": "insufficient_finality",
+      "expected": {
+        "schema_valid": true,
+        "canonical_hash": null,
+        "signature_valid": null,
+        "verifier_status": false,
+        "error_code": "TSL_SETTLEMENT_FINALITY_INVALID"
+      }
+    },
+    {
+      "id": "rpc_attested_rejected_for_mainnet",
+      "expected": {
+        "schema_valid": true,
+        "canonical_hash": null,
+        "signature_valid": null,
+        "verifier_status": false,
+        "error_code": "TSL_SETTLEMENT_OFFLINE_PROOF_REQUIRED"
+      }
+    }
+  ]
+}

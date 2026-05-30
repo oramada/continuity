@@ -2,9 +2,15 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
+import { encode } from "@ethereumjs/rlp";
+import { Trie } from "@ethereumjs/trie";
+import { ethers } from "ethers";
 import { canonicalBytes } from "../packages/core-ts/src/canonicalize";
 import { buildIdentityFromSeed, signMessageEvent } from "../packages/core-ts/src/commitments";
-import { commitmentHashFromParts, hashDomain, legacyCommitmentHashFromParts, sha256Hex, signEd25519, signReceipt } from "../packages/core-ts/src/crypto";
+import { bytesToHex, commitmentHashFromParts, hashDomain, hexToBytes, legacyCommitmentHashFromParts, sha256Hex, signEd25519, signReceipt } from "../packages/core-ts/src/crypto";
+import { contractCheckpointFieldsHashForCheckpoint } from "../packages/core-ts/src/settlement";
+import { settlementProofInternals, verifyOfflineSettlementEvidence } from "../packages/core-ts/src/settlementProof";
+import type { BatchCheckpointV1, Hex32, SettlementEvidenceV1 } from "../packages/core-ts/src/types";
 import { buildThresholdProof, verifyThresholdProofAsync, zkCircuitReleaseManifestHash, zkProofUsesRegisteredCircuit, zkVerificationKeyObjectHash } from "../packages/core-ts/src/zk";
 import { buildSparseMerkleTree, proveSparseMerkleNonMembership, verifySparseMerkleProof } from "../packages/core-ts/src/nonMembership";
 import {
@@ -327,6 +333,11 @@ function checkProductionReadinessEvidence(): void {
     "key_management",
     "provider_governance",
     "deployment_evidence",
+    "zk_ceremony",
+    "zk_circuit_audit",
+    "zk_verification_key_registry",
+    "base_mainnet_deployment",
+    "offline_settlement_vectors",
     "postgres_live_integration",
     "cli_sidecar_v2_integration",
     "hosted_service_integration"
@@ -1178,7 +1189,215 @@ async function checkGraphResearchConformance(): Promise<void> {
   assert(vector.pagerank_bps !== undefined && vector.conductance_bps !== undefined, "Research graph vector must include PageRank and conductance");
 }
 
+function numberToRlpBytes(value: number): Uint8Array {
+  if (value === 0) return new Uint8Array([]);
+  return hexToBytes(ethers.toBeHex(value));
+}
+
+async function buildOfflineSettlementVector(): Promise<{
+  checkpoint: BatchCheckpointV1;
+  checkpointHashValue: Hex32;
+  contractFieldsHash: Hex32;
+  evidence: SettlementEvidenceV1;
+}> {
+  const checkpoint: BatchCheckpointV1 = {
+    type: "tsl.batch_checkpoint.v1",
+    epoch_start_ms: 1790000000000,
+    epoch_duration_ms: 300000,
+    shard: "0001",
+    event_root: sha256Hex("settlement-offline-event-root"),
+    receipt_root: sha256Hex("settlement-offline-receipt-root"),
+    attestation_root: sha256Hex("settlement-offline-attestation-root"),
+    revocation_root: sha256Hex("settlement-offline-revocation-root"),
+    event_count: 2,
+    receipt_count: 1,
+    previous_checkpoint: sha256Hex("settlement-offline-previous"),
+    settlement_backend: "eip155:8453",
+    relay_id: "did:tsl:relay:offline-vector",
+    relay_signature: "0x11"
+  };
+  const checkpointHashValue = checkpointHash(checkpoint);
+  const contractFieldsHash = contractCheckpointFieldsHashForCheckpoint(checkpoint);
+  const contractAddress = "0x1111111111111111111111111111111111111111";
+  const submitter = "0x2222222222222222222222222222222222222222";
+  const iface = new ethers.Interface([settlementProofInternals.CHECKPOINT_SUBMITTED_EVENT]);
+  const event = iface.encodeEventLog(iface.getEvent("CheckpointSubmitted")!, [
+    checkpointHashValue,
+    contractFieldsHash,
+    BigInt(checkpoint.epoch_start_ms),
+    ethers.zeroPadValue(`0x${checkpoint.shard}`, 32),
+    checkpoint.event_root,
+    submitter
+  ]);
+  const receiptLog = [hexToBytes(contractAddress), event.topics.map(hexToBytes), hexToBytes(event.data)];
+  const receiptRlp = bytesToHex(encode([Uint8Array.from([1]), numberToRlpBytes(21000), new Uint8Array(256), [receiptLog]]));
+  const trie = await Trie.create({ useKeyHashing: false });
+  const receiptKey = encode(0);
+  await trie.put(receiptKey, hexToBytes(receiptRlp));
+  const receiptRoot = bytesToHex(trie.root()) as Hex32;
+  const receiptProofNodes = (await trie.createProof(receiptKey)).map((node) => bytesToHex(node));
+  const blockNumber = 19_000_000;
+  const blockHeaderRlp = bytesToHex(
+    encode([
+      hexToBytes(sha256Hex("parent")),
+      hexToBytes(sha256Hex("ommers")),
+      hexToBytes("0x3333333333333333333333333333333333333333"),
+      hexToBytes(sha256Hex("state-root")),
+      hexToBytes(sha256Hex("tx-root")),
+      hexToBytes(receiptRoot),
+      new Uint8Array(256),
+      numberToRlpBytes(0),
+      numberToRlpBytes(blockNumber),
+      numberToRlpBytes(30_000_000),
+      numberToRlpBytes(21_000),
+      numberToRlpBytes(1_790_000_000),
+      new Uint8Array([]),
+      hexToBytes(sha256Hex("mix-hash")),
+      new Uint8Array(8)
+    ])
+  );
+  const baseEvidence: SettlementEvidenceV1 = {
+    type: "tsl.settlement_evidence.v1",
+    checkpoint_hash: checkpointHashValue,
+    checkpoint_identity_hash: checkpointHashValue,
+    settlement_backend: checkpoint.settlement_backend!,
+    chain_id: 8453,
+    contract_address: contractAddress,
+    contract_checkpoint_fields_hash: contractFieldsHash,
+    settlement_tx: sha256Hex("settlement-offline-tx"),
+    evidence_kind: "offline_receipt_log_proof",
+    block_header_rlp: blockHeaderRlp,
+    receipt_rlp: receiptRlp,
+    receipt_proof_nodes: receiptProofNodes,
+    finality_proof: {
+      type: "finalized_block",
+      finalized_block_hash: ethers.keccak256(blockHeaderRlp) as Hex32,
+      source_commitment: sha256Hex("unset-finality-source")
+    },
+    transaction_receipt_hash: ethers.keccak256(receiptRlp) as Hex32,
+    block_hash: ethers.keccak256(blockHeaderRlp) as Hex32,
+    block_number: blockNumber,
+    receipt_root: receiptRoot,
+    transaction_index: 0,
+    receipt_status: "success",
+    chain_proof_commitment: sha256Hex("unset-chain-proof"),
+    settlement_event_hash: sha256Hex("unset-settlement-event"),
+    settlement_event_index: 0,
+    event_topic_hash: settlementProofInternals.CHECKPOINT_TOPIC as Hex32,
+    event_topics: event.topics.map((topic) => topic.toLowerCase() as Hex32),
+    event_data: event.data.toLowerCase(),
+    log_index: 0,
+    receipt_proof_source_commitment: sha256Hex("unset-receipt-proof-source"),
+    finality_source_commitment: sha256Hex("unset-finality-source"),
+    submitter,
+    submitted_at: "2026-05-29T12:00:00Z",
+    status: "settled"
+  };
+  const evidence = recomputeSettlementEvidenceCommitments(baseEvidence);
+  return { checkpoint, checkpointHashValue, contractFieldsHash, evidence };
+}
+
+function recomputeSettlementEvidenceCommitments(evidence: SettlementEvidenceV1): SettlementEvidenceV1 {
+  const next = structuredClone(evidence) as SettlementEvidenceV1;
+  if (next.finality_proof) {
+    const finalitySource = settlementProofInternals.finalitySourceCommitment(next)!;
+    next.finality_proof.source_commitment = finalitySource;
+    next.finality_source_commitment = finalitySource;
+  }
+  next.receipt_proof_source_commitment = settlementProofInternals.receiptProofSourceCommitment(next)!;
+  next.settlement_event_hash = settlementProofInternals.offlineSettlementEventHash(next)!;
+  next.chain_proof_commitment = settlementProofInternals.chainProofCommitment(next);
+  return next;
+}
+
+async function checkSettlementOfflineConformance(): Promise<void> {
+  const vectorCatalog = readJson("specs/test-vectors/settlement-offline/catalog.json") as {
+    cases: Array<{ id: string; expected: { schema_valid: boolean; canonical_hash: string | null; verifier_status: boolean; error_code: string | null; signature_valid: boolean | null } }>;
+  };
+  const { checkpoint, checkpointHashValue, contractFieldsHash, evidence } = await buildOfflineSettlementVector();
+  const run = async (candidate: SettlementEvidenceV1) =>
+    verifyOfflineSettlementEvidence({
+      evidence: candidate,
+      checkpoint,
+      checkpoint_hash: checkpointHashValue,
+      contract_checkpoint_fields_hash: contractFieldsHash,
+      policy: { require_offline_settlement_proof: true, reject_rpc_attested_settlement_for_mainnet: true }
+    });
+  const cases: Record<string, SettlementEvidenceV1> = {
+    valid_offline_proof: evidence,
+    wrong_tx_hash: recomputeSettlementEvidenceCommitments({ ...evidence, transaction_receipt_hash: sha256Hex("wrong-receipt-hash") }),
+    wrong_contract_address: recomputeSettlementEvidenceCommitments({ ...evidence, contract_address: "0x3333333333333333333333333333333333333333" }),
+    wrong_event_topic: recomputeSettlementEvidenceCommitments({ ...evidence, event_topics: [sha256Hex("wrong-topic"), ...(evidence.event_topics ?? []).slice(1)] }),
+    wrong_checkpoint_identity: recomputeSettlementEvidenceCommitments({ ...evidence, checkpoint_identity_hash: sha256Hex("wrong-checkpoint-identity") }),
+    wrong_contract_fields_hash: recomputeSettlementEvidenceCommitments({ ...evidence, contract_checkpoint_fields_hash: sha256Hex("wrong-contract-fields") }),
+    reverted_receipt: recomputeSettlementEvidenceCommitments({ ...evidence, receipt_status: "reverted" }),
+    bad_receipt_trie_proof: recomputeSettlementEvidenceCommitments({ ...evidence, receipt_proof_nodes: [sha256Hex("bad-proof-node")] }),
+    bad_log_index: recomputeSettlementEvidenceCommitments({ ...evidence, log_index: 3 }),
+    insufficient_finality: recomputeSettlementEvidenceCommitments({
+      ...evidence,
+      finality_proof: { type: "finalized_block", finalized_block_hash: sha256Hex("wrong-finalized-block"), source_commitment: sha256Hex("unset-finality-source") }
+    }),
+    rpc_attested_rejected_for_mainnet: {
+      ...evidence,
+      evidence_kind: "rpc_attested_receipt",
+      block_header_rlp: undefined,
+      receipt_rlp: undefined,
+      receipt_proof_nodes: undefined,
+      finality_proof: undefined,
+      event_topics: undefined,
+      event_data: undefined
+    }
+  };
+  for (const entry of vectorCatalog.cases) {
+    assert("schema_valid" in entry.expected, `Settlement vector ${entry.id} must assert schema_valid`);
+    assert("canonical_hash" in entry.expected, `Settlement vector ${entry.id} must assert canonical_hash`);
+    assert("signature_valid" in entry.expected, `Settlement vector ${entry.id} must assert signature_valid`);
+    assert("verifier_status" in entry.expected, `Settlement vector ${entry.id} must assert verifier_status`);
+    assert("error_code" in entry.expected, `Settlement vector ${entry.id} must assert error_code`);
+    const candidate = cases[entry.id];
+    assert(Boolean(candidate), `Settlement offline vector case missing implementation: ${entry.id}`);
+    const schemaResult = validateSchema("settlementEvidenceV1", candidate);
+    assert(schemaResult.valid === entry.expected.schema_valid, `Settlement offline vector ${entry.id} schema result mismatch`);
+    const result = await run(candidate);
+    assert(result.ok === entry.expected.verifier_status, `Settlement offline vector ${entry.id} verifier status mismatch`);
+    assert((result.error_code ?? null) === entry.expected.error_code, `Settlement offline vector ${entry.id} error code mismatch`);
+  }
+}
+
 async function checkZkProductionConformance(): Promise<void> {
+  const zkVectorCatalog = readJson("specs/test-vectors/zk-production/catalog.json") as {
+    claims: string[];
+    cases: Array<{ id: string; expected: { schema_valid: boolean; canonical_hash: string | null; signature_valid: boolean | null; verifier_status: boolean; error_code: string | null } }>;
+  };
+  const expectedClaims = [
+    "identity_age_days",
+    "reciprocal_receipt_count",
+    "dispute_rate_bound",
+    "set_membership",
+    "revocation_set_non_membership",
+    "organization_membership",
+    "agent_scope_compliance",
+    "private_graph_distance"
+  ];
+  const expectedCases = [
+    "positive",
+    "public_signal_tamper",
+    "wrong_verification_key",
+    "wrong_manifest_hash",
+    "missing_private_witness_field",
+    "dev_circuit_rejected",
+    "revoked_manifest",
+    "inactive_manifest"
+  ];
+  assert(JSON.stringify(zkVectorCatalog.claims) === JSON.stringify(expectedClaims), "ZK production vector catalog must cover all 8 Core-required claims");
+  assert(JSON.stringify(zkVectorCatalog.cases.map((entry) => entry.id)) === JSON.stringify(expectedCases), "ZK production vector catalog must cover required tamper/failure cases");
+  for (const entry of zkVectorCatalog.cases) {
+    assert("schema_valid" in entry.expected, `ZK vector ${entry.id} must assert schema_valid`);
+    assert("canonical_hash" in entry.expected, `ZK vector ${entry.id} must assert canonical_hash`);
+    assert("signature_valid" in entry.expected, `ZK vector ${entry.id} must assert signature_valid`);
+    assert("verifier_status" in entry.expected, `ZK vector ${entry.id} must assert verifier_status`);
+    assert("error_code" in entry.expected, `ZK vector ${entry.id} must assert error_code`);
+  }
   const productionCircuitWitnessFields: Record<string, string[]> = {
     "circuits/production_identity_age_threshold.circom": ["creation_epoch_day", "registry_salt", "registry_siblings", "registry_path_bits", "public_registry_root", "Poseidon"],
     "circuits/production_receipt_count_threshold.circom": ["receipt_leaves", "receipt_salts", "counterparty_commitments", "receipt_siblings", "receipt_path_bits", "public_receipt_root", "Poseidon"],
@@ -1237,6 +1456,7 @@ async function checkZkProductionConformance(): Promise<void> {
     auditor: "did:tsl:auditor:test",
     reviewer: "did:tsl:reviewer:test",
     status: "active" as const,
+    signature_status: "externally_signed" as const,
     issued_at: "2026-05-27T12:00:00Z",
     signature: "0x11" as const
   };
@@ -1258,15 +1478,31 @@ async function checkZkProductionConformance(): Promise<void> {
     zkProofUsesRegisteredCircuit({
       proof,
       manifests: [manifest],
-      registry: { type: "tsl.zk.verification_key_registry.v1", registry_id: "registry", active_manifest_hashes: [releaseHash], revoked_manifest_hashes: [], issued_at: manifest.issued_at, signature: "0x22" as const }
+      registry: { type: "tsl.zk.verification_key_registry.v1", registry_id: "registry", active_manifest_hashes: [releaseHash], revoked_manifest_hashes: [], issued_at: manifest.issued_at, signature_status: "externally_signed" as const, signature: "0x22" as const }
     }),
     "Production ZK proof must bind to active circuit release registry"
   );
   assert(
     !zkProofUsesRegisteredCircuit({
+      proof,
+      manifests: [{ ...manifest, signature_status: "placeholder" as const }],
+      registry: { type: "tsl.zk.verification_key_registry.v1", registry_id: "registry", active_manifest_hashes: [zkCircuitReleaseManifestHash({ ...manifest, signature_status: "placeholder" as const })], revoked_manifest_hashes: [], issued_at: manifest.issued_at, signature_status: "externally_signed" as const, signature: "0x22" as const }
+    }),
+    "Production ZK conformance must reject placeholder-signed active manifests"
+  );
+  assert(
+    !zkProofUsesRegisteredCircuit({
+      proof,
+      manifests: [manifest],
+      registry: { type: "tsl.zk.verification_key_registry.v1", registry_id: "registry", active_manifest_hashes: [releaseHash], revoked_manifest_hashes: [], issued_at: manifest.issued_at, signature_status: "placeholder" as const, signature: "0x22" as const }
+    }),
+    "Production ZK conformance must reject placeholder-signed active registries"
+  );
+  assert(
+    !zkProofUsesRegisteredCircuit({
       proof: { ...proof, circuit_id: "dev_identity_age_threshold_v1" },
       manifests: [{ ...manifest, circuit_id: "dev_identity_age_threshold_v1" }],
-      registry: { type: "tsl.zk.verification_key_registry.v1", registry_id: "registry", active_manifest_hashes: [zkCircuitReleaseManifestHash({ ...manifest, circuit_id: "dev_identity_age_threshold_v1" })], revoked_manifest_hashes: [], issued_at: manifest.issued_at, signature: "0x22" as const }
+      registry: { type: "tsl.zk.verification_key_registry.v1", registry_id: "registry", active_manifest_hashes: [zkCircuitReleaseManifestHash({ ...manifest, circuit_id: "dev_identity_age_threshold_v1" })], revoked_manifest_hashes: [], issued_at: manifest.issued_at, signature_status: "externally_signed" as const, signature: "0x22" as const }
     }),
     "Production ZK conformance must reject dev circuit ids"
   );
@@ -1286,5 +1522,6 @@ for (const level of levels) {
 await checkSemanticConformance();
 if (requestedLevel === "graph-research" || requestedLevel === "spec" || requestedLevel === "all") await checkGraphResearchConformance();
 if (requestedLevel === "zk-production" || requestedLevel === "spec" || requestedLevel === "all") await checkZkProductionConformance();
+if (requestedLevel === "settlement-offline" || requestedLevel === "spec" || requestedLevel === "all") await checkSettlementOfflineConformance();
 
 console.log(JSON.stringify({ conformance: requestedLevel, checked_levels: levels, ok: true }, null, 2));

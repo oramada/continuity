@@ -55,6 +55,10 @@ function verificationKeyHash(path: string): string | null {
 }
 
 const status = process.env["TSL_" + "ZK_RELEASE_STATUS"] ?? "dev";
+const signatureStatus = process.env["TSL_" + "ZK_SIGNATURE_STATUS"] ?? "placeholder";
+if (status === "active" && signatureStatus !== "externally_signed") {
+  throw new Error("TSL_ZK_ACTIVE_MANIFEST_REQUIRES_EXTERNAL_SIGNATURE");
+}
 const issuedAt = new Date().toISOString();
 const releaseManifests = artifacts.map((artifact) => ({
   type: "tsl.zk.circuit_release_manifest.v1",
@@ -78,6 +82,7 @@ const releaseManifests = artifacts.map((artifact) => ({
   auditor: process.env["TSL_" + "ZK_AUDITOR_ID"] ?? "did:tsl:auditor:placeholder",
   reviewer: process.env["TSL_" + "ZK_REVIEWER_ID"] ?? "did:tsl:reviewer:placeholder",
   status,
+  signature_status: signatureStatus,
   issued_at: issuedAt,
   signature: sha256(`${artifact.claim}:dev-manifest-signature`)
 }));
@@ -111,6 +116,7 @@ const manifest = {
     active_manifest_hashes: status === "active" ? releaseHashes : [],
     revoked_manifest_hashes: [],
     issued_at: issuedAt,
+    signature_status: signatureStatus,
     signature: sha256("dev-registry-signature")
   }
 };

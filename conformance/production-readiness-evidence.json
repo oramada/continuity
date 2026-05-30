@@ -18,7 +18,9 @@
         "security/dependency-policy.md",
         "security/production-finding-tracker.json",
         "security/vulnerability-disclosure-policy.md",
-        "security/audit-plan.md"
+        "security/audit-plan.md",
+        "evidence/production-decision-record.md",
+        "evidence/zk/production-ceremony-plan.md"
       ],
       "blocking_findings": [],
       "release_decision": "blocked"
@@ -108,9 +110,108 @@
         "evidence/deployment/production-environment-proof.md",
         "evidence/deployment/monitoring-slo-evidence.md",
         "evidence/deployment/secrets-kms-hsm-evidence.md",
-        "evidence/deployment/production-incident-contacts.md"
+        "evidence/deployment/production-incident-contacts.md",
+        "evidence/deployment/settlement-verification-policy.md",
+        "evidence/production-decision-record.md"
       ],
       "blocking_findings": [],
+      "release_decision": "blocked"
+    },
+    {
+      "id": "zk_ceremony",
+      "status": "draft",
+      "owner": "zk-ceremony",
+      "review_date": null,
+      "approver": null,
+      "evidence_links": [
+        "evidence/zk/production-ceremony-plan.md",
+        "evidence/zk/ceremony-transcript-candidate.md"
+      ],
+      "blocking_findings": [
+        {
+          "id": "ZK-CEREMONY-001",
+          "severity": "critical",
+          "status": "open",
+          "description": "Production Groth16 manifests require a real multi-party ceremony transcript before mainnet approval."
+        }
+      ],
+      "release_decision": "blocked"
+    },
+    {
+      "id": "zk_circuit_audit",
+      "status": "draft",
+      "owner": "zk-security",
+      "review_date": null,
+      "approver": null,
+      "evidence_links": [
+        "evidence/zk/circuit-audit-evidence.md"
+      ],
+      "blocking_findings": [
+        {
+          "id": "ZK-AUDIT-001",
+          "severity": "critical",
+          "status": "open",
+          "description": "All eight production-candidate circuits require external witness and constraint-system review before active release."
+        }
+      ],
+      "release_decision": "blocked"
+    },
+    {
+      "id": "zk_verification_key_registry",
+      "status": "draft",
+      "owner": "protocol-governance",
+      "review_date": null,
+      "approver": null,
+      "evidence_links": [
+        "evidence/zk/verification-key-registry-approval.md"
+      ],
+      "blocking_findings": [
+        {
+          "id": "ZK-REGISTRY-001",
+          "severity": "high",
+          "status": "open",
+          "description": "Verification-key registry activation requires signed governance approval and audit linkage."
+        }
+      ],
+      "release_decision": "blocked"
+    },
+    {
+      "id": "base_mainnet_deployment",
+      "status": "draft",
+      "owner": "platform-ops",
+      "review_date": null,
+      "approver": null,
+      "evidence_links": [
+        "evidence/deployment/base-mainnet-addresses.md"
+      ],
+      "blocking_findings": [
+        {
+          "id": "BASE-DEPLOY-001",
+          "severity": "high",
+          "status": "open",
+          "description": "Base mainnet contract addresses and deployment transaction evidence must be finalized before mainnet approval."
+        }
+      ],
+      "release_decision": "blocked"
+    },
+    {
+      "id": "offline_settlement_vectors",
+      "status": "draft",
+      "owner": "protocol-security",
+      "review_date": null,
+      "approver": null,
+      "evidence_links": [
+        "evidence/deployment/offline-settlement-vectors-evidence.md",
+        "specs/test-vectors/settlement-offline/catalog.json"
+      ],
+      "blocking_findings": [
+        {
+          "id": "SETTLEMENT-OFFLINE-001",
+          "severity": "high",
+          "status": "open",
+          "description": "Offline settlement vector corpus must be reviewed against deployed Base mainnet receipt/log proof data."
+        }
+      ],
       "release_decision": "blocked"
     },
     {

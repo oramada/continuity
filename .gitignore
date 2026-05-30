@@ -4,6 +4,8 @@ node_modules/
 packages/core-rust/target/
 contracts/artifacts/
 contracts/cache/
+circuits/build-production/
+artifacts/zk/production-candidate/
 deployments/local.json
 .env
 docs/*.aux
