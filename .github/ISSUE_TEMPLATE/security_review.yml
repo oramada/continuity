@@ -1,0 +1,32 @@
+name: Non-sensitive security review
+description: Track non-sensitive security hardening tasks or review notes.
+title: "[Security]: "
+labels: ["security", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not disclose exploitable vulnerabilities here. Use private vulnerability reporting for sensitive reports.
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What non-sensitive security topic should be reviewed?
+    validations:
+      required: true
+  - type: textarea
+    id: recommendation
+    attributes:
+      label: Recommendation
+      description: What change or investigation do you recommend?
+    validations:
+      required: true
+  - type: dropdown
+    id: sensitivity
+    attributes:
+      label: Sensitivity check
+      options:
+        - Non-sensitive hardening/task only
+        - Might be sensitive; maintainer should move to private reporting
+    validations:
+      required: true

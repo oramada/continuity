@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security report
+    url: https://github.com/omar2001ramadan/continuity/security/advisories/new
+    about: Use private vulnerability reporting for sensitive security issues when enabled.
+  - name: Production-readiness warning
+    url: https://github.com/omar2001ramadan/continuity/blob/main/docs/PRODUCTION_WARNING.md
+    about: Read this before asking whether Continuity Protocol is production or mainnet ready.

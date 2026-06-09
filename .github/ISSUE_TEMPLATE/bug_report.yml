@@ -1,0 +1,49 @@
+name: Bug report
+description: Report a reproducible developer-preview defect.
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not include private keys, real secrets, exploitable security details, or production credentials. Use the security reporting path for sensitive issues.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened, and what did you expect instead?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction
+      description: Minimal commands, inputs, or test vectors that reproduce the issue.
+      placeholder: |
+        npm ci
+        npm run demo
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Node/npm versions, Docker state, and commit SHA.
+    validations:
+      required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Surface
+      options:
+        - CLI/demo
+        - core verifier
+        - schemas/vectors
+        - ZK/dev circuits
+        - ZK/production-candidate pipeline
+        - settlement proof
+        - contracts
+        - docs/examples
+        - other
+    validations:
+      required: true

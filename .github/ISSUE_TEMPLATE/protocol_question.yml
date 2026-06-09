@@ -1,0 +1,37 @@
+name: Protocol question
+description: Ask about TSL protocol behavior, conformance, or developer-preview semantics.
+title: "[Protocol]: "
+labels: ["protocol", "question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Continuity Protocol is a developer preview. It is not audited, production-ready, or mainnet-approved.
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: What protocol behavior or design point are you asking about?
+    validations:
+      required: true
+  - type: input
+    id: artifact
+    attributes:
+      label: Relevant artifact
+      description: Link or path to a spec section, schema, vector, circuit, or command if applicable.
+      placeholder: docs/PROTOCOL.md
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - canonicalization/signatures
+        - proof bundles
+        - verifier policy
+        - ZK
+        - settlement
+        - conformance
+        - governance/readiness
+        - other
+    validations:
+      required: true
