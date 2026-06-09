@@ -289,7 +289,7 @@ describe("semantic compliance hardening", () => {
       forbidden_field_classes: [],
       purpose: "verification_opening",
       issued_at: "2026-01-01T00:00:00Z",
-      expires_at: "2026-06-01T00:00:00Z",
+      expires_at: "2999-06-01T00:00:00Z",
       revocation_pointer: "sdk-consent"
     };
     const signedConsent = {

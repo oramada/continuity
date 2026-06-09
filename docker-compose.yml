@@ -1,4 +1,6 @@
 services:
+  # DEV ONLY: this stack uses local passwords, public Hardhat keys, and deterministic
+  # local contract addresses. Never reuse these values for testnet or mainnet.
   postgres:
     image: postgres:16
     environment:
@@ -51,6 +53,7 @@ services:
       TSL_REVOCATION_REGISTRY_ADDRESS: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
       TSL_PROVIDER_REGISTRY_ADDRESS: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9"
       TSL_GOVERNANCE_REGISTRY_ADDRESS: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"
+      # DEV ONLY: public Hardhat account 0 private key. Never fund or reuse.
       TSL_SETTLEMENT_PRIVATE_KEY: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
       TSL_RELAY_ID: did:tsl:relay:dev
       TSL_RELAY_SIGNATURE: "0x01"

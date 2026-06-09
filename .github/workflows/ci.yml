@@ -1,4 +1,4 @@
-name: tsl-ci
+name: continuity-ci
 
 on:
   push:
@@ -13,16 +13,8 @@ jobs:
         with:
           node-version: 20
           cache: npm
-      - run: npm ci
-      - run: npm run build
-      - run: npm test
-      - run: npm run contracts:compile
-      - run: npm run contracts:test
-      - run: npm run zk:test
-      - run: npm run build:web-verifier
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: npm run parity:python
-      - run: npm run parity:rust
-      - run: docker compose config
+      - run: npm ci
+      - run: npm run release:check

@@ -134,7 +134,6 @@ export async function buildGroth16ThresholdProof(input: BuildGroth16ThresholdPro
     circuitInput = {
       reciprocal_receipt_count: input.value,
       threshold: input.threshold,
-      threshold_count: input.threshold,
       subject_hash: subjectHash,
       receipt_leaves: receiptLeaves,
       receipt_salts: receiptSalts,

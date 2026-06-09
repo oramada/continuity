@@ -26,6 +26,7 @@ import {
   randomHex32,
   hashDomain,
   sha256Hex,
+  signEd25519,
   signAgentActionV2,
   signAgentDelegation,
   signAuditFinding,
@@ -58,9 +59,12 @@ const VECTOR = {
   seedHex: "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
   contentSaltHex: "1111111111111111111111111111111111111111111111111111111111111111",
   nonce: "0x2222222222222222222222222222222222222222222222222222222222222222" as Hex32,
+  relaySeedHex: "202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f",
   timestamp: "2026-05-25T00:01:00Z",
   sender: "did:tsl:test:alice",
+  relay: "did:tsl:relay:test",
   keyId: "#test-key-1",
+  relayKeyId: "#relay-key-1",
   message: "hello-tsl"
 };
 
@@ -100,7 +104,7 @@ async function getJson(url: string): Promise<unknown> {
 
 function createCheckpoint(commitments: Hex32[], epochStartMs: number, epochDurationMs: number, shard: string): BatchCheckpointV1 {
   const tree = buildMerkleTree(commitments);
-  return {
+  const unsigned: BatchCheckpointV1 = {
     type: "tsl.batch_checkpoint.v1",
     epoch_start_ms: epochStartMs,
     epoch_duration_ms: epochDurationMs,
@@ -112,8 +116,12 @@ function createCheckpoint(commitments: Hex32[], epochStartMs: number, epochDurat
     event_count: commitments.length,
     receipt_count: 0,
     previous_checkpoint: ZERO_HASH,
-    relay_id: "did:tsl:relay:test",
+    relay_id: VECTOR.relay,
     relay_signature: "0x00"
+  };
+  return {
+    ...unsigned,
+    relay_signature: signEd25519(checkpointHash(unsigned), VECTOR.relaySeedHex)
   };
 }
 
@@ -122,6 +130,12 @@ function deterministicBundle() {
     trust_id: VECTOR.sender,
     key_id: VECTOR.keyId,
     seed_hex: VECTOR.seedHex,
+    created_at: "2026-05-25T00:00:00Z"
+  });
+  const relayIdentity = buildIdentityFromSeed({
+    trust_id: VECTOR.relay,
+    key_id: VECTOR.relayKeyId,
+    seed_hex: VECTOR.relaySeedHex,
     created_at: "2026-05-25T00:00:00Z"
   });
   const signed = signMessageEvent({
@@ -150,13 +164,22 @@ function deterministicBundle() {
 
   return {
     identity,
+    identities: [relayIdentity],
     envelope: signed.envelope,
     proof,
     checkpoint,
     redaction_manifest: {
       raw_content_included: false,
+      content_salt_included: false,
       exact_counterparties_included: false,
-      metadata_fields_redacted: ["raw_content", "content_salt", "exact_counterparties", "platform", "ip_address", "user_agent"]
+      metadata_fields_redacted: [
+        "content_salt",
+        "exact_counterparties",
+        "private_graph",
+        "private_metadata",
+        "raw_content",
+        "restricted_attestations"
+      ]
     },
     vector: {
       public_key_hex: deriveEd25519PublicKey(VECTOR.seedHex),

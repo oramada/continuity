@@ -1,9 +1,9 @@
 {
-  "name": "trust-signature-layer",
+  "name": "continuity",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Trust Signature Layer reference MVP: canonical objects, signatures, Merkle proofs, verifier, CLI, and service wrappers.",
+  "description": "Continuity Protocol developer preview: Trust Signature Layer canonical objects, signatures, Merkle proofs, verifier, CLI, and service wrappers.",
   "scripts": {
     "build": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
@@ -67,8 +67,10 @@
     "@noble/hashes": "^1.8.0",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
+    "buffer": "^6.0.3",
     "commander": "^14.0.2",
     "ethers": "^6.16.0",
+    "events": "^3.3.0",
     "express": "^5.1.0",
     "pg": "^8.21.0",
     "redis": "^5.12.1",
