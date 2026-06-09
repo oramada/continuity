@@ -95,7 +95,7 @@ function privateOrLocalHost(hostname: string): boolean {
     );
   }
   if (ipVersion === 6) {
-    return host === "::1" || host.startsWith("fc") || host.startsWith("fd") || host.startsWith("fe80:");
+    return host === "::1" || host === "::" || host.startsWith("::ffff:") || host.startsWith("fc") || host.startsWith("fd") || host.startsWith("fe80:");
   }
   return false;
 }

@@ -36,6 +36,8 @@ describe("public API security hardening", () => {
     expect(() => selectKnownGossipPeers("https://evil.example", ["https://peer.example"])).toThrow(GossipPeerError);
     expect(() => registerRequestedGossipPeer("https://peer.example")).toThrow(/Dynamic gossip peer registration is disabled/);
     expect(() => normalizeGossipPeerUrl("http://127.0.0.1:8080", { allowPrivateHosts: false })).toThrow(/host must be public/);
+    expect(() => normalizeGossipPeerUrl("http://[::ffff:127.0.0.1]:8080", { allowPrivateHosts: false })).toThrow(/host must be public/);
+    expect(() => normalizeGossipPeerUrl("http://[::]:8080", { allowPrivateHosts: false })).toThrow(/host must be public/);
   });
 });
 
