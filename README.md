@@ -1,7 +1,7 @@
 # Continuity Protocol
 
-[![CI](https://github.com/omar2001ramadan/contin/actions/workflows/ci.yml/badge.svg)](https://github.com/omar2001ramadan/contin/actions/workflows/ci.yml)
-[![Release candidate](https://github.com/omar2001ramadan/contin/actions/workflows/release-candidate.yml/badge.svg)](https://github.com/omar2001ramadan/contin/actions/workflows/release-candidate.yml)
+[![CI](https://github.com/omar2001ramadan/continuity/actions/workflows/ci.yml/badge.svg)](https://github.com/omar2001ramadan/continuity/actions/workflows/ci.yml)
+[![Release candidate](https://github.com/omar2001ramadan/continuity/actions/workflows/release-candidate.yml/badge.svg)](https://github.com/omar2001ramadan/continuity/actions/workflows/release-candidate.yml)
 
 Continuity Protocol is a developer-preview implementation of the Trust Signature Layer (TSL): a protocol for portable trust evidence, signed claims, Merkle-backed receipts, verifier APIs, settlement evidence, and conformance-tested protocol objects.
 
@@ -33,8 +33,8 @@ This repository is public-launch ready as a developer preview. It is not product
 Requirements: Node.js 20+, npm, Docker for the full release check, and Python 3.11 for parity checks.
 
 ```bash
-git clone https://github.com/omar2001ramadan/contin.git
-cd contin
+git clone https://github.com/omar2001ramadan/continuity.git
+cd continuity
 npm ci
 python3 -m pip install -r requirements-dev.txt
 npm run demo

@@ -12,8 +12,8 @@ This path is for a local developer preview of Continuity Protocol. It does not p
 ## Fresh Clone
 
 ```bash
-git clone https://github.com/omar2001ramadan/contin.git
-cd contin
+git clone https://github.com/omar2001ramadan/continuity.git
+cd continuity
 npm ci
 python3 -m pip install -r requirements-dev.txt
 npm run demo
