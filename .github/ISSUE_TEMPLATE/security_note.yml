@@ -1,0 +1,25 @@
+name: Security note
+description: Public non-sensitive security hardening note.
+title: "[Security note]: "
+labels: ["security", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not file public security bugs here. Do not include exploit steps, private keys, real secrets, verifier bypasses, settlement bypasses, or proof-forgery details. Use SECURITY.md and private vulnerability reporting for sensitive issues.
+  - type: textarea
+    id: note
+    attributes:
+      label: Non-sensitive note
+      description: What hardening task, documentation improvement, or public security observation should maintainers consider?
+    validations:
+      required: true
+  - type: dropdown
+    id: sensitivity
+    attributes:
+      label: Sensitivity check
+      options:
+        - Non-sensitive and safe to discuss publicly
+        - Might be sensitive; maintainers should move this to private reporting
+    validations:
+      required: true

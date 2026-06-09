@@ -1,0 +1,39 @@
+name: Feature request
+description: Suggest a developer-preview capability, example, or documentation improvement.
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Continuity Protocol is a developer preview. Feature requests should not imply production, audit, or mainnet readiness.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What developer workflow, protocol surface, or documentation gap would this improve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: What should change?
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - CLI/demo
+        - docs/examples
+        - schemas/vectors
+        - verifier policy
+        - ZK
+        - settlement
+        - contracts
+        - governance/readiness
+        - other
+    validations:
+      required: true
