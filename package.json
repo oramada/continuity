@@ -74,7 +74,7 @@
     "express": "^5.1.0",
     "express-rate-limit": "^8.5.2",
     "pg": "^8.21.0",
-    "redis": "^5.12.1",
+    "redis": "^6.0.0",
     "tsx": "^4.20.6"
   },
   "devDependencies": {
