@@ -31,10 +31,10 @@
     linkcolor=blue!50!black,
     urlcolor=blue!55!black,
     citecolor=blue!55!black,
-    pdftitle={Trust Signature Layer: Proof of Continuity for the AI Internet - Full Implementation Specification v3},
+    pdftitle={Trust Signature Layer: Cryptographic Continuity Evidence - Core Architecture Corrected Specification v4},
     pdfauthor={TSL Protocol Draft},
-    pdfsubject={A transport-independent trust envelope protocol beneath applications},
-    pdfkeywords={trust, identity, blockchain, decentralized identity, communication, AI agents, reputation, proof of continuity}
+    pdfsubject={A transport-independent continuity-evidence protocol with an open-source maintainer profile},
+    pdfkeywords={continuity, cryptographic evidence, revocation, transparency log, open-source maintainers, release security}
 }
 
 \setlist[itemize]{topsep=3pt, itemsep=2pt, parsep=0pt, leftmargin=1.25em}
@@ -120,21 +120,21 @@
 \vspace*{1.2cm}
 {\Huge\bfseries Trust Signature Layer\par}
 \vspace{0.35cm}
-{\LARGE\bfseries Proof of Continuity for the AI Internet\par}
+{\LARGE\bfseries Cryptographic Continuity Evidence\par}
 \vspace{0.45cm}
-{\large A Transport-Independent Trust Envelope Protocol Beneath Applications\par}
+{\large Core Architecture and Open-Source Maintainer Continuity Profile\par}
 \vspace{0.85cm}
 \rule{0.72\textwidth}{0.6pt}\par
 \vspace{0.85cm}
 {\large Founder / Protocol + Hyper-Specific Robust Implementation Specification Draft\par}
 \vspace{0.2cm}
 {\large May 2026\par}
-{\large Hyper-Specific Robust Implementation Variant v3\par}
+{\large Core Architecture Corrected Variant v4\par}
 \vspace{1.1cm}
 \begin{minipage}{0.82\textwidth}
 \centering
 \large\itshape
-The internet authenticates accounts. The AI internet must authenticate continuity.
+Verify protocol evidence first. Assess only a named action under a named policy.
 \end{minipage}
 \vspace{1.0cm}
 
@@ -146,9 +146,9 @@ The internet authenticates accounts. The AI internet must authenticate continuit
     width=0.88\textwidth,
     title=Executive Abstract
 ]
-The Trust Signature Layer (\TSL) is a transport-independent trust envelope protocol for online communication, transactions, and autonomous agents. It is not an application that users join and it is not a social network, inbox, marketplace, wallet, or advertising surface. It allows any message, transaction, API call, or agent action to carry a cryptographic proof of origin, continuity, and revocation status without exposing private content by default. Instead of forcing every platform to build its own identity, reputation, and anti-fraud stack, \TSL{} moves trust beneath application semantics and above ordinary transport delivery. Applications become carriers of signed envelopes and proof links; the canonical trust state lives in cryptographic identities, co-signed receipts, append-only transparency logs, and blockchain-anchored checkpoints.
+The Trust Signature Layer (\TSL) is a transport-independent evidence-envelope protocol for proving origin, key continuity, revocation state, and log inclusion without publishing private content by default. It is not an application, social network, inbox, marketplace, wallet, or advertising surface. Applications may carry signed envelopes and portable proof bundles; verifiers independently check canonical bytes, signatures, trusted time evidence, revocation state, cumulative-log proofs, and checkpoint settlement.
 
-The protocol's core primitive is \PoC: a hard-to-fake record of behavioral and cryptographic continuity over time. In a world where generative AI can cheaply produce fake profiles, fake credentials, fake messages, fake social graphs, and fake agents, the scarce resource becomes not identity, but durable, organic, verifiable trajectory. \TSL{} is designed to become the trust substrate for email, messaging, marketplaces, wallets, professional networks, customer support, open-source ecosystems, and AI-agent communication.
+This specification separates a long-term protocol vision from an empirically testable first claim. The first normative evaluation domain is \textbf{open-source maintainer and release continuity}. In that domain, \TSL{} produces a domain-specific continuity or compromise-risk assessment for a particular release under a named policy. It does not produce a universal score of a person, organization, wallet, or agent. Other domains in this document are future profiles and must not be presented as validated until they have their own datasets, policies, calibration reports, and error analyses.
 \end{tcolorbox}
 
 \vfill
@@ -163,7 +163,7 @@ The protocol's core primitive is \PoC: a hard-to-fake record of behavioral and c
 % ============================================================
 
 \begin{thesisbox}
-\TSL{} is the universal trust layer for the AI internet: a protocol that lets any identity, human, business, wallet, or agent prove cryptographic continuity across apps without revealing private messages.
+\TSL{} is a portable evidence layer for cryptographic continuity. Its first evaluable profile asks a narrow question: does a specific open-source release continue a maintainer's verified key, repository, and release trajectory under a declared policy?
 \end{thesisbox}
 
 \begin{principlebox}{Protocol, Not Application}
@@ -178,11 +178,23 @@ Instead, \TSL{} says:
 \textbf{Keep every app. Add a trust settlement layer beneath them.}
 \end{quote}
 
-Every application can carry a \TSL{} envelope. Every envelope can be verified. Every verified event can become part of a privacy-preserving continuity graph. Every continuity graph can be scored, audited, challenged, and selectively disclosed.
+Any compatible application can carry a \TSL{} envelope. Every envelope can be verified independently. Verified events may contribute to a privacy-preserving, domain-scoped evidence graph, but only a named assessment profile may interpret that evidence, and every output must be auditable, challengeable, expiring, and selectively disclosed.
 
-\begin{principlebox}{The Core Belief}
-AI makes content cheap. Blockchain makes records durable. Graphs make behavior legible. The next internet trust primitive is \textbf{Proof of Continuity}.
+\begin{principlebox}{Research Thesis, Not Universal Claim}
+When content and profiles are inexpensive to imitate, signed history, trusted time evidence, revocation, and reproducible release trajectories may provide useful continuity evidence. The first paper tests that proposition only for open-source maintainer and release continuity.
 \end{principlebox}
+
+% ============================================================
+\section{Scientific Scope and Initial Evaluation Domain}
+% ============================================================
+
+\begin{warningbox}{No Universal Trust Claim}
+\TSL{} does not measure human worth, honesty, lawfulness, or universal trustworthiness. A valid proof establishes protocol facts. A continuity provider may estimate a narrowly defined risk for a specified action, domain, policy, model version, and evidence window.
+\end{warningbox}
+
+The initial scientific target is \textbf{open-source maintainer continuity}. The assessment target is a concrete action such as a package release, release tag, repository ownership change, or maintainer-key transition. The first reference policy is \texttt{opensource\_release\_continuity.v1}. It asks whether the action is consistent with the verified public history available before the action and whether compromise-like signals require step-up review.
+
+The first evaluation MUST use time-split, repository-split, and package-split datasets containing public release histories, maintainer transitions, key rotations, ownership changes, confirmed compromise incidents where available, and reproducible simulated takeover scenarios. The output is a calibrated domain-specific continuity or compromise-risk assessment, not a portable social rank. Anti-phishing, marketplaces, professional identity, customer support, and autonomous-agent profiles remain prospective until separately evaluated.
 
 % ============================================================
 \section{Why Now}
@@ -231,7 +243,7 @@ The coming internet requires a different primitive:
 \textbf{Can this identity prove a durable, hard-to-fake pattern of signed behavior over time?}
 \end{quote}
 
-\TSL{} is the answer.
+\TSL{} is a candidate mechanism whose usefulness must be established by domain-specific evaluation.
 
 % ============================================================
 \section{The Category: Trust Settlement}
@@ -251,13 +263,13 @@ Today, every application tries to solve trust locally:
 
 This creates duplicated effort, weak portability, and fragmented trust.
 
-\TSL{} introduces a new category:
+\TSL{} proposes the following architectural category:
 
 \begin{principlebox}{Trust Settlement}
 Trust settlement is the process by which claims about identity continuity, key validity, revocation, interaction history, attestations, and risk assessments become portable, verifiable, and independent of any single application.
 \end{principlebox}
 
-The protocol does for communication trust what payment rails did for commerce:
+As an architectural analogy rather than an empirical claim, the protocol aims to separate evidence settlement from application delivery:
 
 \begin{itemize}
     \item applications initiate interactions,
@@ -306,7 +318,7 @@ Who signed this? Is the key valid? Was the event committed? Has the identity bee
 Layer & Role \\
 \midrule
 Application semantics & Email, chat, marketplace messages, wallet actions, API calls, support tickets, code releases, and AI-agent tool calls. \\
-\TSL{} trust-envelope layer & Signed event commitments, \TrustID{} resolution, receipts, revocation checks, inclusion proofs, checkpoint verification, and optional signed trust assessments. \\
+\TSL{} trust-envelope layer & Signed event commitments, \TrustID{} resolution, receipts, revocation checks, inclusion proofs, checkpoint verification, and optional signed continuity assessments. \\
 Transport and security layer & HTTPS, TLS, QUIC, TCP/IP, SMTP, WebSockets, message queues, and other delivery mechanisms. \\
 \bottomrule
 \end{tabularx}
@@ -343,7 +355,7 @@ user or agent creates ordinary message/action
 ]
 \node[layer] (apps) {\textbf{Application / Transport Layer}\\
 Email, messaging apps, social networks, marketplaces, wallets, support tools, code platforms, AI-agent frameworks. Apps carry ordinary content plus optional \TSL{} envelopes or proof links.};
-\node[underlay, below=of apps] (client) {\textbf{Universal \TSL{} Client Layer}\\
+\node[underlay, below=of apps] (client) {\textbf{Transport-Independent \TSL{} Client Layer}\\
 Browser extension, mobile wallet, desktop client, SDK, enterprise gateway, or agent sidecar. Signs events, verifies envelopes, stores private history, requests receipts, and displays trust explanations.};
 \node[underlay, below=of client] (relay) {\textbf{Relay and Transparency Log Mesh}\\
 Receives commitments, issues inclusion proofs, shards logs, maintains append-only Merkle structures, and batches checkpoints.};
@@ -450,43 +462,92 @@ resolveTrustID(id) -> {
 
 \subsection{Event Commitment}
 
-An event commitment is a signed claim that an interaction occurred. The raw message remains private by default.
+An event commitment is a signed claim that an interaction or action was issued. The raw content remains private by default. The signer-controlled time is named \texttt{issued\_at}; it is never treated as sufficient proof that the event existed at that time.
 
 \begin{lstlisting}[style=tslcode]
 {
   "type": "tsl.event_commitment.v1",
   "event_class": "message | transaction | attestation | agent_call | code_release",
   "sender": "did:tsl:eip155-8453:0xabc...",
-  "receiver_commitment": "H(receiver_id || receiver_salt)",
-  "content_commitment": "H(domain || content_hash || content_salt)",
-  "metadata_commitment": "H(private_metadata || metadata_salt)",
+  "signing_key_id": "#device-key-1",
+  "receiver_commitment": "H(receiver-domain || receiver_id || receiver_salt)",
+  "content_commitment": "H(content-domain || content_hash || content_salt)",
+  "metadata_commitment": "H(metadata-domain || private_metadata || metadata_salt)",
   "previous_event_commitment": "optional_hash",
-  "timestamp": "2026-05-25T00:01:00Z",
+  "issued_at": "2026-05-25T00:01:00Z",
   "nonce": "random_256_bit_nonce",
   "disclosure_policy": "commitment_only",
-  "signature": "sender_signature_over_canonical_payload"
+  "signature": "sender_signature_over_rfc8785_jcs_payload"
 }
 \end{lstlisting}
 
-The protocol should not make \texttt{platform} a required public field. Platform-specific metadata should be private, optional, or selectively disclosed. This avoids turning the protocol into an app-by-app integration system.
+The protocol does not make \texttt{platform} a required public field. Platform-specific metadata remains private, optional, or selectively disclosed.
 
-\subsection{Receipt Commitment}
+\subsection{Trusted Time Evidence and Backdating Resistance}
 
-Receipts turn unilateral claims into mutually observed interactions.
+Three times have distinct meanings:
+
+\begin{center}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{0.23\textwidth} X}
+\toprule
+Time & Meaning \\
+\midrule
+\texttt{issued\_at} & Self-declared and signed by the event key. Useful for ordering and policy, but not a trusted timestamp. \\
+\texttt{relay\_received\_at} & Time assigned and signed by a verifier-trusted relay when it first accepted the exact event commitment or issued an inclusion promise. \\
+\texttt{checkpoint\_time} & Monotonic signed time of a cumulative log checkpoint. Settlement supplies an external upper bound and durable publication evidence. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+A relay receipt binds the exact commitment to trusted receipt time:
+
+\begin{lstlisting}[style=tslcode]
+{
+  "type": "tsl.relay_receipt.v1",
+  "log_id": "tsl-log:00af",
+  "commitment": "0x...",
+  "relay_id": "did:tsl:relay:001",
+  "relay_received_at": "2026-05-25T00:01:04Z",
+  "promised_tree_size": 184294,
+  "merge_by": "2026-05-25T00:06:04Z",
+  "prior_checkpoint_hash": "0x...",
+  "signature": "relay_signature"
+}
+\end{lstlisting}
+
+Let \(t_i\) be \texttt{issued\_at}, \(t_r\) be a verified \texttt{relay\_received\_at}, \(t_c\) be the including \texttt{checkpoint\_time}, and \(t_v\) be the key's effective revocation time. Ordinary historical validity requires \(t_i \leq t_r \leq t_c\), bounded clock skew, the signing key active at trusted first observation, and either \(t_r<t_v\) or a separately trusted pre-revocation timestamp or inclusion promise for the same commitment. A self-declared \texttt{issued\_at} before \(t_v\) never rescues an event first presented after revocation.
+
+A relay time is trusted only under an explicit verifier policy naming accepted relay keys, maximum clock error, freshness of revocation state, merge deadline, and audit/gossip requirements. A single accepted relay supplies a first-observation claim under that relay-honesty assumption; it does not create an objective global clock. High-assurance profiles SHOULD require a quorum of independent relay receipts or an approved external timestamp. Settlement proves durable publication no later than the accepted settlement evidence; it does not retroactively prove the exact wall-clock time asserted by a dishonest relay.
+
+\subsection{Receipt Commitment and Graph Privacy}
+
+The public log MUST NOT contain an exact receiver \TrustID{} or a stable globally reusable receiver identifier. The full signed receipt is private or selectively disclosed. A \texttt{receiver\_pairwise\_id} MUST be scoped to the relationship or authorized verifier, purpose, and rotation epoch; reusing it across unrelated domains is non-compliant. The cumulative public log stores only a salted opaque commitment to that receipt.
 
 \begin{lstlisting}[style=tslcode]
 {
   "type": "tsl.receipt_commitment.v1",
-  "event_commitment": "H(tsl.event_commitment.v1)",
-  "receiver": "did:tsl:eip155-8453:0xdef...",
+  "event_commitment": "0x...",
+  "receiver_pairwise_id": "did:tsl:pairwise:verifier-scoped-id",
+  "signing_key_id": "#pairwise-receipt-key-1",
   "receipt_class": "received | replied | transacted | completed | disputed",
-  "timestamp": "2026-05-25T00:02:00Z",
-  "metadata_commitment": "H(private_receipt_metadata || salt)",
-  "signature": "receiver_signature_over_receipt"
+  "issued_at": "2026-05-25T00:02:00Z",
+  "metadata_commitment": "H(receipt-metadata-domain || private_metadata || salt)",
+  "signature": "receiver_pairwise_signature"
 }
 \end{lstlisting}
 
-A single-signed event proves origin. A co-signed receipt proves interaction. A long history of diverse reciprocal receipts is much harder to fake than a static profile.
+The public receipt-log leaf is:
+
+\begin{lstlisting}[style=tslcode]
+{
+  "type": "tsl.receipt_log_entry.v1",
+  "receipt_commitment": "H(receipt-log-domain || JCS(full_receipt) || fresh_256_bit_salt)"
+}
+\end{lstlisting}
+
+The salt, full receipt, exact receiver identity, event link, and any proof binding the pairwise key to a canonical \TrustID{} stay local or are disclosed to an authorized verifier. A public relay accepts the opaque log entry and a policy-compliant anti-spam authorization; it MUST NOT require the full receipt merely to append the commitment. Public receipt commitments therefore prove existence and ordering without publishing the communication graph. Exact graph edges may be constructed only from local context, explicit selective disclosure, or a privacy-preserving aggregate proof. Opaque public receipt leaves alone MUST NOT be treated as known counterparty edges.
+
+A single-signed event proves origin under the stated key and time evidence. A selectively disclosed co-signed receipt proves an interaction to the authorized verifier. Aggregate receipt claims require disclosed evidence or a registered zero-knowledge proof; the public log by itself does not reveal who interacted with whom.
 
 \subsection{Attestation}
 
@@ -517,32 +578,34 @@ Negative attestations require strict abuse controls: rate limits, evidence commi
   "revoked_key": "z6MkOld...",
   "replacement_key": "z6MkNew...",
   "reason_class": "rotation | compromise | device_loss | policy_update",
+  "issued_at": "2026-05-25T00:04:00Z",
   "effective_at": "2026-05-25T00:04:00Z",
   "signature": "controller_or_recovery_signature"
 }
 \end{lstlisting}
 
-Revocation is not an implementation detail. It is central to trust. Without strong revocation, a long-lived identity becomes a long-lived liability.
+The signed \texttt{effective\_at} is a policy cutoff, while the revocation's relay receipt and checkpoint establish when the network learned the revocation. A controller MAY choose an earlier warning window after compromise, but it MUST NOT retroactively invalidate an event that already has trusted pre-cutoff receipt or checkpoint evidence. Verifiers MUST preserve both the event's trusted-time evidence and the revocation's trusted publication evidence.
 
 \subsection{Batch Checkpoint}
 
 \begin{lstlisting}[style=tslcode]
 {
   "type": "tsl.batch_checkpoint.v1",
-  "epoch": "2026-05-25T00:00:00Z/PT5M",
-  "shard": "identity_prefix_00af",
-  "event_root": "0x...",
-  "receipt_root": "0x...",
-  "attestation_root": "0x...",
-  "revocation_root": "0x...",
-  "event_count": 148292,
-  "receipt_count": 93301,
-  "previous_checkpoint": "0x...",
+  "log_id": "tsl-log:00af",
+  "shard": "00af",
+  "tree_size": 148292,
+  "root_hash": "0x...",
+  "checkpoint_time": "2026-05-25T00:05:00Z",
+  "previous_tree_size": 147811,
+  "previous_checkpoint_hash": "0x...",
   "settlement_backend": "eip155:8453",
   "settlement_tx": "0x...",
+  "relay_id": "did:tsl:relay:001",
   "relay_signature": "0x..."
 }
 \end{lstlisting}
+
+A checkpoint is a signed snapshot of one cumulative shard log. The checkpoint hash chain orders snapshots; RFC 9162 consistency proofs, not the hash chain alone, prove that the newer tree is an append-only extension of the older tree.
 
 % ============================================================
 \section{What Goes On-Chain}
@@ -559,8 +622,8 @@ TrustID registry & Raw messages \\
 Current public keys & Attachments and media \\
 Key rotation records & Exact private contact lists \\
 Revocation records & Sensitive metadata \\
-Checkpoint roots & Full event payloads \\
-Attestation roots & Full communication graph \\
+Cumulative checkpoint roots and tree sizes & Full event payloads \\
+Optional registry-state commitments & Full communication graph \\
 Scoring-provider registry & Feature vectors if not disclosed \\
 Model-version registry & Local risk computation inputs \\
 Appeal/governance hooks & Private user settings \\
@@ -579,7 +642,7 @@ Because provider, model, and governance registries may exist on-chain, implement
 \toprule
 Placement & Allowed Data \\
 \midrule
-On-chain & Registry identifiers, active-key commitments, revocation state, checkpoint roots, attestation roots, provider IDs, model-card commitments, evaluation-report commitments, governance-policy commitments, and settlement timestamps. \\
+On-chain & Registry identifiers, active-key commitments, revocation state, cumulative log checkpoint roots and tree sizes, optional registry-state commitments, provider IDs, model-card commitments, evaluation-report commitments, governance-policy commitments, and settlement timestamps. \\
 Off-chain public & Proof bundles, transparency-log entries, inclusion proofs, schemas, public model cards, public evaluation reports, public audit findings, and public governance policies. \\
 Local/private & Raw messages, salts, exact counterparties, private metadata, local relationship labels, private graph, private feature vectors, private notes, and undisclosed consent records. \\
 Never on-chain & Raw content, exact private graph, private salts, protected attributes, IP addresses, user-agent fingerprints, precise location, biometric data, and private disclosure-consent contents. \\
@@ -595,8 +658,8 @@ The chain should answer:
     \item Who controls this \TrustID{}?
     \item Which keys are currently valid?
     \item Was this key revoked?
-    \item Was this batch checkpoint committed before time \(T\)?
-    \item Which attestation root was active?
+    \item Was this cumulative checkpoint and tree size committed before time \(T\)?
+    \item Which cumulative log checkpoint and optional registry-state commitment were active?
     \item Which scoring provider signed this risk assessment?
     \item Which model version produced this assessment?
 \end{itemize}
@@ -614,75 +677,69 @@ The chain should not answer:
 \section{Ledger Architecture}
 % ============================================================
 
-\subsection{MVP: Transparency Log with Periodic Anchors}
+\subsection{Normative Choice: Cumulative RFC 9162-Style Logs}
 
-The first production-grade version should use an append-only transparency log with periodic blockchain anchoring.
+Each identity-prefix shard is one \textbf{cumulative append-only log}. Epochs are checkpoint publication intervals; they do not create independent trees and they do not reset leaf indices. This specification therefore rejects the alternative design of independent per-epoch Merkle trees chained only by checkpoint hashes.
+
+\begin{principlebox}{One Append-Only Model}
+For every shard, leaves are appended to a single ordered tree using the Merkle Tree Hash, inclusion-proof, and consistency-proof semantics of RFC 9162. A checkpoint identifies a tree size and root. Append-only history is proven from an earlier \((m,root_m)\) to a later \((n,root_n)\) with an RFC 9162 consistency proof, where \(m\leq n\).
+\end{principlebox}
+
+A typed leaf can commit an event, opaque receipt commitment, attestation, revocation, delegation, or other registered entry:
+
+\begin{lstlisting}[style=tslcode]
+{
+  "type": "tsl.log_entry.v1",
+  "entry_type": "event | receipt_commitment | attestation | revocation | delegation",
+  "entry_commitment": "0x..."
+}
+\end{lstlisting}
+
+The leaf input is the RFC 8785 JCS encoding of \texttt{tsl.log\_entry.v1}. The Merkle construction itself follows RFC 9162 exactly: leaf hash \(HASH(0x00\parallel leaf\_input)\), internal node hash \(HASH(0x01\parallel left\parallel right)\), and RFC-defined handling of non-power-of-two tree sizes. Implementations MUST NOT substitute a custom odd-node duplication or promotion rule.
+
+\subsection{Shard Assignment and Checkpoint Cadence}
+
+Shards are stable identity-prefix partitions:
+
+\begin{equation}
+\text{shard}(i)=\operatorname{prefix}_{k}(\operatorname{SHA256}(\operatorname{utf8}(\TrustID_i))).
+\end{equation}
+
+Identity-scoped entries such as events, key transitions, attestations, and revocations use the relevant public identity prefix. Opaque receipt-log entries MUST instead use a commitment-derived privacy shard, for example \(\operatorname{prefix}_k(\operatorname{SHA256}(receipt\_commitment))\), so the public shard identifier does not reveal the receiver's \TrustID{} prefix or the linked event's shard. The shard rule is part of the log profile and MUST be deterministic.
+
+The epoch or checkpoint interval is operational metadata only. Closing a five-minute interval publishes a new checkpoint for the current cumulative tree size; the next interval continues at the next leaf index in the same tree.
 
 \begin{lstlisting}[style=tslcode]
 client signs event
-  -> relay receives event commitment
-  -> relay appends commitment to sharded Merkle log
-  -> relay returns inclusion promise
-  -> checkpoint root is periodically anchored on-chain
-  -> verifier checks Merkle inclusion + chain checkpoint + key state
+  -> relay verifies schema, signature, key state, and trusted-time policy
+  -> relay issues signed relay receipt / inclusion promise
+  -> relay appends typed commitment to cumulative shard log
+  -> log returns RFC 9162 inclusion proof at tree_size n
+  -> checkpoint publishes (log_id, tree_size n, root_hash, checkpoint_time)
+  -> auditor verifies consistency from previous tree size to n
+  -> checkpoint is periodically anchored to a settlement backend
 \end{lstlisting}
 
-This architecture gives low cost, high throughput, and public auditability.
+\subsection{Threat Model of the Chosen Design}
 
-\subsection{Production: Sharded Log Mesh}
+A cumulative log gives verifiers a direct append-only claim: all leaves in the older tree are a prefix of the newer tree. Checkpoint hash chaining remains useful for ordering and equivocation detection but is not accepted as a substitute for a consistency proof. Independent epoch trees would prove only inclusion inside one epoch unless an additional authenticated cross-epoch structure were specified; that design is out of scope for v1.
 
-At scale, one global log is not enough. Use sharded logs by epoch and identity prefix.
+Auditors gossip signed checkpoints, request consistency proofs between observed tree sizes, and publish a conflict if a relay signs incompatible roots for the same log and tree size or cannot prove consistency between monotonic sizes. The security assumption is that at least one honest auditor or verifier compares views.
 
-\begin{equation}
-\text{shard}(i,t) = \hash(\TrustID_i)_{[0:k]} \parallel \text{epoch}(t).
-\end{equation}
+\subsection{Scale Path}
 
-Each shard maintains:
-
-\begin{itemize}
-    \item event commitment tree,
-    \item receipt commitment tree,
-    \item attestation commitment tree,
-    \item revocation tree,
-    \item checkpoint chain,
-    \item consistency proofs.
-\end{itemize}
-
-The verifier only needs the relevant shard proof, not the entire network history.
-
-\subsection{Scale Path: App-Rollup}
-
-When volume grows, \TSL{} should become its own application-specific rollup or trust-settlement network.
-
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[
-    node distance=0.8cm,
-    box/.style={rectangle, rounded corners, draw=tslblue, fill=blue!3, very thick, text width=11.8cm, align=center, inner sep=7pt},
-    arrow/.style={-{Latex[length=3mm]}, thick, draw=tslgray}
-]
-\node[box] (commit) {Millions of event, receipt, attestation, and revocation commitments};
-\node[box, below=of commit] (sequencer) {\TSL{} sequencer / relay mesh orders commitments into epochs};
-\node[box, below=of sequencer] (state) {State transition computes registry changes, Merkle roots, provider state, and checkpoint chain};
-\node[box, below=of state] (proof) {Validity proof or fraud-proof window secures state transition};
-\node[box, below=of proof] (settle) {Root settles to Ethereum L1, major L2, or multi-chain anchor set};
-\draw[arrow] (commit) -- (sequencer);
-\draw[arrow] (sequencer) -- (state);
-\draw[arrow] (state) -- (proof);
-\draw[arrow] (proof) -- (settle);
-\end{tikzpicture}
-\caption{Long-term scale path: \TSL{} app-rollup or trust-settlement network.}
-\end{figure}
+The cumulative logs may be operated by a relay mesh and later committed by an application-specific rollup. Scaling changes ordering, data availability, or settlement adapters; it MUST NOT change RFC 9162 leaf, inclusion, consistency, or checkpoint semantics for the declared log version.
 
 \subsection{Multi-Backend Verification}
 
-The product should not expose chain complexity to users. A verifier should call one function:
+A verifier calls:
 
 \begin{lstlisting}[style=tslcode]
-verifyCommitment(event_commitment, proof, checkpoint) -> VerificationResult
+verifyCommitment(event, relay_receipt, inclusion_proof, checkpoint, consistency_context)
+  -> VerificationResult
 \end{lstlisting}
 
-Internally, the checkpoint may settle to an Ethereum L2, a \TSL{} rollup, another chain, or a timestamping backend. The app should not care.
+Settlement may occur on an L2, app-rollup, alternative chain, or approved timestamping backend. The settlement adapter is separate from the cumulative-log proof.
 
 % ============================================================
 \section{No-Integration Distribution}
@@ -748,12 +805,13 @@ A proof link SHOULD resolve to a portable proof bundle. The bundle is the implem
   "redaction_manifest": {
     "raw_content_included": false,
     "exact_counterparties_included": false,
+    "receipt_graph_disclosed": false,
     "metadata_fields_redacted": ["platform", "ip_address", "user_agent"]
   }
 }
 \end{lstlisting}
 
-The bundle MUST NOT include raw content, exact private counterparties, salts, private graph features, or restricted metadata unless the subject or authorized controller has given explicit disclosure consent under the privacy consent rules. The \texttt{redaction\_manifest} is normative for UI and audit: it tells the verifier which fields were intentionally absent, not merely missing.
+The bundle MUST NOT include raw content, exact private counterparties, receipt-to-event links, pairwise identity bindings, salts, private graph features, or restricted metadata unless the subject or authorized controller has given explicit disclosure consent under the privacy consent rules. The \texttt{redaction\_manifest} is normative for UI and audit: it tells the verifier which fields were intentionally absent, not merely missing.
 
 \subsection{Reference Clients and Interfaces}
 
@@ -779,7 +837,7 @@ The client performs:
     \item inclusion verification,
     \item revocation checks,
     \item receipt requests,
-    \item trust-score rendering,
+    \item domain-specific assessment rendering,
     \item selective disclosure.
 \end{itemize}
 
@@ -789,11 +847,11 @@ The client performs:
 POST /v1/commitments
 GET  /v1/proofs/{commitment}
 GET  /v1/proof-bundles/{bundle_id}
-POST /v1/receipts
+POST /v1/receipt-commitments
 GET  /v1/identity/{trust_id}
 GET  /v1/revocation/{trust_id}
 POST /v1/attestations
-GET  /v1/checkpoints/{epoch}/{shard}
+GET  /v1/checkpoints/{shard}/{tree_size}
 GET  /v1/scoring-profiles/{profile_id}
 GET  /v1/model-cards/{model_id}
 POST /v1/delegations/verify
@@ -857,7 +915,7 @@ Level 0: Local only & Nothing & Raw messages, metadata, graph, scoring \\
 Level 1: Commitments & Hashes, timestamps, signatures, roots & Message content, counterparties, metadata \\
 Level 2: Selective proof & Specific disclosed claim & Everything outside the claim \\
 Level 3: Aggregate proof & Counts, ranges, thresholds & Exact counterparties and messages \\
-Level 4: Public identity & Public attestations and score & Any non-disclosed private context \\
+Level 4: Public identity & Public attestations and optional domain-specific assessment & Any non-disclosed private context \\
 \bottomrule
 \end{tabularx}
 \end{center}
@@ -915,7 +973,7 @@ Revocation & A subject MAY revoke future disclosures. Past third-party copies ca
   "verifier_or_provider": "did:tsl:provider:continuity-labs",
   "allowed_field_classes": ["aggregate_counts", "receipt_thresholds", "attestation_status"],
   "forbidden_field_classes": ["raw_content", "exact_counterparties", "protected_attributes", "ip_address"],
-  "purpose": "anti_phishing_assessment",
+  "purpose": "opensource_release_continuity_assessment",
   "issued_at": "2026-05-26T00:00:00Z",
   "expires_at": "2026-06-26T00:00:00Z",
   "revocation_pointer": "0x...",
@@ -937,10 +995,10 @@ Later versions can add zero-knowledge proofs for threshold and set-membership cl
 \end{itemize}
 
 % ============================================================
-\section{Trust Graph and Behavioral Geometry}
+\section{Domain-Specific Evidence Graph and Behavioral Geometry}
 % ============================================================
 
-Let \(G_t = (V_t, E_t)\) be the communication and receipt graph at time \(t\). Nodes are \TrustID{}s. Edges are signed events, co-signed receipts, attestations, transactions, or agent calls.
+Let \(G_t = (V_t, E_t)\) be a domain-scoped evidence graph at time \(t\). For the initial open-source profile, nodes represent maintainer, repository, package, release-key, and release identities. Edges come only from verified public release facts, selectively disclosed receipts, attestations, repository or registry control evidence, and explicit local context. Opaque public receipt commitments do not reveal graph edges.
 
 Each identity has a behavioral history:
 
@@ -975,107 +1033,114 @@ Local context & prior relationship with verifier, personal allowlist, private hi
 \end{tabularx}
 \end{center}
 
-\subsection{Trust Manifolds}
+\subsection{Research Risk Geometry (Non-Normative)}
 
-Let \(\mathcal{M}_T\) be the manifold of organic trusted behavior and \(\mathcal{M}_A\) be the manifold of adversarial behavior.
+Let \(\mathcal{M}_C\) denote observed continuity trajectories in the selected domain and \(\mathcal{M}_A\) denote confirmed or simulated compromise and takeover trajectories. These distributions are dataset-dependent research constructs, not protocol truth.
 
 \begin{align}
-    D_T(i,t) &= \dist(x_i(t), \mathcal{M}_T), \\
+    D_C(i,t) &= \dist(x_i(t), \mathcal{M}_C), \\
     D_A(i,t) &= \dist(x_i(t), \mathcal{M}_A), \\
     \drift_i(t) &= \left\|x_i(t) - x_i(t-\Delta t)\right\|.
 \end{align}
 
-A reference score can be written:
+A research model may estimate action-specific compromise risk:
 
 \begin{equation}
-S_i(t) = 100 \cdot \sigmoid\left(
-    -\alpha D_T(i,t)
-    + \beta D_A(i,t)
-    - \gamma \drift_i(t)
-    + \delta \attest_i(t)
-    + \eta R_i(t)
+p_{risk}(a,t \mid d,policy,model)=\sigmoid\left(
+    \alpha D_A(a,t)
+    -\beta D_C(a,t)
+    +\gamma \drift_a(t)
+    -\delta \attest_a(t)
+    +\eta R_a(t)
 \right).
 \end{equation}
 
-This score must be explainable, probabilistic, and provider-specific. \TSL{} should never claim mathematical omniscience.
+The result is meaningful only for the named action, domain, policy, model version, and calibration set. It is not a universal property of the subject.
 
 \begin{warningbox}{Research Math vs. Canonical Implementation}
 The manifold, sigmoid, entropy, covariance, Mahalanobis-distance, and AUROC/ECE formulas in this section are research and evaluation notation. They describe model intent and audit criteria, not signed wire-format arithmetic. A reference implementation MUST emit signed protocol objects using deterministic fixed-point integers, usually basis points or milli-units, and MUST define exact rounding in the algorithm registry and test vectors. Real-valued equations MAY guide model development, but they are not canonical serialization rules.
 \end{warningbox}
 
-\subsection{Reference MVP Score}
+\subsection{Reference Open-Source Continuity Profile}
 
-Before advanced graph neural networks, use transparent scoring:
+Cryptographic validity and trusted-time validity are hard gates. They are not weighted inputs. If schema, canonicalization, signature, key, revocation, trusted-time binding, inclusion, or required checkpoint checks fail, the verifier returns the corresponding protocol failure and no ordinary continuity value.
+
+For a cryptographically valid open-source release, the first transparent research profile may combine only domain-specific evidence:
 
 \begin{align}
-\operatorname{score} ={}&
-    0.20 \cdot \operatorname{crypto\_validity} \\
-& + 0.15 \cdot \operatorname{identity\_age} \\
-& + 0.15 \cdot \operatorname{reciprocity} \\
-& + 0.15 \cdot \operatorname{trusted\_neighbor\_ratio} \\
-& + 0.10 \cdot \operatorname{receipt\_quality} \\
-& + 0.10 \cdot \operatorname{attestation\_quality} \\
-& + 0.10 \cdot \operatorname{temporal\_consistency} \\
-& + 0.05 \cdot \operatorname{local\_relationship}.
+\operatorname{continuity\_evidence} ={}&
+    0.18 \cdot \operatorname{maintainer\_key\_lineage} \\
+& + 0.20 \cdot \operatorname{signed\_release\_history} \\
+& + 0.12 \cdot \operatorname{reviewer\_or\_co\_maintainer\_evidence} \\
+& + 0.12 \cdot \operatorname{repository\_and\_registry\_control\_continuity} \\
+& + 0.07 \cdot \operatorname{counterparty\_and\_community\_diversity} \\
+& + 0.07 \cdot \operatorname{maintainer\_attestation\_quality} \\
+& + 0.07 \cdot \operatorname{release\_cadence\_consistency} \\
+& + 0.10 \cdot \operatorname{change\_set\_and\_dependency\_continuity} \\
+& + 0.07 \cdot \operatorname{local\_verifier\_policy}.
 \end{align}
 
-Map scores to cautious labels:
+The profile then applies separately declared compromise and drift penalties and a calibration function fitted on time-split data. The initial profile assigns zero weight to recursive neighbor reputation. A later profile MAY use governed neighbor mass only under the convergence, seed-governance, and sensitivity rules below.
+
+Reference output labels describe the release assessment, not the actor:
 
 \begin{center}
 \begin{tabular}{ll}
 \toprule
-Score & Label \\
+Continuity evidence & Release label \\
 \midrule
-90--100 & Trusted \\
-75--89 & Likely trusted \\
-55--74 & Medium trust \\
-35--54 & Unknown / caution \\
-15--34 & Suspicious \\
-0--14 & High risk \\
-Special & Revoked / compromised / insufficient evidence \\
+90--100 & Strong continuity evidence \\
+75--89 & Likely continuous \\
+55--74 & Mixed continuity evidence \\
+35--54 & Unknown / step-up recommended \\
+15--34 & Elevated compromise risk \\
+0--14 & High compromise risk \\
+Special & Cryptographic failure / revoked / insufficient evidence \\
 \bottomrule
 \end{tabular}
 \end{center}
 
 % ============================================================
-\section{Trust Assessment as a Signed Object}
+\section{Continuity Assessment as a Signed Object}
 % ============================================================
 
-A trust score should not be a universal truth. It should be a signed assessment from a model, provider, or local verifier.
+A continuity assessment is a signed, expiring claim about a specific action under a specific domain policy. It MUST identify the target event, policy, evidence window, model version, calibration report, and uncertainty. It MUST NOT be displayed as a universal trust score.
 
 \begin{lstlisting}[style=tslcode]
 {
-  "type": "tsl.trust_assessment.v1",
-  "subject": "did:tsl:eip155-8453:0xabc...",
-  "issuer": "did:tsl:scoring-provider:continuity-labs",
-  "score": 82,
-  "label": "likely_trusted",
-  "model_version": "graph-risk-v0.3.1",
+  "type": "tsl.continuity_assessment.v1",
+  "target_event_commitment": "0xrelease...",
+  "subject": "did:tsl:maintainer:alice",
+  "issuer": "did:tsl:provider:continuity-labs",
+  "domain": "opensource_maintainer_continuity",
+  "policy_id": "opensource_release_continuity.v1",
+  "continuity_bps": 8200,
+  "label": "likely_continuous",
+  "model_version": "opensource-continuity-v0.1.0",
   "evidence_commitment": "0x...",
   "features_disclosed": [
-    "valid_signature",
-    "reciprocal_receipt_history",
-    "low_scam_cluster_similarity"
+    "valid_release_signature",
+    "verified_key_lineage",
+    "release_history_consistency"
   ],
   "explanation": [
-    "Signature is valid under current key registry",
-    "Identity has 31 months of continuity",
-    "Counterparty receipts are diverse and reciprocal",
-    "No active revocation or compromise warning"
+    "Release signature and trusted-time binding passed",
+    "Maintainer key rotation has a valid recovery link",
+    "Release history is consistent with the pre-action baseline",
+    "No active revocation or confirmed compromise warning"
   ],
   "issued_at": "2026-05-25T00:05:00Z",
-  "expires_at": "2026-06-25T00:05:00Z",
+  "expires_at": "2026-06-01T00:05:00Z",
   "signature": "provider_signature"
 }
 \end{lstlisting}
 
-\begin{principlebox}{Plural Scoring}
-The protocol should allow multiple scoring providers, local models, domain-specific models, and user-selected risk policies. The base protocol settles evidence; it should not become one centralized reputation oracle.
+\begin{principlebox}{Plural, Domain-Bound Assessments}
+The protocol permits multiple providers and local policies. Every provider must bind an assessment to a domain and target action. The base protocol settles evidence and never requires a single reputation oracle.
 \end{principlebox}
 
-
 % ============================================================
-\section{Trust-Scoring Science: Hyper-Specific Normative Implementation}
+\section{Domain-Specific Continuity Assessment Science: Hyper-Specific Normative Implementation}
 % ============================================================
 
 The base protocol proves signed facts. The scoring layer estimates contextual risk from those facts. A compliant implementation MUST preserve the following invariant:
@@ -1084,10 +1149,10 @@ The base protocol proves signed facts. The scoring layer estimates contextual ri
 \text{Protocol validity} \neq \text{trustworthiness} \neq \text{humanity} \neq \text{lawfulness}.
 \end{equation}
 
-A \TSL{} verifier MUST first compute cryptographic validity. A trust model MAY then compute a signed assessment. A failed cryptographic gate MUST NOT be repaired by a high score.
+A \TSL{} verifier MUST first compute cryptographic validity. A domain-specific model MAY then compute a signed continuity or risk assessment for the target action. A failed cryptographic gate MUST NOT be repaired by a high assessment value.
 
 \begin{principlebox}{Robust Variant}
-The most robust implementation is not one global reputation score. It is a set of domain-specific, signed, calibrated, expiring assessments over versioned evidence profiles. The protocol settles evidence; scoring providers compete on accuracy, calibration, privacy, auditability, and appeal quality.
+The robust implementation is not one global reputation score. It is a set of domain-specific, signed, calibrated, expiring assessments over versioned evidence profiles and explicitly named target actions. The protocol settles evidence; scoring providers compete on accuracy, calibration, privacy, auditability, and appeal quality.
 \end{principlebox}
 
 \subsection{Three Implementation Variants}
@@ -1097,25 +1162,25 @@ The most robust implementation is not one global reputation score. It is a set o
 \toprule
 Variant & Use & Required Properties \\
 \midrule
-MVP transparent scorer & Early demos, proof links, private beta & Hand-weighted features, no raw private data, signed scores, expiration, local override, explicit insufficient-evidence labels. \\
+MVP transparent scorer & Early demos, proof links, private beta & Hand-weighted features, no raw private data, signed domain-specific assessments, expiration, local override, explicit insufficient-evidence labels. \\
 Production calibrated scorer & Enterprise APIs, marketplaces, agent workflows & Versioned feature registry, domain thresholds, time-split evaluation, calibration report, confidence interval, appeal path, provider registry entry. \\
 High-assurance scorer & Banking, large payments, supply chain, regulated workflows & Independent audit, red-team pass, shadow deployment before promotion, privacy leakage report, reproducible evaluation package, emergency rollback, human review for severe negative labels. \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-\subsection{Hard Gates Before Any Score}
+\subsection{Hard Gates Before Any Assessment Value}
 
 The verifier computes a gate vector:
 
 \begin{equation}
-g_i=(schema,canon,sig,key,revocation,inclusion,checkpoint,settlement,delegation).
+g_i=(schema,canon,sig,key,revocation,time\_binding,inclusion,checkpoint,settlement,delegation).
 \end{equation}
 
 The default hard gate is:
 
 \begin{equation}
-G_i=schema\land canon\land sig\land key\land \neg revocation\land inclusion\land checkpoint.
+G_i=schema\land canon\land sig\land key\land \neg revocation\land time\_binding\land inclusion\land checkpoint.
 \end{equation}
 
 If the verifier policy requires chain finality, then:
@@ -1124,17 +1189,17 @@ If the verifier policy requires chain finality, then:
 G_i^{settled}=G_i\land settlement.
 \end{equation}
 
-A scoring provider MUST return one of the following before numeric scoring:
+An assessment provider MUST return one of the following before producing an ordinary continuity value:
 
 \begin{center}
 \begin{tabularx}{\textwidth}{>{\bfseries}p{0.28\textwidth} X}
 \toprule
 Gate Outcome & Required Behavior \\
 \midrule
-Valid core proof & Numeric trust assessment MAY be computed. \\
-Invalid signature & Return \texttt{cryptographic\_failure}; no ordinary score. \\
-Revoked key & Return \texttt{revoked\_or\_compromised}; no ordinary score. \\
-Missing inclusion proof & Return \texttt{unsettled\_or\_unproven}; risk score MAY be suppressed. \\
+Valid core proof & Numeric continuity assessment MAY be computed. \\
+Invalid signature & Return \texttt{cryptographic\_failure}; no ordinary continuity value. \\
+Revoked key or failed trusted-time binding & Return \texttt{revoked\_or\_compromised} or \texttt{time\_binding\_failure}; no ordinary assessment value. \\
+Missing inclusion proof & Return \texttt{unsettled\_or\_unproven}; ordinary assessment value is suppressed under the reference policy. \\
 Settlement required but absent & Return \texttt{settlement\_missing}; verifier policy decides accept or reject. \\
 Delegation absent for agent action & Return \texttt{delegation\_missing}; no action authorization. \\
 Sparse evidence but no adverse signal & Return \texttt{insufficient\_evidence}, not \texttt{suspicious}. \\
@@ -1144,37 +1209,37 @@ Sparse evidence but no adverse signal & Return \texttt{insufficient\_evidence}, 
 
 \subsection{Domain Policies}
 
-Every score MUST be bound to a domain policy. The same evidence can imply different action in different domains.
+Every assessment MUST be bound to a domain policy. The same evidence may imply a different action under another policy. The first normative policy is open-source release continuity; all other rows are future research profiles.
 
 \begin{lstlisting}[style=tslcode]
 {
   "type": "tsl.domain_policy.v1",
-  "domain": "agent_payments",
-  "policy_version": "agent-payments-2026-05-26",
+  "domain": "opensource_maintainer_continuity",
+  "policy_version": "opensource-release-continuity-2026-06",
+  "target_action_class": "code_release",
   "requires_settlement": true,
-  "requires_delegation_check": true,
+  "requires_trusted_time_binding": true,
   "requires_content_opening": false,
-  "step_up_above_value_minor_units": 100000,
-  "max_assessment_age_seconds": 3600,
-  "false_positive_cost_class": "medium",
-  "false_negative_cost_class": "critical",
-  "sparse_identity_default": "unknown_caution",
+  "max_assessment_age_seconds": 86400,
+  "false_positive_cost_class": "high",
+  "false_negative_cost_class": "high",
+  "sparse_identity_default": "insufficient_evidence",
+  "default_action_on_drift": "step_up",
   "accepted_provider_status": ["active", "probation_allowed"],
-  "human_review_required_labels": ["public_high_risk", "fraud_claim"]
+  "human_review_required_labels": ["high_compromise_risk", "public_negative_claim"]
 }
 \end{lstlisting}
 
 \begin{center}
-\begin{tabularx}{\textwidth}{>{\bfseries}p{0.22\textwidth} p{0.18\textwidth} p{0.22\textwidth} X}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{0.25\textwidth} p{0.19\textwidth} X}
 \toprule
-Domain & Primary Failure & Threshold Bias & Default Action \\
+Profile & Status & Required Claim Discipline \\
 \midrule
-Anti-phishing & False negative & Warn early; tolerate more caution labels & Block or warn on hard proof failures and strong adversarial proximity. \\
-Marketplace trust & Both sides & Balance buyer safety and seller false positives & Use evidence coverage, dispute rates, and appealable warnings. \\
-Agent payments & False negative & Extremely conservative above value thresholds & Require delegation, settlement, and step-up approval. \\
-Open-source supply chain & False positive & Protect legitimate maintainer changes & Use drift as step-up trigger, not automatic accusation. \\
-Professional identity & False positive & Avoid defamation and caste effects & Prefer continuity proofs and private verifier context. \\
-Customer support & False negative & Verify organization authority first & Require org membership and current delegation. \\
+Open-source maintainer continuity & Normative initial domain & Assess one release or control transition; use step-up rather than accusation for unexplained drift. \\
+Anti-phishing & Future profile & Requires separate message datasets, relationship policy, and calibration. \\
+Marketplace trust & Future profile & Requires transaction-specific outcomes and appealable seller/buyer policy. \\
+Agent payments & Future profile & Requires delegation, value limits, and settlement-specific testing. \\
+Professional identity / customer support & Future profile & Requires defamation, privacy, and organizational-authority review. \\
 \bottomrule
 \end{tabularx}
 \end{center}
@@ -1186,11 +1251,11 @@ A scoring profile is the executable contract between provider, verifier, auditor
 \begin{lstlisting}[style=tslcode]
 {
   "type": "tsl.scoring_profile.v2",
-  "profile_id": "did:tsl:provider:continuity-labs/profile/anti-phishing-v2.1.0",
+  "profile_id": "did:tsl:provider:continuity-labs/profile/opensource-continuity-v0.1.0",
   "provider": "did:tsl:provider:continuity-labs",
-  "domain": "anti_phishing",
+  "domain": "opensource_maintainer_continuity",
   "model_family": "transparent_weighted_logistic",
-  "model_version": "2.1.0",
+  "model_version": "0.1.0",
   "feature_registry_uri": "ipfs://bafy.../feature_registry.json",
   "feature_registry_commitment": "0x...",
   "normalization_profile_commitment": "0x...",
@@ -1200,7 +1265,7 @@ A scoring profile is the executable contract between provider, verifier, auditor
   "privacy_policy_commitment": "0x...",
   "evaluation_report_commitment": "0x...",
   "training_data_statement_commitment": "0x...",
-  "appeal_policy_uri": "https://provider.example/appeals/anti-phishing-v2",
+  "appeal_policy_uri": "https://provider.example/appeals/opensource-continuity-v0",
   "issued_at": "2026-05-26T00:00:00Z",
   "valid_after": "2026-05-26T00:00:00Z",
   "expires_at": "2026-08-26T00:00:00Z",
@@ -1237,21 +1302,21 @@ Every feature MUST be named, typed, normalized, privacy-classified, and attack-m
 
 \subsection{Exact Reference Feature Set}
 
-Let \(i\) be the subject, \(t\) be the assessment time, \(e\) be a verified event, \(c_e\) be its class, \(\tau_e\) be its timestamp, and \(\omega_e(t)\) be its effective graph weight. Let \(\varepsilon=10^{-9}\).
+Let \(i\) be the subject, \(t\) be the assessment time, \(e\) be a verified event, \(c_e\) be its class, \(\tau_e\) be its verified relay or checkpoint time under policy, and \(\omega_e(t)\) be its effective graph weight. Let \(\varepsilon=10^{-9}\).
 
 \begin{longtable}{>{\bfseries}p{0.24\textwidth} p{0.26\textwidth} p{0.40\textwidth}}
 \toprule
 Feature & Formula & Implementation Rule \\
 \midrule
-Cryptographic gate & \(f_{crypto}=\mathbb{I}[G_i=1]\) & Hard gate. If zero, suppress ordinary score. \\
+Protocol gate (not a feature) & \(G_i\in\{0,1\}\) & Evaluated before feature extraction. If zero, emit only a failure assessment. \\
 Identity age & \(1-e^{-\min(a_i,730)/180}\) & \(a_i\) is age in days since registry creation or verified local creation. \\
 Active key age & \(1-e^{-\min(k_i,365)/90}\) & Recent key age is downweighted unless rotation has valid recovery proof. \\
 Signed event count & \(\frac{\log(1+n_i)}{\log(1+1000)}\) clipped & Counts only valid, non-replayed, included events. \\
 Receipt count & \(\frac{\log(1+r_i)}{\log(1+300)}\) clipped & Counts only co-signed receipts whose counterparties are distinct after clustering. \\
 Reciprocity & \(\frac{\sum_j \min(w_{ij},w_{ji})}{\sum_j \max(w_{ij},w_{ji})+\varepsilon}\) & One-way broadcasts do not become strong continuity. \\
-Counterparty diversity & \(1-\sum_j p_{ij}^2\) & Uses trust-weighted edge mass; penalizes closed farms. \\
+Counterparty diversity & \(1-\sum_j p_{ij}^2\) & Uses capped evidence-weighted edge mass; penalizes closed farms. \\
 Community escape & \(\frac{\sum_{j:comm(j)\neq comm(i)}w_{ij}}{\sum_jw_{ij}+\varepsilon}\) & Low escape is a Sybil warning when paired with density and synchronization. \\
-Trusted neighbor mass & \(\frac{\sum_j w_{ij}S_jq_j}{\sum_j w_{ij}+\varepsilon}\) & Neighbor score \(S_j\) and coverage \(q_j\) MUST be model-versioned. \\
+Trusted neighbor mass & \(T_i^*\) from the governed damped fixed-point process below & Disabled in the initial profile; any later use requires a signed seed manifest, convergence, damping, and sensitivity report. \\
 Dispute rate & \(\frac{d_i}{r_i+d_i+\varepsilon}\) & Disputes require evidence commitments and appeal state. \\
 Attestation quality & \(\operatorname{clip}_{0,1}\sum_a Q_a\kappa_a d_a\) & Expired and reversed attestations contribute zero or negative weight. \\
 Revocation risk & \(\mathbb{I}[recent\ compromise]\) & Triggers warning window after compromise event. \\
@@ -1263,6 +1328,25 @@ Local relationship & private verifier value & MUST remain local unless user disc
 \end{longtable}
 
 All clipped features are clipped to \([0,1]\). Output features stored in protocol objects SHOULD be represented as integer basis points from \(0\) to \(10000\).
+
+\subsection{Recursive Neighbor Mass: Convergence and Seed Governance}
+
+A provider MUST NOT define \texttt{trusted\_neighbor\_mass} as an unconstrained recursive reputation score. When a later domain profile enables it, the profile MUST use the following damped process.
+
+Let \(b_i\in[0,1]\) be a non-recursive baseline derived only from verified first-order evidence. Let \(P\) be a row-stochastic matrix built from capped, verified, domain-scoped edge weights. For damping \(0\leq\lambda\leq0.85\):
+
+\begin{align}
+T^{(0)} &= b,\\
+T^{(k+1)} &= (1-\lambda)b+\lambda P T^{(k)}.
+\end{align}
+
+Because \(\lambda<1\), the update is a contraction under the declared norm and has a unique fixed point. The implementation stops when \(\|T^{(k+1)}-T^{(k)}\|_\infty\leq 1\) basis point or after 100 iterations. Failure to converge within the declared bound returns \texttt{TSL\_NEIGHBOR\_MASS\_NONCONVERGENT} and the feature is omitted; it MUST NOT fall back to a provider-selected value.
+
+Seed influence is governed by a signed \texttt{tsl.seed\_set\_manifest.v1} containing the domain, inclusion criteria, source evidence, approving organizations, expiry, conflicts of interest, removal and appeal process, and per-source concentration caps. A scoring provider MUST NOT privately choose its own authoritative seeds. The seed manifest requires independent approval and versioning, and no single issuer or operator may contribute more than the profile's declared concentration cap.
+
+Every release of a profile using neighbor mass MUST publish sensitivity analysis that, at minimum: removes each seed class in turn; removes each approving organization in turn; perturbs eligible edge weights by the declared tolerance; varies \(\lambda\) across at least \(0.50,0.65,0.75,0.85\); and reports maximum subject-level change, label flips, and rank instability. If a subject's label changes under an allowed perturbation, the provider MUST widen uncertainty, suppress the feature, or abstain according to policy.
+
+The initial \texttt{opensource\_maintainer\_continuity} profile sets the neighbor-mass weight to zero until these governance artifacts and sensitivity gates are implemented.
 
 \subsection{Normalization Profiles}
 
@@ -1294,51 +1378,41 @@ The normalization profile MUST include the training window, percentiles, missing
 
 \subsection{Reference Weight Profile}
 
-The robust default separates gates, positive evidence, penalties, and uncertainty. This is an implementation profile, not a universal truth.
+The first implementation profile is specific to open-source release continuity. Cryptographic validity and trusted-time binding are gates and receive no weight.
 
 \begin{center}
-\begin{tabularx}{\textwidth}{>{\bfseries}p{0.26\textwidth} p{0.15\textwidth} X}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{0.30\textwidth} p{0.15\textwidth} X}
 \toprule
 Component & Weight & Rule \\
 \midrule
-Cryptographic validity & Gate & Required before ordinary scoring. \\
-Identity and key continuity & 1400 basis points & Age helps, but cannot dominate because old identities can be compromised. \\
-Receipts and reciprocity & 2200 basis points & Co-signed diverse receipts are the core scarce signal. \\
-Counterparty and community diversity & 1400 basis points & Prevents farms from converting volume into trust. \\
-Attestation quality & 1000 basis points & Useful but issuer-abuse bounded. \\
-Temporal consistency & 900 basis points & Detects compromise and laundering. \\
-Trusted-neighbor mass & 900 basis points & Useful with coverage weighting and seed governance. \\
-Domain-specific feature & 700 basis points & Example: dispute rate for marketplace, delegation scope for agents. \\
-Local relationship & 500 basis points & Private verifier context; never globalized by default. \\
-Adversarial proximity penalty & up to 2500 basis points & Strong in anti-phishing, weaker in high-false-positive domains. \\
-Drift penalty & up to 1500 basis points & Usually produces step-up, not permanent label. \\
+Protocol validity and trusted time & Gate & Required before any ordinary assessment. \\
+Maintainer key lineage & 1800 bps & Rewards verified rotation and recovery continuity; old age alone cannot dominate. \\
+Signed release history & 2000 bps & Uses only releases available before the target action. \\
+Reviewer/co-maintainer evidence & 1200 bps & Requires verified or selectively disclosed evidence; no public graph inference from opaque receipts. \\
+Repository and registry control continuity & 1200 bps & Versioned adapters and time-split evidence only. \\
+Counterparty/community diversity & 700 bps & Caps closed-cluster inflation. \\
+Maintainer attestation quality & 700 bps & Issuer quality, expiry, reversal, and appeal bounded. \\
+Release cadence consistency & 700 bps & Low or missing activity reduces coverage, not moral standing. \\
+Change-set and dependency continuity & 1000 bps & Drift produces step-up unless paired with hard adverse evidence. \\
+Local verifier policy & 700 bps & Remains local unless explicitly disclosed. \\
+Governed neighbor mass & 0 bps in v0 & May be enabled only under the convergence and seed-governance rules. \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-The raw score is:
-
-\begin{equation}
-z_i=b+\sum_{k\in K^+}w_kN_k(f_{ik})-\sum_{\ell\in K^-}u_{\ell}N_{\ell}(r_{i\ell})-u_q(1-q_i).
-\end{equation}
-
-The calibrated score is:
-
-\begin{equation}
-S_i=\operatorname{round}(10000\cdot C(z_i)),
-\end{equation}
-
-where \(C\) MUST be a declared monotone calibration function.
+The internal evidence value is computed with deterministic fixed-point arithmetic. A declared calibration function maps the value and penalties to an action-specific continuity estimate. Providers MUST NOT describe the result as universal trust.
 
 \subsection{Evidence Coverage and Abstention}
 
 Evidence coverage measures whether the provider has enough verified evidence to make a confident claim.
 
 \begin{equation}
-q_i=G_i\cdot \min\left(1,\frac{n_{events}}{25}\right)^{0.25}\cdot
-\min\left(1,\frac{n_{receipts}}{10}\right)^{0.35}\cdot
-\min\left(1,\frac{n_{counterparties}}{5}\right)^{0.40}.
+q_i=G_i\cdot \min\left(1,\frac{n_{signed\_releases}}{10}\right)^{0.45}\cdot
+\min\left(1,\frac{history\_days}{180}\right)^{0.35}\cdot
+\min\left(1,\frac{n_{independent\_control\_or\_review\_sources}}{3}\right)^{0.20}.
 \end{equation}
+
+Only evidence that predates the target release may contribute. Repository forks, mirrors, or duplicate registry observations MUST be deduplicated by the declared profile.
 
 A provider MUST abstain or use caution labels when coverage is low:
 
@@ -1348,7 +1422,7 @@ A provider MUST abstain or use caution labels when coverage is low:
 Coverage & Label Policy & Meaning \\
 \midrule
 \(q_i<0.25\) & Insufficient evidence & Do not infer suspiciousness from newness. \\
-\(0.25\leq q_i<0.50\) & Unknown or caution & Score MAY be shown with wide interval. \\
+\(0.25\leq q_i<0.50\) & Unknown or caution & An assessment MAY be shown only with a wide interval and step-up guidance. \\
 \(0.50\leq q_i<0.75\) & Medium confidence & Ordinary labels allowed except highest trust. \\
 \(q_i\geq0.75\) & High confidence & Full label range allowed if calibration supports it. \\
 \bottomrule
@@ -1380,7 +1454,7 @@ Providers MUST report calibration on held-out time-split data. Expected calibrat
 ECE=\sum_{b=1}^{B}\frac{|B_b|}{n}\left|acc(B_b)-conf(B_b)\right|.
 \end{equation}
 
-A score assessment SHOULD include a confidence interval. For transparent models, bootstrap over edges, counterparties, and attestations:
+An ordinary continuity assessment SHOULD include a confidence interval. For transparent models, bootstrap over edges, counterparties, and attestations:
 
 \begin{equation}
 CI_{95}(S_i)=\left[Q_{0.025}(S_i^*),Q_{0.975}(S_i^*)\right].
@@ -1407,46 +1481,52 @@ The reference labels are:
 \toprule
 Label & Required Rule & Notes \\
 \midrule
-Trusted & \(S\geq9000\), lower CI \(\geq8000\), \(q\geq0.75\) & Never shown for sparse identities. \\
-Likely trusted & \(7500\leq S<9000\), \(q\geq0.50\) & Good continuity, not a guarantee. \\
-Medium trust & \(5500\leq S<7500\) & Mixed or moderate evidence. \\
+Strong continuity & \(S\geq9000\), lower CI \(\geq8000\), \(q\geq0.75\) & Never shown for sparse identities. \\
+Likely continuous & \(7500\leq S<9000\), \(q\geq0.50\) & Good continuity, not a guarantee. \\
+Mixed continuity & \(5500\leq S<7500\) & Mixed or moderate evidence. \\
 Unknown caution & \(3500\leq S<5500\) or low coverage & Default for legitimate new users. \\
 Suspicious & \(1500\leq S<3500\) and adverse evidence present & Requires adverse signal beyond newness. \\
 High risk & \(S<1500\) or hard negative proof & Reserved for revoked, compromised, scam-like, or severe abuse evidence. \\
-Cryptographic failure & Any failed hard gate & Separate from score. \\
+Cryptographic failure & Any failed hard gate & No continuity value is emitted. \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-\subsection{Signed Trust Assessment Object}
+\subsection{Signed Continuity Assessment Object}
 
 \begin{lstlisting}[style=tslcode]
 {
-  "type": "tsl.trust_assessment.v2",
+  "type": "tsl.continuity_assessment.v2",
   "assessment_id": "0x...",
-  "subject": "did:tsl:eip155-8453:0xabc...",
+  "target_event_commitment": "0xrelease...",
+  "subject": "did:tsl:maintainer:alice",
   "issuer": "did:tsl:provider:continuity-labs",
-  "domain": "anti_phishing",
-  "scoring_profile_id": "did:tsl:provider:continuity-labs/profile/anti-phishing-v2.1.0",
-  "model_version": "2.1.0",
+  "domain": "opensource_maintainer_continuity",
+  "policy_id": "opensource_release_continuity.v1",
+  "scoring_profile_id": "did:tsl:provider:continuity-labs/profile/opensource-continuity-v0.1.0",
+  "model_version": "0.1.0",
   "gate_result": {
     "schema_valid": true,
+    "canonicalization_valid": true,
     "signature_valid": true,
     "key_active": true,
     "not_revoked": true,
+    "trusted_time_binding_valid": true,
+    "trusted_time_binding_valid": true,
     "included_in_log": true,
     "checkpoint_valid": true,
     "settlement_satisfied": true
   },
-  "score_bps": 8420,
+  "continuity_bps": 8420,
   "confidence_interval_bps": [7660, 9010],
   "coverage_bps": 8600,
-  "label": "likely_trusted",
+  "label": "likely_continuous",
+  "recommended_action": "allow_with_monitoring",
   "reason_codes": [
-    "valid_current_key",
-    "diverse_reciprocal_receipts",
-    "low_dispute_rate",
-    "no_recent_compromise_revocation"
+    "valid_release_signature",
+    "trusted_pre_revocation_time_evidence",
+    "verified_key_lineage",
+    "release_history_consistent"
   ],
   "risk_codes": [],
   "feature_vector_commitment": "0x...",
@@ -1454,7 +1534,7 @@ Cryptographic failure & Any failed hard gate & Separate from score. \\
   "privacy_disclosure_level": "aggregate_only",
   "appeal_uri": "https://provider.example/appeals/0x...",
   "issued_at": "2026-05-26T00:00:00Z",
-  "expires_at": "2026-06-26T00:00:00Z",
+  "expires_at": "2026-05-27T00:00:00Z",
   "signature": "provider_signature"
 }
 \end{lstlisting}
@@ -1462,24 +1542,24 @@ Cryptographic failure & Any failed hard gate & Separate from score. \\
 \subsection{Assessment Algorithm}
 
 \begin{lstlisting}[style=tslcode]
-function assessTrust(subject, evidence, profile, domainPolicy): TrustAssessmentV2 {
-  gate = verifyHardGates(subject, evidence, domainPolicy)
-  if gate.hasCryptographicFailure():
-    return signedFailureAssessment(subject, gate)
+function assessContinuity(targetEvent, evidence, profile, domainPolicy): ContinuityAssessmentV2 {
+  gate = verifyHardGates(targetEvent, evidence, domainPolicy)
+  if gate.hasProtocolFailure():
+    return signedFailureAssessment(targetEvent, gate)
 
-  features = extractRegisteredFeatures(evidence, profile.featureRegistry)
-  coverage = computeEvidenceCoverage(features, evidence)
+  features = extractRegisteredDomainFeatures(targetEvent, evidence, profile.featureRegistry)
+  coverage = computeEvidenceCoverage(features, evidence, targetEvent.issued_at)
 
   if coverage < domainPolicy.minimumCoverage and !features.hasAdverseEvidence:
-    return signedAbstention(subject, gate, coverage, "insufficient_evidence")
+    return signedAbstention(targetEvent, gate, coverage, "insufficient_evidence")
 
   normalized = normalize(features, profile.normalizationProfile)
-  rawScore = weightedScore(normalized, profile.weightProfile, coverage)
-  calibrated = calibrate(rawScore, profile.calibrationProfile)
-  interval = confidenceInterval(evidence, profile)
-  label = threshold(calibrated, interval, coverage, profile.thresholdPolicy)
+  rawEvidence = weightedEvidence(normalized, profile.weightProfile, coverage)
+  continuity = calibrate(rawEvidence, profile.calibrationProfile)
+  interval = confidenceInterval(targetEvent, evidence, profile)
+  label = thresholdForPolicy(continuity, interval, coverage, features, domainPolicy)
 
-  return signAssessment({subject, gate, calibrated, interval, coverage, label})
+  return signContinuityAssessment({targetEvent, gate, continuity, interval, coverage, label})
 }
 \end{lstlisting}
 
@@ -1499,7 +1579,7 @@ Variant & Storage & Disclosure \\
 Local-only & Encrypted client store & Used only for local drift and relationship scoring. \\
 Pairwise verifier & Derived per verifier domain & Stable only between subject and verifier; not reusable globally. \\
 Provider aggregate & Provider receives buckets or proofs & Provider computes features without raw content or exact graph by default. \\
-Public commitment & Salted commitment only & Proves existence or timestamp without opening metadata. \\
+Public commitment & Salted commitment only & Proves committed existence and, once logged, trusted ordering without opening metadata. \\
 High-assurance private proof & Commitments plus ZK predicates & Proves threshold facts without disclosing raw metadata. \\
 \bottomrule
 \end{tabularx}
@@ -1513,7 +1593,7 @@ High-assurance private proof & Commitments plus ZK predicates & Proves threshold
 Input & Default Rule & Notes \\
 \midrule
 Event class & Allowed & Message, receipt, transaction, agent call, code release. \\
-Coarse timestamp bucket & Allowed & Exact timestamp MAY remain local; public log epoch already leaks coarse timing. \\
+Coarse time bucket & Allowed & Exact local time MAY remain private; checkpoint cadence and leaf ordering leak bounded timing information. \\
 Content length bucket & Restricted & Use coarse buckets only; exact size can leak content. \\
 Counterparty commitment & Allowed with salt & Exact counterparty stays local unless disclosed. \\
 Key lineage & Allowed & Key age and rotation history are protocol facts. \\
@@ -1584,7 +1664,7 @@ C_{F,t} &= \hash(\texttt{tsl.metadata.commit.v1}\parallel F_t\parallel s_t),\\
 R_F &= \MerkleRoot(C_{F,1},\ldots,C_{F,n}).
 \end{align}
 
-The salt \(s_t\) MUST be a fresh 256-bit random value. A public fingerprint commitment MUST NOT include \(F_t\) itself.
+The salt \(s_t\) MUST be a fresh 256-bit random value. A public fingerprint commitment MUST NOT include \(F_t\) itself. A private receipt-set root is a subject-controlled accumulator used only for selective or zero-knowledge proofs; it is not a second public transparency log.
 
 \subsection{Fingerprint Object}
 
@@ -1733,7 +1813,7 @@ The effective edge weight is:
 \omega_e(t)=\omega_{base}(c_e)\cdot q_{source(e)}\cdot d_{c_e}(t-\tau_e)\cdot \rho_e\cdot \chi_e,
 \end{equation}
 
-where \(q_{source}\) is counterparty or issuer quality, \(d_c\) is decay, \(\rho_e\) is receipt status, and \(\chi_e\) is an appeal/reversal multiplier.
+where \(q_{source}\) is a capped, non-recursive source-quality value derived from verified first-order evidence or a separately governed fixed-point profile; \(d_c\) is decay, \(\rho_e\) is receipt status, and \(\chi_e\) is an appeal/reversal multiplier.
 
 \subsection{Temporal Decay}
 
@@ -1798,7 +1878,7 @@ Low conductance, high internal density, low seed escape, and synchronized creati
 
 \subsection{Trusted and Adversarial Manifolds}
 
-The organic manifold \(\mathcal{M}_T\) is a distribution over trajectories with:
+The organic manifold \(\mathcal{M}_C\) is a distribution over trajectories with:
 
 \begin{itemize}
     \item long-lived key lineage or verified recovery,
@@ -1943,7 +2023,7 @@ Every production scorer SHOULD test at least these synthetic attacks:
     {"name": "issuer_collusion", "identities": 300, "weak_issuer_fraction_bps": 2500},
     {"name": "compromised_real_accounts", "identities": 50, "drift_after_day": 90}
   ],
-  "success_metric": "fraction_reaching_likely_trusted_label",
+  "success_metric": "fraction_reaching_likely_continuous_label",
   "required_detection_rate_bps": 8500
 }
 \end{lstlisting}
@@ -1959,7 +2039,7 @@ Stage & Requirements & Allowed Label Ceiling \\
 \midrule
 Fresh & Valid key, no receipts & Unknown caution. \\
 Seeded & Verified organization, inviter, or local relationship & Medium trust unless receipts exist. \\
-Emerging & At least 5 reciprocal receipts and 3 counterparties & Likely trusted MAY be possible in narrow local context. \\
+Emerging & At least 5 reciprocal receipts and 3 counterparties & Likely continuity MAY be supported in narrow local context. \\
 Established & At least 25 events, 10 receipts, 5 counterparties & Full label range possible subject to calibration. \\
 High-value actor & Strong attestations or long history & Full label range, stricter drift monitoring. \\
 \bottomrule
@@ -2337,7 +2417,10 @@ Mainnet readiness for ZK proofs is blocked until a real ceremony transcript, ver
   "public_statement": {
     "minimum_reciprocal_receipts": 50,
     "valid_before": "2026-05-26T00:00:00Z",
-    "receipt_root": "0x..."
+    "public_log_id": "tsl-log:00af",
+    "public_tree_size": 184294,
+    "public_root_hash": "0x...",
+    "private_receipt_set_root": "0x..."
   },
   "disclosure_policy": "do_not_reveal_counterparties",
   "verifier_domain": "marketplace.example"
@@ -2349,7 +2432,7 @@ Mainnet readiness for ZK proofs is blocked until a real ceremony transcript, ver
 A privacy report MUST consider:
 
 \begin{itemize}
-    \item timing leakage from checkpoint epochs,
+    \item timing leakage from checkpoint cadence and cumulative leaf ordering,
     \item volume leakage from repeated commitments,
     \item uniqueness leakage from unusual bucket combinations,
     \item counterparty correlation through repeated pairwise proofs,
@@ -2394,7 +2477,7 @@ A provider on probation MAY issue assessments only if verifier policy accepts pr
   "provider_id": "did:tsl:provider:continuity-labs",
   "legal_or_pseudonymous_name_commitment": "0x...",
   "public_keys": [{"key_id": "#assessment-key-1", "type": "ed25519", "public_key": "0x..."}],
-  "supported_domains": ["anti_phishing", "marketplace", "agent_delegation"],
+  "supported_domains": ["opensource_maintainer_continuity"],
   "provider_status": "active",
   "audit_policy_uri": "https://provider.example/audit-policy",
   "appeal_policy_uri": "https://provider.example/appeals",
@@ -2410,11 +2493,11 @@ A provider on probation MAY issue assessments only if verifier policy accepts pr
 \begin{lstlisting}[style=tslcode]
 {
   "type": "tsl.model_card.v2",
-  "model_id": "anti-phishing-v2.1.0",
+  "model_id": "opensource-continuity-v0.1.0",
   "provider": "did:tsl:provider:continuity-labs",
-  "domain": "anti_phishing",
-  "intended_use": "consumer and enterprise phishing warning",
-  "not_intended_for": ["employment_decisions", "credit_decisions", "law_enforcement"],
+  "domain": "opensource_maintainer_continuity",
+  "intended_use": "open-source release continuity and compromise step-up",
+  "not_intended_for": ["employment_decisions", "credit_decisions", "law_enforcement", "general_person_reputation"],
   "feature_registry_commitment": "0x...",
   "training_data_statement": {
     "time_window": "2025-01-01/2026-04-30",
@@ -2481,6 +2564,10 @@ Production models SHOULD be deployed through shadow and canary phases. Canary ex
 \section{Evaluation Framework}
 % ============================================================
 
+\begin{principlebox}{First-Paper Evaluation Scope}
+The first paper evaluates only \texttt{opensource\_maintainer\_continuity}. Train/test splits MUST prevent leakage across time, repositories, packages, maintainers, forks, and mirrored release artifacts. Results for other domains are not reported as validated protocol performance.
+\end{principlebox}
+
 The evaluation framework must test accuracy, calibration, fairness to sparse identities, latency, privacy leakage, robustness under attacks, and longitudinal drift.
 
 \subsection{Benchmark Dataset Families}
@@ -2523,24 +2610,21 @@ Leakage&=PLS,\\
 Latency_{p95}&=Q_{0.95}(verification\_time).
 \end{align}
 
-\subsection{Promotion Gates by Domain}
+\subsection{Promotion Gates for the Initial Domain}
 
-Promotion gates are expressed in fixed-point basis points for machine-readable reports. For example, \texttt{auroc\_bps = 9200} means AUROC 0.92.
+Promotion gates are fixed before final test evaluation and expressed in basis points. The reference values below are engineering targets, not evidence of achieved performance.
 
 \begin{center}
-\begin{tabularx}{\textwidth}{>{\bfseries}p{0.20\textwidth} p{0.18\textwidth} p{0.18\textwidth} X}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{0.27\textwidth} p{0.17\textwidth} p{0.17\textwidth} X}
 \toprule
 Domain & Min AUROC bps & Max ECE bps & Additional Gate \\
 \midrule
-Anti-phishing & 9200 & 400 & Recall at high-risk threshold at least 8500 bps. \\
-Marketplace & 8800 & 500 & Sparse seller false-positive rate below 300 bps. \\
-Agent payments & 9400 & 300 & Zero known out-of-scope payment approvals in red-team set. \\
-Open-source & 8600 & 500 & Maintainer-drift false-positive review below 200 bps. \\
-Professional identity & 8400 & 500 & Public negative label reversal rate below 100 bps. \\
-Customer support & 9000 & 400 & Org-delegation verification false negative below 100 bps. \\
+Open-source maintainer continuity & 8600 & 500 & Maintainer-transition false-positive review below 200 bps; zero acceptance of the reference post-revocation backdating attack; calibrated step-up rate reported by project size and history coverage. \\
 \bottomrule
 \end{tabularx}
 \end{center}
+
+No threshold is claimed for anti-phishing, marketplaces, professional identity, customer support, or agent payments in the initial paper.
 
 \subsection{Red-Team Matrix}
 
@@ -2565,7 +2649,7 @@ A production scorer MUST be evaluated against:
 \begin{lstlisting}[style=tslcode]
 {
   "type": "tsl.evaluation_report.v1",
-  "model_id": "anti-phishing-v2.1.0",
+  "model_id": "opensource-continuity-v0.1.0",
   "provider": "did:tsl:provider:continuity-labs",
   "dataset_commitments": ["0x...", "0x..."],
   "time_split": {"train_end": "2026-03-31", "test_start": "2026-04-01"},
@@ -2710,11 +2794,11 @@ Game & Adversary Goal & Win Condition \\
 Origin forgery & Create valid event for uncompromised key & Verifier accepts signature under active key not controlled by adversary. \\
 Commitment binding & Open one commitment two ways & Same commitment verifies for two different contents or metadata values. \\
 Inclusion forgery & Claim log inclusion falsely & Invalid Merkle path accepted for a settled root. \\
-Checkpoint equivocation & Present conflicting roots & Two roots for same epoch-shard avoid auditor or verifier detection. \\
-Revocation safety & Use revoked key after effective time & Verifier accepts post-revocation event under policy requiring revocation check. \\
+Checkpoint equivocation & Present conflicting roots & Two incompatible roots for the same log and tree size avoid auditor or verifier detection. \\
+Revocation and backdating safety & Submit a newly signed event after revocation with an earlier self-declared time & Verifier accepts without trusted pre-revocation relay receipt, timestamp, inclusion promise, or checkpoint evidence. \\
 Unlinkability & Link two commitments beyond policy & Adversary distinguishes same subject across scopes better than leakage budget permits. \\
 Delegation scope & Prove out-of-scope action as allowed & Verifier accepts action outside effective delegation scope. \\
-Assessment integrity & Forge provider score & Verifier accepts unsigned or wrong-provider assessment as valid. \\
+Assessment integrity & Forge provider assessment & Verifier accepts unsigned or wrong-provider assessment as valid. \\
 \bottomrule
 \end{longtable}
 
@@ -2728,11 +2812,11 @@ Mechanism & What It Guarantees \\
 Signature & A holder of the private key signed the canonical payload, assuming no compromise. \\
 Registry & Key state and provider state according to settled registry facts. \\
 Hash commitment & Opened value matches committed value if salt and value are disclosed. \\
-Merkle proof & Commitment is included in a stated root if proof verifies. \\
-Checkpoint & Root was recorded under settlement assumptions. \\
+RFC 9162 inclusion proof & A typed commitment is included at a stated leaf index and cumulative tree size if the proof verifies. \\
+Checkpoint and consistency proof & A cumulative root was advertised and is an append-only extension of a prior accepted root under RFC 9162 and settlement assumptions. \\
 Auditor gossip & Equivocation becomes detectable if conflicting views are observed. \\
 Attestation & Issuer made a signed claim; truth depends on evidence and issuer quality. \\
-Trust score & Calibrated estimate of risk for a domain; never proof of safety or intent. \\
+Continuity assessment & Calibrated estimate for one target action, domain, and policy; never proof of safety, intent, or universal trustworthiness. \\
 Graph model & Statistical similarity and continuity evidence; not cryptographic truth. \\
 \bottomrule
 \end{tabularx}
@@ -2741,10 +2825,10 @@ Graph model & Statistical similarity and continuity evidence; not cryptographic 
 \subsection{Formal Invariants}
 
 \begin{enumerate}
-    \item Invalid signatures MUST fail regardless of score.
-    \item Revoked keys MUST fail for post-revocation events.
-    \item A verifier MUST be able to recompute canonical bytes before signature verification.
-    \item Public commitments MUST NOT require raw content disclosure.
+    \item Invalid signatures MUST fail regardless of any assessment output.
+    \item A post-revocation first submission MUST fail unless the exact commitment has trusted pre-revocation time evidence.
+    \item A verifier MUST recompute RFC 8785 JCS bytes before signature verification.
+    \item Public commitments MUST NOT require raw content or exact receiver disclosure.
     \item Scoring provider signatures MUST be checked independently of relay signatures.
     \item Agent action authorization MUST check effective scope and revocation.
     \item Sparse evidence MUST NOT be mapped directly to maliciousness without adverse evidence.
@@ -2870,15 +2954,16 @@ Deny rules override allow rules.
 \subsection{Authorization Algorithm}
 
 \begin{lstlisting}[style=tslcode]
-function verifyAgentAction(action, delegationChain, parameters, policy): AgentDecision {
+function verifyAgentAction(action, relayReceipt, checkpoint, delegationChain, parameters, policy): AgentDecision {
   verifyAgentSignature(action)
+  verifyTrustedActionTime(action, relayReceipt, checkpoint, policy)
   verifyCanonicalActionCommitment(action, parameters)
 
   effectiveScope = universeScope()
   for delegation in delegationChain:
     verifyPrincipalSignature(delegation)
-    assert activeAt(delegation, action.issued_at)
-    assert !revokedAt(delegation, action.issued_at)
+    assert activeAt(delegation, trustedActionTime(action, relayReceipt, checkpoint))
+    assert !revokedAt(delegation, trustedActionTime(action, relayReceipt, checkpoint))
     assert subdelegationAllowedByParent(delegation)
     effectiveScope = intersect(effectiveScope, delegation.scope)
 
@@ -2944,7 +3029,7 @@ Defenses:
 \begin{itemize}
     \item diverse counterparty weighting,
     \item community-escape metrics,
-    \item trust-weighted attestations,
+    \item issuer-quality-capped, evidence-bound attestations,
     \item rate limits for new identities,
     \item cluster anomaly detection,
     \item economic or proof-of-personhood optional add-ons,
@@ -2981,6 +3066,21 @@ Defenses:
     \item delegated signing policies.
 \end{itemize}
 
+\subsection{Revocation Backdating and Post-Revocation Submission}
+
+An attacker with a compromised key signs a new event after revocation but assigns an earlier \texttt{issued\_at}. A verifier that checks only key status at \texttt{issued\_at} accepts a forged historical event.
+
+Defenses:
+
+\begin{itemize}
+    \item signed relay receipt with \texttt{relay\_received\_at},
+    \item inclusion promise binding the exact commitment and merge deadline,
+    \item monotonic \texttt{checkpoint\_time},
+    \item rejection of first-seen post-revocation submissions,
+    \item acceptance after revocation only with trusted pre-revocation evidence,
+    \item test vectors covering backdated \texttt{issued\_at} and stale caches.
+\end{itemize}
+
 \subsection{Metadata Correlation}
 
 Observers infer private relationships from public commitments.
@@ -2988,7 +3088,8 @@ Observers infer private relationships from public commitments.
 Defenses:
 
 \begin{itemize}
-    \item blinded receiver commitments,
+    \item public logs containing only salted opaque receipt commitments,
+    \item pairwise identifiers and selective receiver-binding disclosure,
     \item salting and domain separation,
     \item batching and delayed publication,
     \item optional local-only mode,
@@ -3031,65 +3132,33 @@ Defenses:
 \end{itemize}
 
 % ============================================================
-\section{Use Cases}
+\section{Initial Domain and Future Use Cases}
 % ============================================================
 
-\subsection{Anti-Phishing}
+\subsection{Normative Initial Domain: Open-Source Maintainer Continuity}
 
-A message says it is from a bank. The \TSL{} client verifies whether the sender's \TrustID{} matches the user's prior verified bank relationship, whether the key is active, whether the proof is included in a checkpoint, and whether current behavior resembles prior continuity.
+The first implementation and paper focus on code releases. A verifier checks the release signature, maintainer key lineage, trusted-time and revocation state, cumulative-log inclusion, repository or package-registry control continuity, prior release trajectory, and domain-specific drift. The default response to unexplained drift is step-up review, not an accusation of fraud.
 
-\begin{warningbox}{Example Warning}
-This message has a valid signature, but not from the \TrustID{} you previously used with this bank. The identity is three days old, has no reciprocal receipts with you, and has elevated outbound activity. Treat as high risk.
-\end{warningbox}
+The benchmark target is a concrete release event. Evaluation uses public histories and reproducible compromise-like scenarios with time-split and project-split holdouts. The strongest claim is that the profile can be calibrated to distinguish ordinary continuity from specified takeover or compromise scenarios at measured false-positive and false-negative rates.
 
-\subsection{AI-Agent Trust}
+\subsection{Prospective Domains}
 
-AI agents will call tools, negotiate with other agents, spend money, sign documents, and interact with humans. Each agent needs scoped identity, delegated authority, and continuity history.
-
-\TSL{} can answer:
-
-\begin{itemize}
-    \item Is this the same agent I interacted with before?
-    \item Which human, company, or wallet delegated authority to it?
-    \item What actions is it allowed to perform?
-    \item Has its behavior changed sharply?
-    \item Is this agent connected to malicious clusters?
-\end{itemize}
-
-\subsection{Marketplace Reputation}
-
-Sellers should not lose all reputation when they move platforms. Buyers should not have to trust platform-specific badges. \TSL{} makes completed transactions and counterparty receipts portable.
-
-\subsection{Professional Trust}
-
-Founders, recruiters, engineers, contractors, and creators can prove long-term professional continuity without exposing private messages.
-
-\subsection{Open-Source Supply Chain}
-
-Package maintainers and release bots can sign releases, issues, pull requests, and maintainer attestations. A suspicious package release can be evaluated against maintainer continuity, key state, and behavioral drift.
-
-\subsection{Customer Support}
-
-Businesses can sign support interactions. Customers can verify that a support agent is authorized and that a message belongs to the company's continuity chain.
+Anti-phishing, marketplace reputation, professional identity, customer support, and agent authorization remain design sketches. They MAY reuse the evidence and log layer, but each needs its own policy, ground truth, privacy review, calibration, threshold selection, and appeals process before any scientific or product claim is made.
 
 % ============================================================
 \section{Killer Demos}
 % ============================================================
 
-\begin{marketbox}{Demo 1: The Phishing Email That Fails}
-A realistic fake email from a bank arrives. Gmail does not block it. \TSL{} shows: wrong \TrustID{}, no prior relationship, young key, no company attestation, scam-like outbound pattern. The user sees one clear warning before clicking.
+\begin{marketbox}{Primary Demo: Maintainer Continuity and Compromise Step-Up}
+A package release carries a valid signature, but the release is first submitted after the signing key's revocation cutoff and supplies only a backdated \texttt{issued\_at}. Verification fails the trusted-time gate. In a second scenario, a valid pre-revocation release has unusual dependency and control changes; the continuity profile recommends step-up review rather than declaring the maintainer malicious.
 \end{marketbox}
 
-\begin{marketbox}{Demo 2: Portable Seller Reputation}
-A marketplace seller leaves one platform. On a new marketplace, they selectively prove 500 completed transactions, 2 years of continuity, and low dispute rate without revealing buyer identities.
+\begin{marketbox}{Secondary Demo: Privacy-Preserving Review Receipt}
+A reviewer co-signs a receipt. The public cumulative log contains only a salted opaque receipt commitment. An authorized verifier receives the full receipt and pairwise binding proof, while public observers cannot read the exact reviewer-maintainer edge.
 \end{marketbox}
 
-\begin{marketbox}{Demo 3: Agent-to-Agent Verification}
-An AI procurement agent receives an invoice from another agent. It verifies delegation scope, company \TrustID{}, invoice continuity, and revocation status before initiating payment approval.
-\end{marketbox}
-
-\begin{marketbox}{Demo 4: Compromised Maintainer Alert}
-A trusted open-source maintainer signs a release, but the behavior is abnormal: new device key, dormant account reactivation, unusual package dependency, and sudden outbound maintainer messages. \TSL{} shows a step-up verification warning.
+\begin{marketbox}{Future Demos, Not Yet Validated}
+Phishing, portable marketplace evidence, and agent-to-agent authorization may be demonstrated as future profiles, but they MUST be labeled exploratory until domain-specific evaluation is complete.
 \end{marketbox}
 
 % ============================================================
@@ -3102,10 +3171,10 @@ The product surface is only the visible edge of the protocol. These badges, web 
 \subsection{Consumer Badge}
 
 \begin{lstlisting}[style=tslcode]
-TSL Verified
-Continuity: Strong
-Relationship: Known to you
-Risk: Low
+TSL Release Proof Valid
+Release continuity: Strong evidence
+Policy: opensource_release_continuity.v1
+Recommended action: Allow with monitoring
 Why:
 - Signature valid under current key registry
 - Identity has 31 months of continuity
@@ -3117,9 +3186,9 @@ Why:
 \subsection{Caution Badge}
 
 \begin{lstlisting}[style=tslcode]
-Unknown TSL Identity
-Continuity: Insufficient
-Risk: Caution
+Insufficient Release Evidence
+Continuity: Not assessed
+Recommended action: Step up or review
 Why:
 - Signature is valid
 - Identity is 2 days old
@@ -3130,8 +3199,8 @@ Why:
 \subsection{High-Risk Badge}
 
 \begin{lstlisting}[style=tslcode]
-High Risk
-Continuity: Broken
+Release Verification Failed
+Continuity assessment: Suppressed
 Why:
 - Key was revoked 6 hours ago
 - Message signed with revoked key
@@ -3158,7 +3227,7 @@ Deliverables:
     \item verification API.
 \end{itemize}
 
-\subsection{Phase 1: Universal Proof Link Reference Client}
+\subsection{Phase 1: Portable Proof Link Reference Client}
 
 Build a reference client where a user or agent can:
 
@@ -3189,9 +3258,9 @@ Build:
     \item identity registry.
 \end{itemize}
 
-\subsection{Phase 4: Trust Assessment Engine}
+\subsection{Phase 4: Open-Source Continuity Assessment Engine}
 
-Start with transparent scoring and explanations. Add graph intelligence only after enough data exists.
+Implement only the \texttt{opensource\_release\_continuity.v1} profile with transparent features, time-split evaluation, calibration, uncertainty, and step-up explanations. Do not add cross-domain graph intelligence until the first profile is reproducible.
 
 \subsection{Phase 5: Agent SDK}
 
@@ -3237,7 +3306,7 @@ Request:
   "event_commitment": "0x...",
   "sender": "did:tsl:eip155-8453:0xabc...",
   "signature": "0x...",
-  "timestamp": "2026-05-25T00:01:00Z"
+  "issued_at": "2026-05-25T00:01:00Z"
 }
 
 Response:
@@ -3245,9 +3314,8 @@ Response:
   "accepted": true,
   "relay": "relay-3.tsl.network",
   "log_index": 184293,
-  "epoch": "2026-05-25T00:00:00Z/PT5M",
   "shard": "00af",
-  "inclusion_promise": "0x..."
+  "relay_receipt": {"type": "tsl.relay_receipt.v1", "relay_received_at": "2026-05-25T00:01:04Z", "promised_tree_size": 184294, "signature": "0x..."}
 }
 \end{lstlisting}
 
@@ -3259,14 +3327,17 @@ GET /v1/proofs/0xEVENTCOMMITMENT
 Response:
 {
   "event_commitment": "0x...",
+  "relay_receipt": {"type": "tsl.relay_receipt.v1", "...": "..."},
   "checkpoint": {
-    "epoch": "2026-05-25T00:00:00Z/PT5M",
+    "log_id": "tsl-log:00af",
     "shard": "00af",
-    "root": "0x...",
+    "tree_size": 184294,
+    "root_hash": "0x...",
+    "checkpoint_time": "2026-05-25T00:05:00Z",
     "settlement_tx": "0x..."
   },
-  "merkle_proof": ["0x...", "0x...", "0x..."],
-  "consistency_proof": ["0x...", "0x..."]
+  "inclusion_proof": {"type": "tsl.inclusion_proof.v1", "...": "..."},
+  "consistency_proof": {"type": "tsl.consistency_proof.v1", "...": "..."}
 }
 \end{lstlisting}
 
@@ -3292,8 +3363,8 @@ Response:
   "included_in_log": true,
   "checkpoint_settled": true,
   "revoked": false,
-  "risk_label": "likely_trusted",
-  "score": 82,
+  "continuity_label": "likely_continuous",
+  "continuity_bps": 8200,
   "explanation": [
     "Signature valid",
     "Key active",
@@ -3320,17 +3391,17 @@ interface ITrustIDRegistry {
 
 interface ICheckpointRegistry {
     function submitCheckpoint(
-        uint64 epoch,
+        bytes32 logId,
         bytes32 shard,
-        bytes32 eventRoot,
-        bytes32 receiptRoot,
-        bytes32 attestationRoot,
-        bytes32 revocationRoot,
-        uint256 eventCount,
+        uint64 treeSize,
+        bytes32 rootHash,
+        uint64 checkpointTime,
+        uint64 previousTreeSize,
+        bytes32 previousCheckpointHash,
         bytes calldata relaySignature
     ) external;
 
-    function getCheckpoint(uint64 epoch, bytes32 shard) external view returns (Checkpoint);
+    function getCheckpoint(bytes32 logId, uint64 treeSize) external view returns (Checkpoint);
 }
 
 interface IProviderRegistry {
@@ -3397,44 +3468,19 @@ Developer tooling & Maintainer signing, package trust, CI/CD release verificatio
 \section{Go-to-Market}
 % ============================================================
 
-The wedge should be a problem where trust failure is painful and proof links can work without permission from incumbents.
+The first wedge is open-source maintainer and release continuity because release histories, signatures, ownership transitions, package metadata, and compromise-like scenarios are comparatively public and reproducible.
 
-\subsection{Best Initial Wedges}
+\subsection{Initial Product}
 
-\begin{enumerate}
-    \item \textbf{AI-agent verification:} new category, little incumbent lock-in, urgent need for delegated trust.
-    \item \textbf{Marketplace seller/buyer trust:} obvious economic value and portable reputation story.
-    \item \textbf{Anti-phishing for businesses:} strong enterprise willingness to pay.
-    \item \textbf{Open-source maintainer continuity:} developer credibility and viral proof-of-concept.
-    \item \textbf{Professional proof links:} founders, recruiters, contractors, creators, and consultants.
-\end{enumerate}
+Ship a command-line verifier, CI integration, release proof bundle, maintainer-key rotation flow, cumulative transparency log, and browser/web proof view for code releases. The product claim is limited to verifying protocol facts and producing a calibrated release-continuity assessment under \texttt{opensource\_release\_continuity.v1}.
 
-\subsection{Avoid as First Wedge}
+\subsection{Expansion Rule}
 
-Do not begin by asking Gmail, LinkedIn, or major social platforms for permission. They can become later distribution channels. The first wedge should prove value without platform cooperation.
+A new domain is added only after it has a named policy, dataset statement, privacy review, deterministic profile, calibration report, red-team scenarios, threshold-cost analysis, and appeal path. Anti-phishing, marketplaces, professional identity, customer support, and agent commerce are expansion hypotheses rather than initial proof points.
 
 \subsection{Adoption Loop}
 
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[
-    node distance=2.35cm,
-    bubble/.style={circle, draw=tslblue, fill=blue!3, very thick, text width=2.2cm, align=center, inner sep=5pt},
-    arrow/.style={-{Latex[length=3mm]}, thick, draw=tslgray}
-]
-\node[bubble] (sign) {User signs proof};
-\node[bubble, right=of sign] (share) {Proof shared anywhere};
-\node[bubble, below=of share] (verify) {Recipient verifies};
-\node[bubble, left=of verify] (receipt) {Recipient co-signs receipt};
-\node[bubble, below=1.7cm of $(sign)!0.5!(verify)$] (score) {Continuity improves};
-\draw[arrow] (sign) -- (share);
-\draw[arrow] (share) -- (verify);
-\draw[arrow] (verify) -- (receipt);
-\draw[arrow] (receipt) -- (score);
-\draw[arrow] (score.west) to[bend left=30] (sign.west);
-\end{tikzpicture}
-\caption{Every verification can create a receipt; every receipt increases continuity; stronger continuity makes future verification more valuable.}
-\end{figure}
+A maintainer signs a release, shares a proof bundle, a verifier checks it, and authorized reviewers may add private or selective receipts. The resulting evidence improves future release continuity without publishing the exact review graph.
 
 % ============================================================
 \section{Competitive Positioning}
@@ -3452,7 +3498,7 @@ Platform reputation & Local marketplace trust & Portability and cryptographic ow
 DID wallets & Identifier control & Behavioral trust, receipts, graph intelligence \\
 Blockchains & Durable settlement & Communication trust semantics and privacy UX \\
 AI scam detectors & Pattern detection & Verifiable identity history and user-owned evidence \\
-\TSL{} & Portable continuity trust & Must solve adoption, privacy, governance, and UX carefully \\
+\TSL{} & Portable continuity evidence & Initial validated profile is limited to open-source maintainer and release continuity \\
 \bottomrule
 \end{tabularx}
 \end{center}
@@ -3471,13 +3517,13 @@ AI scam detectors & Pattern detection & Verifiable identity history and user-own
     \item blockchain-anchored checkpoints,
     \item key revocation and recovery,
     \item privacy-preserving graph intelligence,
-    \item signed, plural trust assessments.
+    \item signed, plural continuity assessments.
 \end{enumerate}
 
 The novelty is not ``put messages on a blockchain.'' That is the wrong framing. The novelty is:
 
 \begin{quote}
-\textbf{Build a portable behavioral trust substrate whose evidence is cryptographically auditable and privacy-preserving by default.}
+\textbf{Build a portable continuity-evidence substrate whose protocol facts are cryptographically auditable and whose assessments remain domain- and policy-bound.}
 \end{quote}
 
 % ============================================================
@@ -3488,12 +3534,12 @@ A production implementation requires:
 
 \begin{itemize}
     \item audited cryptographic libraries,
-    \item canonical serialization to prevent signature ambiguity,
+    \item RFC 8785 JCS canonicalization to prevent signature ambiguity,
     \item domain-separated commitments,
-    \item replay protection with nonces and timestamps,
+    \item replay protection with nonces plus trusted relay-receive and checkpoint time binding,
     \item robust key rotation semantics,
     \item revocation propagation,
-    \item transparency-log consistency proofs,
+    \item cumulative RFC 9162 inclusion and consistency proofs,
     \item rate limits and anti-spam controls,
     \item privacy threat modeling,
     \item user-controlled disclosure,
@@ -3557,8 +3603,8 @@ Days 1--15 & Protocol schemas, signing library, canonical serialization, \TrustI
 Days 16--30 & Proof-link reference client, message signing, basic verification, local encrypted store \\
 Days 31--45 & Receipt flow, append-only log prototype, inclusion proofs \\
 Days 46--60 & Revocation registry, checkpoint contract, first blockchain anchor \\
-Days 61--75 & Browser extension, trust badge UX, explanation engine \\
-Days 76--90 & Agent SDK, marketplace demo, phishing demo, open-source maintainer demo \\
+Days 61--75 & Release verifier UI, CI integration, maintainer rotation UX, explanation engine \\
+Days 76--90 & Open-source continuity benchmark, compromise simulations, calibration report, public test vectors \\
 \bottomrule
 \end{tabularx}
 \end{center}
@@ -3571,7 +3617,7 @@ Days 76--90 & Agent SDK, marketplace demo, phishing demo, open-source maintainer
 This section converts the protocol architecture into an engineer-executable backend specification. The reference implementation must be treated as a protocol stack, not as a monolithic application. A web app, extension, dashboard, or enterprise console is only a client of the protocol.
 
 \begin{principlebox}{Implementation Boundary}
-The canonical product is the protocol: object schemas, serialization rules, cryptographic verification, identity resolution, revocation semantics, Merkle proof verification, checkpoint settlement, relay behavior, and signed trust assessments. Applications are optional interfaces and carriers. No single website, dashboard, wallet, or extension is the protocol.
+The canonical product is the protocol: object schemas, serialization rules, cryptographic verification, identity resolution, revocation semantics, Merkle proof verification, checkpoint settlement, relay behavior, and signed continuity assessments. Applications are optional interfaces and carriers. No single website, dashboard, wallet, or extension is the protocol.
 \end{principlebox}
 
 \subsection{Normative Language}
@@ -3600,7 +3646,7 @@ A compliant implementation MUST preserve these invariants:
     \item A valid \TSL{} proof MUST be verifiable without the original hosted website.
     \item A valid \TSL{} proof MUST NOT require the user to join a destination application or social network.
     \item Raw message content MUST NOT be required for public log inclusion.
-    \item The canonical event validity MUST NOT depend on a trust score.
+    \item The canonical event validity MUST NOT depend on any continuity or risk assessment.
     \item The canonical event validity MUST NOT depend on a future token, staking tier, subscription plan, or payment method.
     \item Any compatible relay MAY accept commitments if it follows the relay validation rules.
     \item Any compatible verifier MAY verify signatures, revocation state, inclusion proofs, and settled checkpoints.
@@ -3663,25 +3709,23 @@ tsl/
 \section{Canonical Data and Cryptography}
 % ============================================================
 
-\subsection{Encoding Rules}
+\subsection{Encoding Rules: RFC 8785 JCS}
 
-Every signed or hashed object MUST be converted into canonical bytes before signing or hashing. The reference implementation uses deterministic JSON canonicalization with these rules:
+Every signed or hashed JSON object MUST be canonicalized exactly with RFC 8785 JSON Canonicalization Scheme (JCS) \cite{jcs}. \TSL{} does not define an alternative canonical JSON format.
 
 \begin{enumerate}
-    \item Objects are encoded as UTF-8 JSON.
-    \item Object keys are sorted lexicographically by Unicode code point.
-    \item Whitespace outside strings is removed.
-    \item Arrays preserve order.
-    \item Strings use standard JSON escaping.
-    \item Integers MUST be encoded in base-10 without leading zeroes.
-    \item Floating point values MUST NOT appear in signed core objects. Scores MAY appear as integers in basis points.
-    \item Timestamps MUST be RFC3339 UTC strings ending in \texttt{Z}, or unsigned integer milliseconds since Unix epoch where explicitly specified.
-    \item Binary values MUST be encoded as lowercase hex with \texttt{0x} prefix or multibase strings, depending on field definition.
-    \item Unknown fields MUST be rejected for core object types unless the object version declares an extension namespace.
+    \item Input MUST satisfy the I-JSON constraints required by RFC 8785, including no duplicate object member names and valid Unicode strings.
+    \item Canonicalization MUST use RFC 8785 primitive serialization, deterministic property sorting, and UTF-8 output exactly. Implementations MUST NOT substitute sorting by locale, UTF-8 byte sequence, or an informal ``Unicode code point'' rule.
+    \item Signed core objects in this profile MUST NOT contain JSON floating-point values. Integral JSON numbers MUST be within the interoperable I-JSON range; larger integers, arbitrary-precision values, and binary values MUST use schema-defined decimal strings, hexadecimal strings, or multibase strings.
+    \item Arrays preserve order. Object members whose order is semantically irrelevant MUST be sorted before array construction by the object's normative algorithm; JCS itself does not reorder arrays.
+    \item Timestamps MUST be schema-valid RFC 3339 UTC strings ending in \texttt{Z}. The signer-controlled event field is \texttt{issued\_at}; trusted relay and checkpoint times are carried in their own signed objects.
+    \item Unknown fields are rejected for core object types unless the version declares an extension namespace.
 \end{enumerate}
 
-\begin{warningbox}{No Ambiguous Signatures}
-The same semantic event must have exactly one byte representation before signing. If two libraries serialize the same event differently, the protocol is broken. Canonicalization tests are mandatory.
+Conformance suites MUST include the RFC 8785 number-serialization and property-order vectors, including published errata, plus TSL-specific cross-language vectors for every signed object. A library that emits different JCS bytes is non-compliant.
+
+\begin{warningbox}{No New Canonical JSON Dialect}
+The canonical byte sequence is RFC 8785 JCS output. Any future delta requires a new object major version, a precise byte-level specification, and cross-language vectors; it MUST NOT be introduced as an undocumented implementation convenience.
 \end{warningbox}
 
 \subsection{Domain Separation}
@@ -3692,13 +3736,14 @@ Every hash MUST include a domain tag. The tag prevents a hash intended for one o
 TSL_IDENTITY_V1        = "tsl.identity.v1"
 TSL_EVENT_V1           = "tsl.event_commitment.v1"
 TSL_RECEIPT_V1         = "tsl.receipt_commitment.v1"
+TSL_RECEIPT_LOG_V1     = "tsl.receipt_log_entry.v1"
+TSL_RELAY_RECEIPT_V1   = "tsl.relay_receipt.v1"
 TSL_ATTESTATION_V1     = "tsl.attestation.v1"
 TSL_REVOCATION_V1      = "tsl.revocation.v1"
 TSL_CHECKPOINT_V1      = "tsl.batch_checkpoint.v1"
-TSL_MERKLE_LEAF_V1     = "tsl.merkle.leaf.v1"
-TSL_MERKLE_NODE_V1     = "tsl.merkle.node.v1"
-TSL_ASSESSMENT_V1      = "tsl.trust_assessment.v1"
-TSL_ASSESSMENT_V2      = "tsl.trust_assessment.v2"
+TSL_LOG_ENTRY_V1       = "tsl.log_entry.v1"
+TSL_ASSESSMENT_V1      = "tsl.continuity_assessment.v1"
+TSL_ASSESSMENT_V2      = "tsl.continuity_assessment.v2"
 TSL_PROOF_BUNDLE_V1    = "tsl.proof_bundle.v1"
 TSL_DELEGATION_V2      = "tsl.delegation_policy.v2"
 TSL_AGENT_ACTION_V2    = "tsl.agent_action.v2"
@@ -3719,12 +3764,12 @@ The MVP crypto suite SHOULD use:
 \toprule
 Primitive & Reference Choice \\
 \midrule
-Signature & Ed25519 for local keys and agent keys \\
+Signature & Ed25519 as specified by RFC 8032 for local, maintainer, relay, and agent keys; RFC 8032 Section 7 vectors are mandatory. \\
 Smart account signature & EIP-712-compatible signature or account abstraction validation where applicable \\
-Hash & SHA-256 for broad compatibility; BLAKE3 MAY be offered as an extension \\
+Hash & SHA-256 for the v1 suite. A different hash requires a separately versioned suite and new vectors. \\
 Commitment salt & 256-bit random salt from a cryptographically secure random generator \\
 Nonce & 256-bit random nonce per event \\
-Merkle tree & Binary append-only tree with domain-separated leaves and internal nodes \\
+Merkle log & Cumulative RFC 9162 SHA-256 Merkle Tree Hash, inclusion proofs, and consistency proofs. \\
 Encryption at rest & XChaCha20-Poly1305 or AES-256-GCM for local private data \\
 \bottomrule
 \end{tabularx}
@@ -3756,7 +3801,7 @@ export interface EventCommitmentV1 {
   content_commitment: Hex32;
   metadata_commitment?: Hex32;
   previous_event_commitment?: Hex32;
-  timestamp: RFC3339;
+  issued_at: RFC3339;
   nonce: Hex32;
   disclosure_policy: "local_only" | "commitment_only" | "selective" | "public";
   signature: HexSig;
@@ -3813,7 +3858,7 @@ This section defines the minimum JSON Schema shape for production validation. Th
   "type": "object",
   "required": [
     "type", "event_class", "sender", "signing_key_id",
-    "content_commitment", "timestamp", "nonce", "disclosure_policy", "signature"
+    "content_commitment", "issued_at", "nonce", "disclosure_policy", "signature"
   ],
   "additionalProperties": false,
   "properties": {
@@ -3825,7 +3870,7 @@ This section defines the minimum JSON Schema shape for production validation. Th
     "content_commitment": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
     "metadata_commitment": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
     "previous_event_commitment": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
-    "timestamp": { "type": "string", "format": "date-time" },
+    "issued_at": { "type": "string", "format": "date-time" },
     "nonce": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
     "disclosure_policy": { "enum": ["local_only", "commitment_only", "selective", "public"] },
     "signature": { "type": "string", "pattern": "^0x[0-9a-f]+$" }
@@ -3835,21 +3880,34 @@ This section defines the minimum JSON Schema shape for production validation. Th
 
 \subsection{Receipt Commitment Schema}
 
+The full receipt schema is private or selectively disclosed. Public logs store only \texttt{receipt\_log\_entry.v1}.
+
 \begin{lstlisting}[style=tslcode]
 {
   "$id": "https://spec.tsl.network/schemas/receipt_commitment.v1.json",
   "type": "object",
-  "required": ["type", "event_commitment", "receiver", "signing_key_id", "receipt_class", "timestamp", "signature"],
+  "required": ["type", "event_commitment", "receiver_pairwise_id", "signing_key_id", "receipt_class", "issued_at", "signature"],
   "additionalProperties": false,
   "properties": {
     "type": { "const": "tsl.receipt_commitment.v1" },
     "event_commitment": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
-    "receiver": { "type": "string", "pattern": "^did:tsl:" },
+    "receiver_pairwise_id": { "type": "string", "pattern": "^did:tsl:pairwise:" },
     "signing_key_id": { "type": "string" },
     "receipt_class": { "enum": ["received", "replied", "transacted", "completed", "disputed"] },
-    "timestamp": { "type": "string", "format": "date-time" },
+    "issued_at": { "type": "string", "format": "date-time" },
     "metadata_commitment": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
     "signature": { "type": "string", "pattern": "^0x[0-9a-f]+$" }
+  }
+}
+
+{
+  "$id": "https://spec.tsl.network/schemas/receipt_log_entry.v1.json",
+  "type": "object",
+  "required": ["type", "receipt_commitment"],
+  "additionalProperties": false,
+  "properties": {
+    "type": { "const": "tsl.receipt_log_entry.v1" },
+    "receipt_commitment": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" }
   }
 }
 \end{lstlisting}
@@ -3861,23 +3919,19 @@ This section defines the minimum JSON Schema shape for production validation. Th
   "$id": "https://spec.tsl.network/schemas/batch_checkpoint.v1.json",
   "type": "object",
   "required": [
-    "type", "epoch_start_ms", "epoch_duration_ms", "shard",
-    "event_root", "receipt_root", "attestation_root", "revocation_root",
-    "event_count", "receipt_count", "previous_checkpoint", "relay_id", "relay_signature"
+    "type", "log_id", "shard", "tree_size", "root_hash", "checkpoint_time",
+    "previous_tree_size", "previous_checkpoint_hash", "relay_id", "relay_signature"
   ],
   "additionalProperties": false,
   "properties": {
     "type": { "const": "tsl.batch_checkpoint.v1" },
-    "epoch_start_ms": { "type": "integer", "minimum": 0 },
-    "epoch_duration_ms": { "type": "integer", "minimum": 1 },
+    "log_id": { "type": "string" },
     "shard": { "type": "string", "pattern": "^[0-9a-f]{4,16}$" },
-    "event_root": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
-    "receipt_root": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
-    "attestation_root": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
-    "revocation_root": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
-    "event_count": { "type": "integer", "minimum": 0 },
-    "receipt_count": { "type": "integer", "minimum": 0 },
-    "previous_checkpoint": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
+    "tree_size": { "type": "integer", "minimum": 0 },
+    "root_hash": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
+    "checkpoint_time": { "type": "string", "format": "date-time" },
+    "previous_tree_size": { "type": "integer", "minimum": 0 },
+    "previous_checkpoint_hash": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
     "settlement_backend": { "type": "string" },
     "settlement_tx": { "type": "string" },
     "relay_id": { "type": "string", "pattern": "^did:tsl:" },
@@ -3897,12 +3951,12 @@ This section defines the minimum JSON Schema shape for production validation. Th
 \toprule
 Service & Port & Responsibility \\
 \midrule
-relay-node & 8080 & Accept commitments, receipts, attestations, revocations; validate and enqueue them. \\
+relay-node & 8080 & Accept event commitments, opaque receipt commitments, attestations, and revocations; validate and enqueue them. \\
 log-node & 8081 & Maintain sharded append-only Merkle logs; produce inclusion and consistency proofs. \\
 resolver-node & 8082 & Resolve \TrustID{}s, active keys, revoked keys, providers, and model versions. \\
 checkpoint-submitter & worker & Periodically submit checkpoint roots to settlement contracts. \\
 verifier-api & 8083 & Hosted wrapper around pure verifier library. Not required for protocol validity. \\
-scoring-provider & 8084 & Optional feature extraction, scoring, and signed trust assessments. \\
+scoring-provider & 8084 & Optional feature extraction, scoring, and signed continuity assessments. \\
 auditor-node & 8085 & Monitor logs, verify checkpoints, detect equivocation, and publish audit reports. \\
 \bottomrule
 \end{tabularx}
@@ -3911,24 +3965,25 @@ auditor-node & 8085 & Monitor logs, verify checkpoints, detect equivocation, and
 \subsection{Reference Data Flow}
 
 \begin{lstlisting}[style=tslcode]
-1. Client creates event object without signature.
-2. Client canonicalizes event payload.
-3. Client signs canonical payload hash with active private key.
-4. Client submits event commitment to any relay.
-5. Relay validates schema, signature, timestamp, nonce, and key status.
-6. Relay writes accepted item to durable queue.
-7. Log node appends commitment to shard for current epoch.
-8. Log node returns inclusion promise immediately if configured.
-9. At epoch close, log node computes Merkle roots and checkpoint.
-10. Checkpoint submitter anchors checkpoint root to settlement backend.
-11. Verifier checks signature, key status, inclusion proof, checkpoint settlement, and revocation.
+1. Client creates an unsigned event with issued_at.
+2. Client canonicalizes the unsigned object with RFC 8785 JCS.
+3. Client signs the domain-separated event hash with an active key.
+4. Client submits the event commitment to a relay.
+5. Relay validates schema, JCS bytes, signature, key state, nonce, and revocation state.
+6. Relay records relay_received_at and returns a signed relay receipt / inclusion promise.
+7. Log node appends a typed entry to the cumulative identity-prefix shard log.
+8. Log node returns an RFC 9162 inclusion proof at cumulative tree_size n.
+9. At checkpoint cadence, log node signs (log_id, n, root_hash, checkpoint_time).
+10. Auditor verifies RFC 9162 consistency from the prior checkpoint tree size.
+11. Checkpoint submitter anchors the checkpoint to the settlement backend.
+12. Verifier checks event signature, three-time binding, revocation, inclusion, consistency context, and settlement policy.
 \end{lstlisting}
 
 \subsection{Queue Topics}
 
 \begin{lstlisting}[style=tslcode]
 tsl.commitments.accepted.v1
-tsl.receipts.accepted.v1
+tsl.receipt_commitments.accepted.v1
 tsl.attestations.accepted.v1
 tsl.revocations.accepted.v1
 tsl.checkpoints.ready.v1
@@ -3977,11 +4032,27 @@ CREATE TABLE revocations (
     trust_id TEXT NOT NULL,
     key_id TEXT NOT NULL,
     reason_class TEXT NOT NULL,
+    issued_at TIMESTAMPTZ NOT NULL,
     effective_at TIMESTAMPTZ NOT NULL,
+    relay_received_at TIMESTAMPTZ NOT NULL,
+    checkpoint_time TIMESTAMPTZ,
     replacement_key_id TEXT,
     canonical_body BYTEA NOT NULL,
     signature TEXT NOT NULL,
     accepted_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE log_entries (
+    log_id TEXT NOT NULL,
+    shard TEXT NOT NULL,
+    log_index BIGINT NOT NULL,
+    entry_type TEXT NOT NULL CHECK (entry_type IN ('event','receipt_commitment','attestation','revocation','delegation')),
+    entry_commitment TEXT NOT NULL CHECK (entry_commitment ~ '^0x[0-9a-f]{64}$'),
+    canonical_leaf_input BYTEA NOT NULL,
+    relay_id TEXT NOT NULL,
+    relay_received_at TIMESTAMPTZ NOT NULL,
+    PRIMARY KEY (log_id, log_index),
+    UNIQUE (log_id, entry_commitment)
 );
 
 CREATE TABLE event_commitments (
@@ -3993,38 +4064,39 @@ CREATE TABLE event_commitments (
     receiver_commitment TEXT,
     metadata_commitment TEXT,
     previous_event_commitment TEXT,
-    event_timestamp TIMESTAMPTZ NOT NULL,
+    issued_at TIMESTAMPTZ NOT NULL,
+    relay_received_at TIMESTAMPTZ NOT NULL,
     nonce TEXT NOT NULL,
     disclosure_policy TEXT NOT NULL,
     canonical_body BYTEA NOT NULL,
     signature TEXT NOT NULL,
     relay_id TEXT NOT NULL,
+    log_id TEXT NOT NULL,
     shard TEXT NOT NULL,
-    epoch_start_ms BIGINT NOT NULL,
-    log_index BIGINT,
+    log_index BIGINT NOT NULL,
     accepted_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    UNIQUE(sender_trust_id, signing_key_id, nonce)
+    UNIQUE(sender_trust_id, signing_key_id, nonce),
+    FOREIGN KEY (log_id, log_index) REFERENCES log_entries(log_id, log_index)
 );
 
-CREATE INDEX idx_event_commitments_sender_time ON event_commitments(sender_trust_id, event_timestamp DESC);
-CREATE INDEX idx_event_commitments_epoch_shard ON event_commitments(epoch_start_ms, shard, log_index);
+CREATE INDEX idx_event_commitments_sender_time ON event_commitments(sender_trust_id, issued_at DESC);
+CREATE INDEX idx_event_commitments_log_index ON event_commitments(log_id, log_index);
 
-CREATE TABLE receipt_commitments (
-    receipt_hash TEXT PRIMARY KEY CHECK (receipt_hash ~ '^0x[0-9a-f]{64}$'),
-    event_commitment TEXT NOT NULL,
-    receiver_trust_id TEXT NOT NULL,
-    signing_key_id TEXT NOT NULL,
-    receipt_class TEXT NOT NULL,
-    receipt_timestamp TIMESTAMPTZ NOT NULL,
-    metadata_commitment TEXT,
-    canonical_body BYTEA NOT NULL,
-    signature TEXT NOT NULL,
+CREATE TABLE receipt_log_entries (
+    receipt_commitment TEXT PRIMARY KEY CHECK (receipt_commitment ~ '^0x[0-9a-f]{64}$'),
+    canonical_log_entry BYTEA NOT NULL,
     relay_id TEXT NOT NULL,
+    relay_received_at TIMESTAMPTZ NOT NULL,
+    log_id TEXT NOT NULL,
     shard TEXT NOT NULL,
-    epoch_start_ms BIGINT NOT NULL,
-    log_index BIGINT,
-    accepted_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    log_index BIGINT NOT NULL,
+    accepted_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    FOREIGN KEY (log_id, log_index) REFERENCES log_entries(log_id, log_index)
 );
+
+-- Full receipts, salts, exact receiver identities, and pairwise-to-TrustID
+-- binding proofs are local/private or held by an authorized provider. They
+-- are not stored in the public relay/log database.
 
 CREATE TABLE attestations (
     attestation_hash TEXT PRIMARY KEY CHECK (attestation_hash ~ '^0x[0-9a-f]{64}$'),
@@ -4042,16 +4114,13 @@ CREATE TABLE attestations (
 
 CREATE TABLE checkpoints (
     checkpoint_hash TEXT PRIMARY KEY CHECK (checkpoint_hash ~ '^0x[0-9a-f]{64}$'),
-    epoch_start_ms BIGINT NOT NULL,
-    epoch_duration_ms BIGINT NOT NULL,
+    log_id TEXT NOT NULL,
     shard TEXT NOT NULL,
-    event_root TEXT NOT NULL,
-    receipt_root TEXT NOT NULL,
-    attestation_root TEXT NOT NULL,
-    revocation_root TEXT NOT NULL,
-    event_count BIGINT NOT NULL,
-    receipt_count BIGINT NOT NULL,
-    previous_checkpoint TEXT NOT NULL,
+    tree_size BIGINT NOT NULL,
+    root_hash TEXT NOT NULL CHECK (root_hash ~ '^0x[0-9a-f]{64}$'),
+    checkpoint_time TIMESTAMPTZ NOT NULL,
+    previous_tree_size BIGINT NOT NULL,
+    previous_checkpoint_hash TEXT NOT NULL,
     relay_id TEXT NOT NULL,
     relay_signature TEXT NOT NULL,
     settlement_backend TEXT,
@@ -4059,17 +4128,16 @@ CREATE TABLE checkpoints (
     settlement_status TEXT NOT NULL DEFAULT 'pending',
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     settled_at TIMESTAMPTZ,
-    UNIQUE(epoch_start_ms, shard)
+    UNIQUE(log_id, tree_size)
 );
 
 CREATE TABLE merkle_nodes (
-    epoch_start_ms BIGINT NOT NULL,
+    log_id TEXT NOT NULL,
     shard TEXT NOT NULL,
-    tree_kind TEXT NOT NULL CHECK (tree_kind IN ('event','receipt','attestation','revocation')),
     level INTEGER NOT NULL,
     node_index BIGINT NOT NULL,
     node_hash TEXT NOT NULL CHECK (node_hash ~ '^0x[0-9a-f]{64}$'),
-    PRIMARY KEY (epoch_start_ms, shard, tree_kind, level, node_index)
+    PRIMARY KEY (log_id, level, node_index)
 );
 
 CREATE TABLE provider_registry_cache (
@@ -4081,11 +4149,12 @@ CREATE TABLE provider_registry_cache (
     updated_at TIMESTAMPTZ NOT NULL
 );
 
-CREATE TABLE trust_assessments (
+CREATE TABLE continuity_assessments (
     assessment_hash TEXT PRIMARY KEY CHECK (assessment_hash ~ '^0x[0-9a-f]{64}$'),
+    target_event_commitment TEXT NOT NULL,
     subject_trust_id TEXT NOT NULL,
     issuer_provider_id TEXT NOT NULL,
-    score_bps INTEGER NOT NULL CHECK (score_bps BETWEEN 0 AND 10000),
+    continuity_bps INTEGER NOT NULL CHECK (continuity_bps BETWEEN 0 AND 10000),
     label TEXT NOT NULL,
     model_version TEXT NOT NULL,
     evidence_commitment TEXT NOT NULL,
@@ -4148,12 +4217,13 @@ CREATE TABLE evidence_coverage_v1 (
     canonical_body BYTEA NOT NULL
 );
 
-CREATE TABLE trust_assessments_v2 (
+CREATE TABLE continuity_assessments_v2 (
     assessment_hash TEXT PRIMARY KEY CHECK (assessment_hash ~ '^0x[0-9a-f]{64}$'),
+    target_event_commitment TEXT NOT NULL,
     subject_trust_id TEXT NOT NULL,
     provider_id TEXT NOT NULL,
     profile_id TEXT NOT NULL,
-    score_bps INTEGER NOT NULL CHECK (score_bps BETWEEN 0 AND 10000),
+    continuity_bps INTEGER NOT NULL CHECK (continuity_bps BETWEEN 0 AND 10000),
     confidence_low_bps INTEGER NOT NULL,
     confidence_high_bps INTEGER NOT NULL,
     risk_label TEXT NOT NULL,
@@ -4303,84 +4373,63 @@ CREATE TABLE local_settings (
 \section{Merkle Log Implementation}
 % ============================================================
 
-\subsection{Shard Assignment}
+\subsection{Stable Shard Assignment}
 
-The shard for a commitment is computed from the sender \TrustID{} and epoch. For MVP, use the first 16 bits of the SHA-256 hash of the sender \TrustID{}.
-
-\begin{equation}
-\operatorname{shard}(\TrustID, t) = \operatorname{hex}_{4}(\hash(\operatorname{utf8}(\TrustID))) \parallel \texttt{:} \parallel \operatorname{epoch}(t).
-\end{equation}
-
-The default epoch duration SHOULD be five minutes for production and one minute for test networks.
-
-\subsection{Leaf and Node Hashes}
-
-For an item commitment \(C_i\), the leaf hash is:
+For v1, the shard is the first 16 bits of SHA-256 over the UTF-8 \TrustID{}. The epoch is not part of the shard identifier and does not reset the tree.
 
 \begin{equation}
-L_i = \hash_{\texttt{TSL\_MERKLE\_LEAF\_V1}}(\operatorname{uint64be}(i) \parallel C_i).
+\operatorname{shard}(\TrustID)=\operatorname{hex}_{4}(\operatorname{SHA256}(\operatorname{utf8}(\TrustID))).
 \end{equation}
 
-For two child hashes \(a\) and \(b\), the internal node hash is:
+\subsection{RFC 9162 Merkle Tree Hash}
 
-\begin{equation}
-N = \hash_{\texttt{TSL\_MERKLE\_NODE\_V1}}(a \parallel b).
-\end{equation}
+The log uses the RFC 9162 SHA-256 Merkle Tree Hash semantics \cite{ctv2}. For leaf input \(d\):
 
-If a level has an odd number of nodes, the final node is promoted unchanged to the next level. This rule MUST be consistent across implementations.
+\begin{align}
+MTH(\{d\}) &= \operatorname{SHA256}(\texttt{0x00}\parallel d),\\
+MTH(D_n) &= \operatorname{SHA256}(\texttt{0x01}\parallel MTH(D[0:k])\parallel MTH(D[k:n])),
+\end{align}
+
+where \(k\) is the largest power of two smaller than \(n\), exactly as defined by RFC 9162. The empty-tree hash, inclusion proof, and consistency proof algorithms are also those of RFC 9162. Implementations MUST NOT duplicate an odd leaf, promote a node under a custom rule, add a private prefix inside the Merkle algorithm, or reset the tree at checkpoint boundaries.
+
+TSL domain separation occurs inside the JCS-encoded \texttt{tsl.log\_entry.v1} leaf input. The RFC 9162 \texttt{0x00} and \texttt{0x01} prefixes remain unchanged.
 
 \subsection{Inclusion Proof Object}
 
 \begin{lstlisting}[style=tslcode]
 {
   "type": "tsl.inclusion_proof.v1",
-  "tree_kind": "event",
-  "commitment": "0x...",
+  "log_id": "tsl-log:00af",
+  "leaf_input_hash": "0x...",
   "leaf_index": 184293,
-  "leaf_hash": "0x...",
-  "root": "0x...",
-  "epoch_start_ms": 1779667200000,
-  "epoch_duration_ms": 300000,
-  "shard": "00af",
-  "path": [
-    { "side": "right", "hash": "0x..." },
-    { "side": "left",  "hash": "0x..." }
-  ],
+  "tree_size": 184294,
+  "root_hash": "0x...",
+  "audit_path": ["0x...", "0x..."],
   "checkpoint_hash": "0x..."
 }
 \end{lstlisting}
 
-\subsection{Inclusion Verification Pseudocode}
+The verifier reconstructs the RFC 9162 Merkle Tree Hash for \texttt{leaf\_index} at \texttt{tree\_size}. Path direction is derived from the index and tree size; it is not accepted from an attacker-controlled \texttt{side} field.
+
+\subsection{Consistency Proof Object}
 
 \begin{lstlisting}[style=tslcode]
-function verifyInclusion(proof): boolean {
-  h = hashLeaf(proof.leaf_index, proof.commitment)
-  if h != proof.leaf_hash: return false
-
-  for step in proof.path:
-    if step.side == "left":
-      h = hashNode(step.hash, h)
-    else if step.side == "right":
-      h = hashNode(h, step.hash)
-    else:
-      return false
-
-  return h == proof.root
+{
+  "type": "tsl.consistency_proof.v1",
+  "log_id": "tsl-log:00af",
+  "old_tree_size": 147811,
+  "old_root_hash": "0x...",
+  "new_tree_size": 148292,
+  "new_root_hash": "0x...",
+  "consistency_path": ["0x...", "0x..."]
 }
 \end{lstlisting}
 
-\subsection{Consistency Proofs}
+Every non-genesis checkpoint MUST be accompanied by or retrievable with a valid consistency proof from the previous advertised tree size. The checkpoint hash chain is checked as metadata, but append-only acceptance depends on RFC 9162 consistency verification.
 
-Each closed checkpoint MUST link to the previous checkpoint for the same shard. The minimum MVP consistency check verifies:
+\subsection{Checkpoint Time Rules}
 
-\begin{enumerate}
-    \item checkpoint \(k\) includes \texttt{previous\_checkpoint = hash(k-1)},
-    \item checkpoint \(k\) is signed by an authorized relay,
-    \item checkpoint \(k\) is settled or pending under the declared settlement policy,
-    \item no two checkpoints exist for the same \((epoch, shard)\) with different roots.
-\end{enumerate}
-
-Auditor nodes SHOULD additionally verify append-only tree consistency and publish signed audit findings.
+A checkpoint's \texttt{checkpoint\_time} MUST be monotonic for a log, MUST be no earlier than the greatest \texttt{relay\_received\_at} among included entries, and MUST satisfy the relay clock-skew policy relative to the prior checkpoint and settlement evidence. A checkpoint time is trusted only under the verifier's relay policy and settlement assumptions.
 
 % ============================================================
 \section{Relay Node Specification}
@@ -4391,19 +4440,23 @@ Auditor nodes SHOULD additionally verify append-only tree consistency and publis
 A relay MUST perform these checks before accepting an event commitment:
 
 \begin{enumerate}
-    \item Validate JSON schema.
-    \item Reject unknown fields.
-    \item Check timestamp is within the relay acceptance window. Default: \(\pm 10\) minutes.
-    \item Resolve sender \TrustID{}.
-    \item Confirm signing key exists and was active at event timestamp.
-    \item Confirm signing key is not revoked at event timestamp.
-    \item Recompute canonical payload bytes excluding \texttt{signature}.
-    \item Verify signature.
-    \item Recompute event commitment hash.
+    \item Validate the JSON Schema and reject unknown non-extension fields.
+    \item Recompute RFC 8785 JCS bytes for the unsigned event.
+    \item Resolve the sender and signing key.
+    \item Verify the Ed25519 signature with an RFC 8032-conformant library.
+    \item Check that \texttt{issued\_at} is not earlier than key creation; this is an internal-consistency check, not the key-validity gate.
+    \item At the relay-controlled receive time, verify that the key exists, has become active, has not expired, and is not currently revoked under fresh registry state. Key validity at \texttt{issued\_at} alone is insufficient.
+    \item If the key is already revoked, reject a new submission unless the client supplies a previously issued trusted timestamp or inclusion promise for the exact commitment with time before the effective revocation cutoff.
+    \item Enforce bounded skew between \texttt{issued\_at} and the relay's current time as an intake policy; this skew check is not a substitute for trusted time evidence.
     \item Enforce replay protection with \((sender, signing\_key\_id, nonce)\).
-    \item Assign shard and epoch.
-    \item Persist canonical bytes and enqueue for log append.
+    \item Record the relay-controlled \texttt{relay\_received\_at}.
+    \item Assign the stable identity-prefix shard, persist canonical bytes, and append a typed entry to the cumulative log.
+    \item Return a signed \texttt{tsl.relay\_receipt.v1} inclusion promise binding commitment, log, receive time, promised tree size, and merge deadline.
 \end{enumerate}
+
+A relay MUST NOT determine historical validity only by asking whether the key was active at the event's self-declared \texttt{issued\_at}.
+
+For a public receipt-log submission, the relay validates only \texttt{receipt\_log\_entry.v1}, its anti-spam authorization, and replay policy. It assigns the commitment-derived privacy shard and MUST NOT request or persist the full receipt, exact receiver, event link, salt, or pairwise-to-canonical identity binding.
 
 \subsection{Relay Response States}
 
@@ -4414,7 +4467,7 @@ State & Meaning \\
 \midrule
 accepted & Relay validated the object and queued it for log append. \\
 included & Object has a log index and can receive an inclusion proof. \\
-checkpointed & Object's epoch is closed and root has been checkpointed. \\
+checkpointed & The cumulative tree size containing the object has been checkpointed. \\
 settled & Checkpoint has settlement proof from the declared backend. \\
 rejected & Object failed validation. \\
 \bottomrule
@@ -4463,13 +4516,13 @@ All hosted APIs are wrappers around protocol libraries. A proof that requires th
 \path|/v1/keys/rotate| & POST & Submit signed key rotation. \\
 \path|/v1/keys/revoke| & POST & Submit signed key revocation. \\
 \path|/v1/commitments| & POST & Submit event commitment. \\
-\path|/v1/receipts| & POST & Submit receipt commitment. \\
+\path|/v1/receipt-commitments| & POST & Submit a salted opaque receipt-log commitment; the full receipt remains local or selectively disclosed. \\
 \path|/v1/attestations| & POST & Submit signed attestation. \\
 \path|/v1/proofs/{commitment}| & GET & Fetch inclusion proof and checkpoint data. \\
 \path|/v1/proof-bundles/{bundleId}| & GET & Fetch portable proof bundle. \\
-\path|/v1/checkpoints/{epoch}/{shard}| & GET & Fetch checkpoint. \\
+\path|/v1/checkpoints/{shard}/{treeSize}| & GET & Fetch checkpoint. \\
 \path|/v1/verify| & POST & Verify envelope, proof, key state, and optional message. \\
-\path|/v1/assessments| & POST & Request optional trust assessment. \\
+\path|/v1/assessments| & POST & Request optional continuity assessment. \\
 \path|/v1/scoring-profiles/{profileId}| & GET & Fetch signed scoring profile. \\
 \path|/v1/model-cards/{modelId}| & GET & Fetch signed model card. \\
 \path|/v1/delegations/verify| & POST & Verify delegated agent action. \\
@@ -4519,10 +4572,15 @@ Response:
   "status": "accepted",
   "commitment_hash": "0x...",
   "relay_id": "did:tsl:relay:001",
-  "epoch_start_ms": 1779667200000,
-  "epoch_duration_ms": 300000,
+  "log_id": "tsl-log:00af",
   "shard": "00af",
-  "inclusion_promise": "0xrelaySignedPromise"
+  "relay_receipt": {
+    "type": "tsl.relay_receipt.v1",
+    "relay_received_at": "2026-05-25T00:01:04Z",
+    "promised_tree_size": 184294,
+    "merge_by": "2026-05-25T00:06:04Z",
+    "signature": "0xrelaySignedPromise"
+  }
 }
 \end{lstlisting}
 
@@ -4534,6 +4592,7 @@ POST /v1/verify
 Request:
 {
   "envelope": { "type": "tsl.event_commitment.v1", "...": "..." },
+  "relay_receipt": { "type": "tsl.relay_receipt.v1", "...": "..." },
   "proof": { "type": "tsl.inclusion_proof.v1", "...": "..." },
   "checkpoint": { "type": "tsl.batch_checkpoint.v1", "...": "..." },
   "message_disclosure": {
@@ -4543,6 +4602,7 @@ Request:
   "verifier_policy": {
     "require_settlement": true,
     "max_clock_skew_ms": 600000,
+    "require_trusted_time_binding": true,
     "accepted_scoring_providers": ["did:tsl:provider:continuity-labs"]
   }
 }
@@ -4561,7 +4621,7 @@ Response:
     "checkpoint_settled": true
   },
   "commitment_hash": "0x...",
-  "risk_label": "not_assessed",
+  "continuity_label": "not_assessed",
   "explanation": ["Signature valid", "Key active", "Included in settled checkpoint"]
 }
 \end{lstlisting}
@@ -4587,10 +4647,13 @@ TSL\_KEY\_EXPIRED & identity & yes & no & The signing key had expired at the rel
 TSL\_KEY\_REVOKED & identity & yes & no & The key was revoked before the relevant event time. \\
 TSL\_REVOCATION\_STATE\_STALE & identity & no & yes & Revocation state is too old for the verifier policy. \\
 TSL\_NONCE\_REPLAY & relay & yes & no & This sender/key/nonce was already accepted. \\
-TSL\_TIMESTAMP\_OUT\_OF\_WINDOW & relay & yes & yes & The timestamp is outside relay acceptance policy. \\
+TSL\_ISSUED\_AT\_OUT\_OF\_WINDOW & relay & yes & yes & The self-declared issued time is outside relay intake policy; this check is not trusted time evidence. \\
+TSL\_TIME\_BINDING\_MISSING & relay & yes & maybe & No trusted relay receipt, prior inclusion promise, or checkpoint time binds the event before the revocation cutoff. \\
+TSL\_RELAY\_RECEIPT\_INVALID & relay & yes & no & The relay receipt signature, commitment, time, or merge promise is invalid. \\
+TSL\_POST\_REVOCATION\_SUBMISSION & identity & yes & no & The event was first presented after revocation without trusted pre-revocation evidence. \\
 TSL\_INCLUSION\_INVALID & log & yes & no & The Merkle proof does not match the checkpoint root. \\
 TSL\_CHECKPOINT\_INVALID & settlement & yes & no & The checkpoint signature or hash is invalid. \\
-TSL\_CHECKPOINT\_CONFLICT & settlement & yes & no & Conflicting roots exist for the same epoch and shard. \\
+TSL\_CHECKPOINT\_CONFLICT & settlement & yes & no & Conflicting roots exist for the same log and tree size. \\
 TSL\_SETTLEMENT\_MISSING & settlement & policy & yes & Settlement is missing but required by policy. \\
 TSL\_PROOF\_BUNDLE\_REDACTED & privacy & no & no & Some private fields were intentionally redacted. \\
 TSL\_DISCLOSURE\_CONSENT\_REQUIRED & privacy & policy & no & More disclosure requires explicit consent. \\
@@ -4666,18 +4729,35 @@ function verifyTSL(input, policy): VerificationResult {
   result.schema_valid = validateSchema(input.envelope)
   if !result.schema_valid: return result.fail("TSL_SCHEMA_INVALID")
 
-  canonical = canonicalize(removeSignature(input.envelope))
+  canonical = RFC8785_JCS(removeSignature(input.envelope))
   event_hash = hashDomain("tsl.event_commitment.v1", canonical)
 
   identity = resolveTrustID(input.envelope.sender)
   key = identity.getKey(input.envelope.signing_key_id)
-
   result.key_found = key != null
-  result.key_active = keyActiveAt(key, input.envelope.timestamp)
-  result.not_revoked = !revokedAt(key, input.envelope.timestamp)
-  result.signature_valid = verifySignature(key.public_key, event_hash, input.envelope.signature)
+  result.issued_at_consistent_with_key_lifecycle = keyCreatedNoLaterThan(key, input.envelope.issued_at)
+  result.signature_valid = verifyEd25519RFC8032(key.public_key, event_hash, input.envelope.signature)
 
-  result.commitment_hash = hash(event_hash || input.envelope.signature)
+  result.commitment_hash = hashDomain("tsl.event.submission.v1", event_hash || input.envelope.signature)
+  result.relay_receipt_valid = verifyRelayReceipt(input.relay_receipt, result.commitment_hash, policy)
+  result.key_active_at_trusted_time = result.relay_receipt_valid &&
+      keyActiveAt(key, input.relay_receipt.relay_received_at)
+  result.included_in_log = verifyRFC9162Inclusion(input.proof, input.checkpoint)
+  result.checkpoint_valid = verifyCheckpoint(input.checkpoint)
+  result.consistency_context_valid = verifyRequiredRFC9162Consistency(input.consistency_context, input.checkpoint, policy)
+  result.checkpoint_settled = verifySettlement(input.checkpoint, policy)
+
+  revocation = resolveRevocationState(key)
+  result.trusted_time_binding_valid = verifyThreeTimeBinding({
+    issued_at: input.envelope.issued_at,
+    relay_received_at: input.relay_receipt.relay_received_at,
+    checkpoint_time: input.checkpoint.checkpoint_time,
+    revocation_effective_at: revocation.effective_at,
+    prior_trusted_evidence: input.prior_trusted_time_evidence,
+    policy
+  })
+  result.not_revoked_for_event = result.trusted_time_binding_valid &&
+      eventValidUnderRevocationPolicy(revocation, input)
 
   if input.message_disclosure exists:
     result.content_commitment_matches = verifyContentCommitment(
@@ -4686,15 +4766,9 @@ function verifyTSL(input, policy): VerificationResult {
       input.envelope.content_commitment
     )
 
-  result.included_in_log = verifyInclusion(input.proof)
-  result.checkpoint_valid = verifyCheckpoint(input.checkpoint)
-  result.checkpoint_matches_proof = input.proof.root == rootForKind(input.checkpoint, input.proof.tree_kind)
-  result.checkpoint_settled = verifySettlement(input.checkpoint)
-
   return result.finalize(policy)
 }
 \end{lstlisting}
-
 
 \subsection{Verification Result Semantics}
 
@@ -4706,10 +4780,10 @@ A result can be cryptographically valid but not trusted. The implementation MUST
 \toprule
 \textbf{Field} & \textbf{Meaning} \\
 \midrule
-\path|cryptographic_validity| & Signature, key, commitment, inclusion, checkpoint, and revocation checks. \\
+\path|cryptographic_validity| & Schema, RFC 8785 canonicalization, RFC 8032 signature, key activity at trusted first observation, three-time binding, revocation, RFC 9162 inclusion/consistency context, and checkpoint checks. \\
 \path|content_match| & Raw disclosed content matches the commitment. Optional when content is undisclosed. \\
 \path|settlement_status| & Whether checkpoint is settled, pending, or unavailable. \\
-\path|risk_assessment| & Optional signed scoring result. Not required for cryptographic validity. \\
+\path|risk_assessment| & Optional signed domain-specific continuity or risk assessment. Not required for protocol validity. \\
 \path|verdict| & Human-facing summary generated from policy and checks. \\
 \bottomrule
 \end{tabularx}
@@ -4719,34 +4793,31 @@ A result can be cryptographically valid but not trusted. The implementation MUST
 \section{Smart Contract Implementation}
 % ============================================================
 
-Contracts settle registry facts and checkpoint roots. They do not compute trust scores and do not store raw messages.
+Contracts settle registry facts and checkpoint roots. They do not compute continuity or risk assessments and do not store raw messages.
 
 \subsection{Checkpoint Registry Storage}
 
 \begin{lstlisting}[style=tslcode]
 struct Checkpoint {
-    uint64 epochStartMs;
-    uint32 epochDurationMs;
+    bytes32 logId;
     bytes32 shard;
-    bytes32 eventRoot;
-    bytes32 receiptRoot;
-    bytes32 attestationRoot;
-    bytes32 revocationRoot;
-    uint64 eventCount;
-    uint64 receiptCount;
-    bytes32 previousCheckpoint;
+    uint64 treeSize;
+    bytes32 rootHash;
+    uint64 checkpointTime;
+    uint64 previousTreeSize;
+    bytes32 previousCheckpointHash;
     bytes32 relayId;
     uint64 submittedAt;
 }
 
 mapping(bytes32 => Checkpoint) public checkpointsByHash;
-mapping(bytes32 => bytes32) public checkpointHashByEpochShard;
+mapping(bytes32 => bytes32) public checkpointHashByLogAndSize;
 \end{lstlisting}
 
-The key for \texttt{checkpointHashByEpochShard} is:
+The lookup key is:
 
 \begin{equation}
-K = \hash(\operatorname{uint64be}(epochStartMs) \parallel shard).
+K = \hash(logId \parallel \operatorname{uint64be}(treeSize)).
 \end{equation}
 
 \subsection{Checkpoint Submission}
@@ -4755,31 +4826,31 @@ K = \hash(\operatorname{uint64be}(epochStartMs) \parallel shard).
 function submitCheckpoint(CheckpointInput calldata input, bytes calldata relaySignature) external {
     require(isAuthorizedRelay(input.relayId), "UNAUTHORIZED_RELAY");
 
-    bytes32 key = keccak256(abi.encodePacked(input.epochStartMs, input.shard));
-    require(checkpointHashByEpochShard[key] == bytes32(0), "CHECKPOINT_EXISTS");
+    bytes32 key = keccak256(abi.encodePacked(input.logId, input.treeSize));
+    require(checkpointHashByLogAndSize[key] == bytes32(0), "CHECKPOINT_EXISTS");
+    require(input.previousTreeSize <= input.treeSize, "TREE_SIZE_REGRESSION");
 
     bytes32 checkpointHash = hashCheckpoint(input);
     require(verifyRelaySignature(input.relayId, checkpointHash, relaySignature), "BAD_RELAY_SIG");
 
     checkpointsByHash[checkpointHash] = Checkpoint({
-        epochStartMs: input.epochStartMs,
-        epochDurationMs: input.epochDurationMs,
+        logId: input.logId,
         shard: input.shard,
-        eventRoot: input.eventRoot,
-        receiptRoot: input.receiptRoot,
-        attestationRoot: input.attestationRoot,
-        revocationRoot: input.revocationRoot,
-        eventCount: input.eventCount,
-        receiptCount: input.receiptCount,
-        previousCheckpoint: input.previousCheckpoint,
+        treeSize: input.treeSize,
+        rootHash: input.rootHash,
+        checkpointTime: input.checkpointTime,
+        previousTreeSize: input.previousTreeSize,
+        previousCheckpointHash: input.previousCheckpointHash,
         relayId: input.relayId,
         submittedAt: uint64(block.timestamp)
     });
 
-    checkpointHashByEpochShard[key] = checkpointHash;
-    emit CheckpointSubmitted(checkpointHash, input.epochStartMs, input.shard, input.eventRoot);
+    checkpointHashByLogAndSize[key] = checkpointHash;
+    emit CheckpointSubmitted(checkpointHash, input.logId, input.treeSize, input.rootHash);
 }
 \end{lstlisting}
+
+The contract prevents duplicate claims for one log and tree size, but it does not itself verify RFC 9162 consistency. Auditors and verifiers MUST verify the off-chain consistency proof between advertised sizes; a contract hash chain alone is insufficient.
 
 \subsection{Token-Free Core}
 
@@ -4803,87 +4874,84 @@ The default MVP policy MAY be an allowlist or multisig-controlled relay registry
 
 \subsection{Resolution Algorithm}
 
+Identity resolution returns key lifecycle facts and revocation records, but event validity is decided with trusted event-time evidence rather than a self-declared timestamp alone.
+
 \begin{lstlisting}[style=tslcode]
-function resolveTrustID(trustId, atTime): ResolvedIdentity {
+function resolveTrustID(trustId): ResolvedIdentity {
   method = parseMethod(trustId)
   doc = methodResolver(method).resolve(trustId)
   registryState = settlementBackend.getIdentityState(trustId)
   revocations = settlementBackend.getRevocations(trustId)
-
-  activeKeys = []
-  for key in doc.verification_methods:
-    if key.created_at <= atTime and (key.expires_at is null or atTime < key.expires_at):
-      if not isRevoked(key, revocations, atTime):
-        activeKeys.append(key)
-
-  return { trust_id: trustId, document: doc, active_keys: activeKeys, revocations }
+  return { trust_id: trustId, document: doc, registry_state: registryState, revocations }
 }
 \end{lstlisting}
 
-\subsection{Revocation Precedence}
+\subsection{Three-Time Revocation Rule}
 
-Revocation MUST take precedence over local cache, stale identity documents, or old proofs. If a key is revoked effective at time \(t_r\), then:
+For event \(e\), let \(t_i\) be signed \texttt{issued\_at}, \(t_r\) be a verified relay receive time or equivalent trusted timestamp, \(t_c\) be the including checkpoint time, and \(t_v\) be the key's effective revocation cutoff.
 
-\begin{itemize}
-    \item events signed before \(t_r\) MAY remain historically valid,
-    \item events signed at or after \(t_r\) MUST fail key validity,
-    \item clients SHOULD show compromise warnings for a configurable window before \(t_r\) if the revocation reason is compromise.
-\end{itemize}
+\begin{enumerate}
+    \item \(t_i\) orders signer intent but is not trusted proof of existence.
+    \item Ordinary validity requires \(t_i\leq t_r\leq t_c\), subject to bounded skew and monotonic checkpoint rules, and the signing key MUST be active at the trusted first-observation time \(t_r\) (or at the time carried by an equivalent trusted timestamp). Checking activity only at \(t_i\) is forbidden.
+    \item If \(t_r<t_v\), the event MAY remain historically valid even if checkpoint settlement occurs after \(t_v\), provided the pre-revocation relay receipt or inclusion promise is valid and later merged as promised.
+    \item If the event is first presented at or after \(t_v\), it MUST fail unless the submission carries a previously issued trusted timestamp, relay receipt, or inclusion promise for the exact commitment with time before \(t_v\).
+    \item A backdated \texttt{issued\_at} without trusted pre-revocation evidence MUST fail with \texttt{TSL\_POST\_REVOCATION\_SUBMISSION}.
+    \item A retroactive compromise warning MAY lower confidence or trigger review for earlier events, but MUST NOT rewrite trusted log history or silently invalidate events already timestamped before the cutoff.
+\end{enumerate}
+
+\subsection{Revocation Publication Time}
+
+The revocation object has signer-declared \texttt{issued\_at} and \texttt{effective\_at}; the relay receipt and checkpoint for the revocation establish trusted publication time. Verifiers MUST retain both event and revocation time evidence so that disputes can be reproduced.
 
 % ============================================================
 \section{Scoring Provider Implementation}
 % ============================================================
 
-Scoring is optional and signed. It must not be required for protocol verification.
+Scoring is optional, signed, domain-specific, and target-action-specific. It MUST NOT be required for protocol verification.
 
-\subsection{Feature Extraction Contract}
+\subsection{Open-Source Feature Extraction Contract}
 
 \begin{lstlisting}[style=tslcode]
-export interface FeatureExtractor {
+export interface OpenSourceContinuityFeatureExtractor {
   extract(input: {
-    subject: TrustID;
-    verifiedEvents: VerifiedEventSummary[];
-    verifiedReceipts: VerifiedReceiptSummary[];
+    targetRelease: VerifiedEventSummary;
+    priorVerifiedReleases: VerifiedEventSummary[];
+    keyLineage: VerifiedKeyTransition[];
+    controlEvidence: VerifiedRepositoryOrRegistryControl[];
+    disclosedReviewEvidence: VerifiedReceiptSummary[];
     attestations: VerifiedAttestationSummary[];
     revocationState: RevocationSummary;
     localContext?: LocalVerifierContext;
-  }): Promise<FeatureVectorV1>;
+  }): Promise<OpenSourceContinuityFeatureVectorV0>;
 }
 
-export interface FeatureVectorV1 {
-  type: "tsl.feature_vector.v1";
-  subject: TrustID;
+export interface OpenSourceContinuityFeatureVectorV0 {
+  type: "tsl.opensource_continuity_feature_vector.v0";
+  target_event_commitment: Hex32;
   computed_at: RFC3339;
-  identity_age_days: number;
-  active_key_age_days: number;
-  signed_event_count: number;
-  reciprocal_receipt_count: number;
-  unique_counterparty_count: number;
-  trusted_neighbor_ratio_bps: number;
-  attestation_quality_bps: number;
-  temporal_consistency_bps: number;
-  revocation_risk_bps: number;
-  local_relationship_bps?: number;
+  maintainer_key_lineage_bps: number;
+  signed_release_history_bps: number;
+  reviewer_or_co_maintainer_evidence_bps: number;
+  repository_registry_control_continuity_bps: number;
+  counterparty_community_diversity_bps: number;
+  maintainer_attestation_quality_bps: number;
+  release_cadence_consistency_bps: number;
+  change_set_dependency_continuity_bps: number;
+  local_verifier_policy_bps?: number;
+  has_adverse_evidence: boolean;
 }
 \end{lstlisting}
 
-\subsection{Reference Score}
-
-Scores SHOULD be stored as integer basis points from \(0\) to \(10000\).
+\subsection{Hard Gate Before Evidence Weighting}
 
 \begin{lstlisting}[style=tslcode]
-score_bps =
-  2000 * crypto_validity_bps / 10000 +
-  1500 * identity_age_bps / 10000 +
-  1500 * reciprocity_bps / 10000 +
-  1500 * trusted_neighbor_ratio_bps / 10000 +
-  1000 * receipt_quality_bps / 10000 +
-  1000 * attestation_quality_bps / 10000 +
-  1000 * temporal_consistency_bps / 10000 +
-   500 * local_relationship_bps / 10000
+if !schema_valid || !canonicalization_valid || !signature_valid ||
+   !key_active_at_trusted_time || !trusted_time_binding_valid ||
+   !not_revoked_for_event || !included_in_log || !checkpoint_valid:
+    return signed_protocol_failure_without_continuity_bps()
 \end{lstlisting}
 
-The signed assessment MUST include the model version, feature disclosure policy, evidence commitment, expiration, and provider signature.
+No cryptographic-validity field appears in the weighted feature vector. The transparent v0 weights sum to 10,000 basis points only over domain evidence after the hard gate. The signed output MUST identify the target release, policy, profile, continuity basis points, uncertainty, coverage, expiry, and provider signature.
 
 % ============================================================
 \section{Security, Abuse Controls, and Rate Limits}
@@ -4906,7 +4974,7 @@ New identity event submissions & 100 per hour until identity has settled checkpo
 Established identity submissions & 10,000 per hour, adjustable by relay policy. \\
 Negative public attestations & 10 per day per issuer, stricter for low-continuity issuers. \\
 Proof requests & 1,000 per hour per IP or API key for hosted API; unlimited for local verification. \\
-Checkpoint submissions & One per relay per epoch-shard. \\
+Checkpoint submissions & One monotonic checkpoint per relay, log, and advertised tree size. \\
 \bottomrule
 \end{tabularx}
 \end{center}
@@ -4930,7 +4998,7 @@ The protocol SHOULD distinguish \texttt{private\_warning}, \texttt{provider\_ris
 \subsection{Privacy Requirements}
 
 \begin{enumerate}
-    \item Receiver identities SHOULD be blinded by default.
+    \item Exact receiver identities MUST be absent from public or generally retrievable receipt logs; pairwise identifiers are selective and scope-bound.
     \item Content commitments MUST use salts unless the content is intentionally public.
     \item Metadata commitments MUST use salts.
     \item Public logs MUST NOT include raw platform identifiers by default.
@@ -5025,101 +5093,76 @@ TSL_LOG_SEGMENT_BUCKET=s3://...
 \section{Test Vectors and Compliance}
 % ============================================================
 
-A compliant implementation MUST pass canonicalization, hashing, signature, Merkle, and verification test vectors.
+A compliant implementation MUST pass the published RFC vectors and TSL profile vectors. TSL does not replace standard primitive vectors with home-grown examples.
 
-\subsection{Canonicalization Test}
+\subsection{RFC 8785 JCS Vectors}
 
-These two objects MUST canonicalize to identical bytes:
+Implementations MUST pass the RFC 8785 property-order and number-serialization vectors, including published errata. The simple pair below also canonicalizes to identical UTF-8 bytes:
 
 \begin{lstlisting}[style=tslcode]
 {"b":2,"a":1}
-{
-  "a": 1,
-  "b": 2
-}
-\end{lstlisting}
-
-Expected canonical form:
-
-\begin{lstlisting}[style=tslcode]
 {"a":1,"b":2}
+expected JCS bytes: {"a":1,"b":2}
 \end{lstlisting}
 
+Cross-language tests MUST include non-ASCII property names whose RFC 8785 UTF-16 sorting order differs from naive locale or UTF-8-byte sorting.
 
-\subsection{Deterministic Event Test Vector}
+\subsection{RFC 8032 Ed25519 Vectors}
 
-The following vector fixes a seed, payload, canonical form, signature, commitment, and single-leaf Merkle root. Implementations MUST reproduce these values when using the reference suite.
+All Ed25519 implementations MUST pass RFC 8032 Section 7.1. At minimum, the first vector is included verbatim in the repository manifest:
 
 \begin{lstlisting}[style=tslcode]
-private_key_seed_hex:
-000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f
-
-public_key_hex:
-03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8
-
-content_salt_hex:
-1111111111111111111111111111111111111111111111111111111111111111
-
-content_message_utf8:
-hello-tsl
-
-content_commitment_hex:
-0x50f62d6063e0d92d02fd4fdafb4b10c38bf271ebb5e14afd037d35b0b35f6b95
+secret_key:
+9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60
+public_key:
+d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a
+message: <empty>
+signature:
+e5564300c360ac729086e2cc806e828a84877f1eb8e5d974d873e06522490155
+5fb8821590a33bacc61e39701cf9b46bd25bf5f0595bbe24655141438e7a100b
 \end{lstlisting}
 
-Canonical unsigned event payload:
+Production code MUST use an audited library and reject malformed points, wrong lengths, out-of-range scalar values, and altered messages according to the library's RFC 8032 behavior.
 
-\begin{lstlisting}[style=tslcode]
-{"content_commitment":"0x50f62d6063e0d92d02fd4fdafb4b10c38bf271ebb5e14afd037d35b0b35f6b95","disclosure_policy":"commitment_only","event_class":"message","nonce":"0x2222222222222222222222222222222222222222222222222222222222222222","sender":"did:tsl:test:alice","signing_key_id":"#test-key-1","timestamp":"2026-05-25T00:01:00Z","type":"tsl.event_commitment.v1"}
-\end{lstlisting}
+\subsection{RFC 9162 Merkle Vectors}
 
-Expected hashes and signature:
+The repository MUST include inclusion and consistency vectors generated from the RFC 9162 Merkle Tree Hash algorithm for tree sizes 0 through at least 16. Every language implementation MUST reproduce identical roots, inclusion paths, and consistency paths. A custom odd-node rule is a conformance failure.
 
-\begin{lstlisting}[style=tslcode]
-event_hash_hex:
-0xcf5cb36e4596ed4c446f2d24504407369a1fc4862928e86c340ec5270fcc3267
+\subsection{Critical TSL Security Vectors}
 
-signature_hex:
-0xd3187ac9861b87a3b5f871c9ae9a6426ce0c1e49cee1978c767bf99eff6c94467
-b6955cd9821c2a7e3bfcf945b576e49d81deccb4e7c8b0624917fd794f1ff08
-
-commitment_hash_hex:
-0x174c377613f1fa94acc95d32408095c27330f5dfa088ee40cdcb81a503b25bb5
-
-single_leaf_merkle_root_hex:
-0xc09632a2beaaf0c4702e673a7a1661673c80be478f1136b60677f38c5bb5914f
-\end{lstlisting}
-
-
-\subsection{End-to-End Test Scenario}
-
-\begin{enumerate}
-    \item Generate identity from deterministic test seed.
-    \item Create event commitment with fixed nonce and timestamp.
-    \item Canonicalize event without signature.
-    \item Sign event hash.
-    \item Compute commitment hash.
-    \item Append to Merkle tree.
-    \item Generate inclusion proof.
-    \item Build checkpoint.
-    \item Verify signature, key state, inclusion proof, checkpoint, and revocation state.
-\end{enumerate}
+\begin{longtable}{>{\bfseries}p{0.31\textwidth} p{0.57\textwidth}}
+\toprule
+Vector & Required Result \\
+\midrule
+Backdated event after revocation & An event signed after cutoff with earlier \texttt{issued\_at} and no trusted pre-revocation evidence fails with \texttt{TSL\_POST\_REVOCATION\_SUBMISSION}. \\
+Pre-revocation inclusion promise, later merge & Event remains historically valid when exact commitment has valid pre-cutoff relay receipt or inclusion promise and is merged by deadline. \\
+Relay receipt tamper & Changing commitment, receive time, log ID, tree-size promise, or signature fails. \\
+Checkpoint time regression & A checkpoint earlier than the prior checkpoint or an included relay time fails. \\
+RFC 9162 inconsistency & A newer root that is not an append-only extension fails even if \texttt{previous\_checkpoint\_hash} is syntactically correct. \\
+Receipt graph privacy & Public receipt log entry contains no exact TrustID, event link, stable global receiver ID, receipt class, or unsalted receipt hash. \\
+Selective receipt disclosure & Authorized verifier can open the salted commitment and verify pairwise signature and optional identity-binding proof. \\
+Cryptographic gate & Invalid signature, failed time binding, or revoked key produces no ordinary \texttt{continuity\_bps}. \\
+Recursive neighbor convergence & Governed iteration converges within one basis point or returns the non-convergence error; no provider fallback value is accepted. \\
+Seed sensitivity & Required seed-removal and damping perturbations produce a signed sensitivity report and trigger abstention when label stability fails. \\
+\bottomrule
+\end{longtable}
 
 \subsection{Compliance Matrix}
 
 \begin{center}
-\begin{tabularx}{\textwidth}{>{\bfseries}p{0.28\textwidth} X}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{0.30\textwidth} X}
 \toprule
 Requirement & Test \\
 \midrule
-Canonical serialization & Same object with reordered keys produces same bytes. \\
-Signature verification & Known vector signature verifies; altered field fails. \\
+RFC 8785 JCS & Reordered objects and official edge vectors produce identical canonical bytes. \\
+RFC 8032 Ed25519 & Official valid vectors pass; altered message/signature and malformed encodings fail. \\
 Replay protection & Duplicate sender/key/nonce is rejected. \\
-Revocation & Event after effective revocation fails. \\
-Merkle proof & Inclusion proof verifies against root; altered leaf fails. \\
-Checkpoint conflict & Two roots for same epoch-shard trigger audit finding. \\
-Privacy & Raw message absent from public commitment and checkpoint tables. \\
-Token independence & Event validity tests pass with no fee policy or token module. \\
+Revocation backdating & Self-declared historical time does not bypass current revocation state. \\
+Receipt privacy & Public log and public database expose only opaque salted commitment. \\
+RFC 9162 append-only log & Inclusion and consistency proofs verify at cumulative tree sizes; independent epoch reset is rejected. \\
+Hard gate & Protocol failure suppresses continuity assessment value. \\
+Domain scope & Initial assessment object names target release, domain, policy, model, evidence window, and expiry. \\
+Token independence & Core verification passes without token or fee policy. \\
 \bottomrule
 \end{tabularx}
 \end{center}
@@ -5145,7 +5188,7 @@ Acceptance criteria:
 
 \begin{itemize}
     \item Unit tests pass across TypeScript and Rust.
-    \item Test vectors are identical across languages.
+    \item RFC 8785, RFC 8032, RFC 9162, and TSL attack vectors are identical across languages.
     \item Invalid signatures, revoked keys, and tampered commitments fail deterministically.
 \end{itemize}
 
@@ -5157,15 +5200,15 @@ Deliverables:
     \item Commitment intake API.
     \item Validation pipeline.
     \item Durable queue.
-    \item Sharded append-only Merkle log.
-    \item Inclusion proof generation.
+    \item Cumulative identity-prefix RFC 9162 log.
+    \item RFC 9162 inclusion and consistency proof generation.
     \item Checkpoint builder.
 \end{itemize}
 
 Acceptance criteria:
 
 \begin{itemize}
-    \item 1 million test commitments can be appended and proven on a single development cluster.
+    \item 1 million test commitments can be appended to cumulative shards and proven on a development cluster.
     \item Inclusion proof verification succeeds from an offline verifier.
     \item Duplicate nonce replay is rejected.
 \end{itemize}
@@ -5186,7 +5229,7 @@ Acceptance criteria:
 
 \begin{itemize}
     \item Checkpoints can be submitted and queried.
-    \item Conflicting checkpoints are rejected.
+    \item Conflicting checkpoints are detected, and non-consistent cumulative roots are rejected by verifiers/auditors.
     \item Revoked keys fail verifier tests.
     \item No token contract is required for core verification.
 \end{itemize}
@@ -5210,23 +5253,23 @@ Acceptance criteria:
     \item Disclosed message content matches content commitment.
 \end{itemize}
 
-\subsection{Milestone 5: Optional Scoring Provider}
+\subsection{Milestone 5: Optional Continuity Assessment Provider}
 
 Deliverables:
 
 \begin{itemize}
     \item Reference feature extractor.
-    \item Transparent weighted scoring model.
-    \item Signed trust assessment object.
+    \item Transparent open-source release-continuity model with hard protocol gates.
+    \item Signed continuity assessment object.
     \item Explanation generator.
 \end{itemize}
 
 Acceptance criteria:
 
 \begin{itemize}
-    \item Scoring output is signed and expires.
-    \item Verifier can display score but does not require it for cryptographic validity.
-    \item User can choose not to request a score.
+    \item Assessment output is target-bound, signed, and expires.
+    \item Verifier can display a domain-specific assessment but does not require it for protocol validity.
+    \item User can choose not to request an assessment.
 \end{itemize}
 
 % ============================================================
@@ -5265,84 +5308,64 @@ The verifier MUST NOT check token balances when determining cryptographic validi
 \section{The Founder Narrative}
 % ============================================================
 
-The story should be told simply:
+The long-term vision should be clearly separated from the first scientific claim:
 
 \begin{quote}
-The internet used to trust accounts. Then it trusted platforms. Now AI can fake both the content and the account layer. The only thing that remains expensive to fake is continuity: a long-running, cryptographically signed, reciprocally witnessed trajectory through a real graph.
+The internet used to trust accounts. Then it trusted platforms. Now AI can fake both the content and the account layer. One potentially costly-to-fake signal is a long-running, cryptographically signed, time-bound, and independently witnessed trajectory. The first paper tests this only for open-source releases.
 \end{quote}
 
 \begin{quote}
-\TSL{} is building Proof of Continuity: a trust settlement layer for humans, businesses, wallets, software, and AI agents.
+\TSL{} is building a continuity-evidence protocol. Its first validated profile is intended for open-source maintainer and release continuity; broader domains remain a roadmap.
 \end{quote}
 
 \begin{quote}
-Applications will not own trust. They will carry it.
+Applications can carry portable evidence without owning the assessment.
 \end{quote}
 
 % ============================================================
 \section{Appendix A: Formal Cryptographic Sketch}
 % ============================================================
 
-Let \(m\) be a raw message, \(\mu\) be private metadata, \(r\) be the receiver identity, and \(n\) be a nonce. Let \(\operatorname{canon}\) be canonical serialization.
+Let \(m\) be raw content, \(\mu\) private metadata, \(r\) the receiver identity, \(n\) a nonce, and \(t_i\) the signer-declared \texttt{issued\_at}. Let \(JCS\) be RFC 8785 canonicalization.
 
 \begin{align}
-    c_m &= \hash(\operatorname{canon}(m) \parallel s_m), \\
-    c_\mu &= \hash(\operatorname{canon}(\mu) \parallel s_\mu), \\
-    c_r &= \hash(\operatorname{canon}(r) \parallel s_r).
+    c_m &= \hash(\texttt{content-domain}\parallel JCS(m) \parallel s_m), \\
+    c_\mu &= \hash(\texttt{metadata-domain}\parallel JCS(\mu) \parallel s_\mu), \\
+    c_r &= \hash(\texttt{receiver-domain}\parallel JCS(r) \parallel s_r).
 \end{align}
 
-An event payload is:
+The unsigned event object is:
 
 \begin{equation}
-    e_t = (\mathrm{sid}_s, c_r, c_m, c_\mu, h_{t-1}, \tau, n, \rho),
+    e=(\mathrm{sid}_s,key_id,c_r,c_m,c_\mu,h_{prev},t_i,n,\rho).
 \end{equation}
 
-where \(\rho\) is the disclosure policy.
+Its canonical bytes and signed hash are:
 
-The event hash is:
+\begin{align}
+    b_e &= JCS(e),\\
+    h_e &= \hash_{\texttt{tsl.event\_commitment.v1}}(b_e),\\
+    \sigma_e &= \sign_{sk_s}(h_e),\\
+    C_e &= \hash_{\texttt{tsl.event.submission.v1}}(h_e\parallel\sigma_e).
+\end{align}
 
-\begin{equation}
-    h_t = \hash(\operatorname{canon}(e_t)).
-\end{equation}
+A trusted relay signs \(R_e=(C_e,log\_id,t_r,promised\_size,merge\_by)\), where \(t_r\) is \texttt{relay\_received\_at}. The cumulative log appends a typed JCS leaf input \(d_e\), and RFC 9162 computes the tree root \(root_n=MTH(D_n)\). A checkpoint signs \(Q_n=(log\_id,n,root_n,t_c,previous\_size,previous\_checkpoint)\), where \(t_c\) is \texttt{checkpoint\_time}.
 
-The sender signature is:
+For revocation cutoff \(t_v\), ordinary event validity is:
 
-\begin{equation}
-    \sigma_t = \sign_{sk_s}(h_t).
-\end{equation}
+\begin{align}
+V={}&\operatorname{VerifyEd25519}(pk_s,h_e,\sigma_e)\\
+&\land \operatorname{VerifyRelayReceipt}(R_e,C_e)\\
+&\land \operatorname{KeyActiveAtTrustedTime}(pk_s,t_r)\\
+&\land (t_i\leq t_r\leq t_c)\\
+&\land \left(t_r<t_v\;\lor\;\operatorname{TrustedPreRevocationEvidence}(C_e,t_v)\right)\\
+&\land \operatorname{VerifyRFC9162Inclusion}(d_e,n,root_n,\pi_e)\\
+&\land \operatorname{VerifyRequiredConsistency}(root_m,m,root_n,n,\kappa_{m,n})\\
+&\land \operatorname{VerifyCheckpoint}(Q_n)\\
+&\land \operatorname{SettlementPolicySatisfied}(Q_n).
+\end{align}
 
-Verification checks:
-
-\begin{equation}
-    \verify_{pk_s}(h_t, \sigma_t) = 1.
-\end{equation}
-
-The submitted commitment is:
-
-\begin{equation}
-    C_t = \hash(h_t \parallel \sigma_t).
-\end{equation}
-
-A batch root is:
-
-\begin{equation}
-    R_E = \MerkleRoot(C_1, C_2, \ldots, C_N).
-\end{equation}
-
-A verifier checks inclusion proof \(\pi_i\):
-
-\begin{equation}
-    \operatorname{VerifyMerkle}(C_i, R_E, \pi_i) = 1.
-\end{equation}
-
-The final verification result is:
-
-\begin{equation}
-V = \verify_{pk_s}(h_t, \sigma_t)
-\land \operatorname{VerifyMerkle}(C_t, R_E, \pi_t)
-\land \operatorname{KeyActive}(\mathrm{sid}_s, pk_s, \tau)
-\land \operatorname{CheckpointSettled}(R_E).
-\end{equation}
+The self-declared \(t_i\) is never sufficient to satisfy the pre-revocation condition. A first-seen submission with \(t_r\geq t_v\) fails unless the exact commitment already has independently verifiable pre-revocation time evidence.
 
 % ============================================================
 \section{Appendix B: Standards Alignment}
@@ -5352,9 +5375,11 @@ V = \verify_{pk_s}(h_t, \sigma_t)
 
 \begin{itemize}
     \item \textbf{DIDs:} \TrustID{} resolution can map to DID documents, verification methods, and service endpoints. See W3C DID Core \cite{didcore}.
-    \item \textbf{Verifiable Credentials:} Trust assessments, organization membership, and professional attestations can be represented as verifiable credentials. See W3C VC Data Model 2.0 \cite{vc2}.
+    \item \textbf{Verifiable Credentials:} Continuity assessments, organization membership, and professional attestations can be represented as verifiable credentials. See W3C VC Data Model 2.0 \cite{vc2}.
     \item \textbf{Account abstraction:} Smart accounts can support recovery, delegated signing, paymasters, and scoped agent keys. See ERC-4337 \cite{erc4337}.
-    \item \textbf{Transparency logs:} Append-only Merkle logs and consistency proofs can borrow concepts from Certificate Transparency. See RFC 9162 \cite{ctv2}.
+    \item \textbf{Canonical JSON:} Signed JSON objects use RFC 8785 JCS exactly. See \cite{jcs}.
+    \item \textbf{Ed25519:} Signature implementations and primitive vectors follow RFC 8032. See \cite{eddsa}.
+    \item \textbf{Transparency logs:} Cumulative Merkle Tree Hash, inclusion proofs, and consistency proofs follow RFC 9162 semantics. See \cite{ctv2}.
     \item \textbf{Layer-2 settlement:} High-volume commitments should be batched and settled through L2s or app-rollups rather than written one-by-one to L1. See Ethereum scaling documentation \cite{ethscaling}.
 \end{itemize}
 
@@ -5366,25 +5391,25 @@ V = \verify_{pk_s}(h_t, \sigma_t)
 
 \begin{quote}
 \textbf{Proof of Continuity for the AI Internet.}\\
-TSL lets humans, businesses, wallets, and AI agents prove they are the same trustworthy actor over time, across any app or transport, without exposing private messages.
+TSL carries portable proofs of origin, key continuity, revocation state, and log inclusion. Its first assessment profile evaluates a specific open-source release under a declared maintainer-continuity policy.
 \end{quote}
 
 \subsection{Investor One-Liner}
 
 \begin{quote}
-We are building the trust-envelope layer for online communication: every message, transaction, API call, and agent action can carry portable cryptographic proof of continuity.
+We are building a portable continuity-evidence protocol, beginning with verifiable maintainer keys and open-source release histories.
 \end{quote}
 
 \subsection{Developer One-Liner}
 
 \begin{quote}
-Add \texttt{tsl.verify()} to any app and get signature validation, key status, inclusion proofs, revocation checks, receipts, and explainable trust assessments.
+Add \texttt{tsl.verify()} to a release workflow to check JCS bytes, signatures, trusted time, revocation, cumulative-log proofs, and an optional policy-bound continuity assessment.
 \end{quote}
 
 \subsection{Consumer One-Liner}
 
 \begin{quote}
-Know whether the person, business, wallet, or AI agent contacting you has real continuity, not just a convincing profile.
+Verify the signed evidence first; show a domain-specific continuity or risk assessment only when a named, evaluated policy applies.
 \end{quote}
 
 
@@ -5428,7 +5453,7 @@ Conformance & Release-candidate levels so the product can ship staged subsets wi
 This version resolves implementation ambiguities introduced by the broader v2 architecture. The following rules are now normative:
 
 \begin{enumerate}
-    \item Signed and hashed protocol examples MUST NOT contain JSON floating-point numbers.
+    \item Signed and hashed protocol examples MUST use RFC 8785 JCS and MUST NOT contain JSON floating-point numbers under the TSL core profile.
     \item Basis-point fields use the suffix \texttt{\_bps}; milli-count fields use \texttt{\_milli}; minor currency units use \texttt{\_minor\_units}.
     \item \texttt{delegation\_policy.v2} uses \texttt{policy\_id}; \texttt{agent\_action.v2} uses \texttt{issued\_at} and \texttt{parameters\_commitment}.
     \item \texttt{sybil\_assessment.v1} uses \texttt{risk\_score\_bps} and \texttt{risk\_label}; \texttt{drift\_report.v1} uses \texttt{drift\_score\_bps}, \texttt{drift\_label}, and \texttt{action}.
@@ -5462,6 +5487,18 @@ tsl.receipt_commitment.v1
   schema: receipt_commitment.v1.schema.json
   vector: receipt_commitment.v1/replied.json
 
+tsl.receipt_log_entry.v1
+  schema: receipt_log_entry.v1.schema.json
+  vector: receipt_log_entry.v1/opaque-public-leaf.json
+
+tsl.relay_receipt.v1
+  schema: relay_receipt.v1.schema.json
+  vector: relay_receipt.v1/pre-revocation-promise.json
+
+tsl.consistency_proof.v1
+  schema: consistency_proof.v1.schema.json
+  vector: consistency_proof.v1/rfc9162-size-8-to-13.json
+
 tsl.revocation.v1
   schema: revocation.v1.schema.json
   vector: revocation.v1/compromise.json
@@ -5490,9 +5527,9 @@ tsl.evidence_coverage.v1
   schema: evidence_coverage.v1.schema.json
   vector: evidence_coverage.v1/high-coverage.json
 
-tsl.trust_assessment.v2
-  schema: trust_assessment.v2.schema.json
-  vector: trust_assessment.v2/likely-trusted.json
+tsl.continuity_assessment.v2
+  schema: continuity_assessment.v2.schema.json
+  vector: continuity_assessment.v2/likely-continuous-release.json
 
 tsl.metadata_fingerprint_commitment.v1
   schema: metadata_fingerprint_commitment.v1.schema.json
@@ -5549,15 +5586,18 @@ tsl/
       identity.v1.schema.json
       event_commitment.v1.schema.json
       receipt_commitment.v1.schema.json
+      receipt_log_entry.v1.schema.json
+      relay_receipt.v1.schema.json
       revocation.v1.schema.json
       batch_checkpoint.v1.schema.json
       inclusion_proof.v1.schema.json
+      consistency_proof.v1.schema.json
       proof_bundle.v1.schema.json
       scoring_profile.v2.schema.json
       feature_definition.v2.schema.json
       domain_policy.v1.schema.json
       evidence_coverage.v1.schema.json
-      trust_assessment.v2.schema.json
+      continuity_assessment.v2.schema.json
       metadata_fingerprint_commitment.v1.schema.json
       graph_profile.v2.schema.json
       graph_feature_vector.v1.schema.json
@@ -5809,7 +5849,9 @@ The following schema skeletons are normative patterns. The repository schemas MA
     "type",
     "domain",
     "policy_version",
+    "target_action_class",
     "requires_settlement",
+    "requires_trusted_time_binding",
     "min_coverage_bps",
     "max_assessment_age_seconds",
     "false_positive_cost_class",
@@ -5822,47 +5864,58 @@ The following schema skeletons are normative patterns. The repository schemas MA
     "type": { "const": "tsl.domain_policy.v1" },
     "domain": { "type": "string" },
     "policy_version": { "type": "string" },
+    "target_action_class": { "type": "string" },
     "requires_settlement": { "type": "boolean" },
+    "requires_trusted_time_binding": { "type": "boolean" },
     "requires_delegation_check": { "type": "boolean" },
     "requires_content_opening": { "type": "boolean" },
     "min_coverage_bps": { "type": "integer", "minimum": 0, "maximum": 10000 },
     "max_assessment_age_seconds": { "type": "integer", "minimum": 1 },
     "false_positive_cost_class": { "enum": ["low", "medium", "high", "critical"] },
     "false_negative_cost_class": { "enum": ["low", "medium", "high", "critical"] },
-    "sparse_identity_default": { "enum": ["unknown", "unknown_caution", "require_step_up", "deny_high_value_action"] },
+    "sparse_identity_default": { "enum": ["insufficient_evidence", "unknown_caution", "require_step_up", "deny_high_value_action"] },
     "thresholds": {
       "type": "object",
-      "required": ["trusted_bps", "likely_trusted_bps", "medium_bps", "suspicious_bps", "high_risk_bps"],
+      "required": [
+        "strong_continuity_min_bps",
+        "likely_continuous_min_bps",
+        "mixed_continuity_min_bps",
+        "elevated_risk_max_bps",
+        "high_risk_max_bps"
+      ],
       "additionalProperties": false,
       "properties": {
-        "trusted_bps": { "type": "integer", "minimum": 0, "maximum": 10000 },
-        "likely_trusted_bps": { "type": "integer", "minimum": 0, "maximum": 10000 },
-        "medium_bps": { "type": "integer", "minimum": 0, "maximum": 10000 },
-        "suspicious_bps": { "type": "integer", "minimum": 0, "maximum": 10000 },
-        "high_risk_bps": { "type": "integer", "minimum": 0, "maximum": 10000 }
+        "strong_continuity_min_bps": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "likely_continuous_min_bps": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "mixed_continuity_min_bps": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "elevated_risk_max_bps": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "high_risk_max_bps": { "type": "integer", "minimum": 0, "maximum": 10000 }
       }
     }
   }
 }
 \end{lstlisting}
 
-\subsubsection{Schema Pattern: \texttt{tsl.trust\_assessment.v2}}
+\subsubsection{Schema Pattern: \texttt{tsl.continuity\_assessment.v2}}
 
 \begin{lstlisting}[style=tslcode]
 {
-  "$id": "https://spec.tsl.network/schemas/trust_assessment.v2.schema.json",
+  "$id": "https://spec.tsl.network/schemas/continuity_assessment.v2.schema.json",
   "type": "object",
   "required": [
     "type",
     "assessment_id",
+    "target_event_commitment",
     "subject",
     "issuer",
     "domain",
+    "policy_id",
     "scoring_profile_id",
     "model_version",
     "gate_result",
-    "label",
     "coverage_bps",
+    "label",
+    "recommended_action",
     "reason_codes",
     "risk_codes",
     "issued_at",
@@ -5871,16 +5924,22 @@ The following schema skeletons are normative patterns. The repository schemas MA
   ],
   "additionalProperties": false,
   "properties": {
-    "type": { "const": "tsl.trust_assessment.v2" },
+    "type": { "const": "tsl.continuity_assessment.v2" },
     "assessment_id": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
+    "target_event_commitment": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
     "subject": { "type": "string", "pattern": "^did:tsl:" },
     "issuer": { "type": "string", "pattern": "^did:tsl:" },
     "domain": { "type": "string" },
+    "policy_id": { "type": "string" },
     "scoring_profile_id": { "type": "string" },
     "model_version": { "type": "string" },
     "gate_result": {
       "type": "object",
-      "required": ["schema_valid", "signature_valid", "key_active", "not_revoked"],
+      "required": [
+        "schema_valid", "canonicalization_valid", "signature_valid",
+        "key_active", "not_revoked", "trusted_time_binding_valid",
+        "included_in_log", "checkpoint_valid"
+      ],
       "additionalProperties": false,
       "properties": {
         "schema_valid": { "type": "boolean" },
@@ -5888,34 +5947,28 @@ The following schema skeletons are normative patterns. The repository schemas MA
         "signature_valid": { "type": "boolean" },
         "key_active": { "type": "boolean" },
         "not_revoked": { "type": "boolean" },
+        "trusted_time_binding_valid": { "type": "boolean" },
         "included_in_log": { "type": "boolean" },
         "checkpoint_valid": { "type": "boolean" },
         "settlement_satisfied": { "type": "boolean" },
         "delegation_valid": { "type": "boolean" }
       }
     },
-    "score_bps": { "type": "integer", "minimum": 0, "maximum": 10000 },
+    "continuity_bps": { "type": "integer", "minimum": 0, "maximum": 10000 },
     "confidence_interval_bps": {
-      "type": "array",
-      "minItems": 2,
-      "maxItems": 2,
+      "type": "array", "minItems": 2, "maxItems": 2,
       "items": { "type": "integer", "minimum": 0, "maximum": 10000 }
     },
     "coverage_bps": { "type": "integer", "minimum": 0, "maximum": 10000 },
     "label": {
       "enum": [
-        "trusted",
-        "likely_trusted",
-        "medium_trust",
-        "unknown_caution",
-        "insufficient_evidence",
-        "suspicious",
-        "high_risk",
-        "cryptographic_failure",
-        "revoked_or_compromised",
-        "settlement_missing"
+        "strong_continuity", "likely_continuous", "mixed_continuity",
+        "unknown_caution", "insufficient_evidence", "elevated_risk",
+        "high_risk", "cryptographic_failure", "revoked_or_compromised",
+        "settlement_missing", "time_binding_failure"
       ]
     },
+    "recommended_action": { "enum": ["allow", "allow_with_monitoring", "step_up", "human_review", "block", "not_applicable"] },
     "reason_codes": { "type": "array", "items": { "type": "string" } },
     "risk_codes": { "type": "array", "items": { "type": "string" } },
     "feature_vector_commitment": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
@@ -5925,7 +5978,17 @@ The following schema skeletons are normative patterns. The repository schemas MA
     "issued_at": { "type": "string", "format": "date-time" },
     "expires_at": { "type": "string", "format": "date-time" },
     "signature": { "type": "string", "pattern": "^0x[0-9a-f]+$" }
-  }
+  },
+  "oneOf": [
+    {
+      "properties": { "label": { "enum": ["cryptographic_failure", "revoked_or_compromised", "settlement_missing", "time_binding_failure"] } },
+      "not": { "required": ["continuity_bps"] }
+    },
+    {
+      "required": ["continuity_bps", "confidence_interval_bps"],
+      "properties": { "label": { "enum": ["strong_continuity", "likely_continuous", "mixed_continuity", "unknown_caution", "insufficient_evidence", "elevated_risk", "high_risk"] } }
+    }
+  ]
 }
 \end{lstlisting}
 
@@ -6290,17 +6353,17 @@ verifyDelegatedAgentActionV0
 \end{lstlisting}
 
 
-\subsubsection{Reference Score v0}
+\subsubsection{Reference Continuity Assessment v0}
 
 \begin{lstlisting}[style=tslcode]
-function computeReferenceScoreV0(input, scoringProfile, domainPolicy, atTime): TrustAssessmentV2 {
+function computeReferenceContinuityV0(input, scoringProfile, domainPolicy, atTime): ContinuityAssessmentV2 {
   gate = verifyHardGates(input, domainPolicy, atTime)
 
   if gate.schema_valid == false:
     return failureAssessment("cryptographic_failure", "TSL_SCHEMA_INVALID", gate)
   if gate.signature_valid == false:
     return failureAssessment("cryptographic_failure", "TSL_SIGNATURE_INVALID", gate)
-  if gate.key_active == false or gate.not_revoked == false:
+  if gate.key_active == false or gate.not_revoked == false or gate.trusted_time_binding_valid == false:
     return failureAssessment("revoked_or_compromised", "TSL_KEY_REVOKED", gate)
   if domainPolicy.requires_settlement and gate.settlement_satisfied == false:
     return failureAssessment("settlement_missing", "TSL_SETTLEMENT_MISSING", gate)
@@ -6313,23 +6376,23 @@ function computeReferenceScoreV0(input, scoringProfile, domainPolicy, atTime): T
 
   normalized = normalizeFeatureVectorV0(features, scoringProfile.normalization_profile)
 
-  weighted_sum_bps = 0
+  continuity_evidence_bps = 0
   for item in scoringProfile.weight_profile.features sorted by item.feature_id:
     value_bps = normalized[item.feature_id]
     weight_bps = item.weight_bps
-    weighted_sum_bps += floor(value_bps * weight_bps / 10000)
+    continuity_evidence_bps += floor(value_bps * weight_bps / 10000)
 
-  calibrated_bps = calibrateScoreV0(weighted_sum_bps, scoringProfile.calibration_profile)
+  calibrated_bps = calibrateContinuityV0(continuity_evidence_bps, scoringProfile.calibration_profile)
   confidence = computeConfidenceIntervalV0(input.evidence, scoringProfile.confidence_profile)
   label = selectLabelV0(calibrated_bps, confidence, coverage, features, domainPolicy)
 
-  return signTrustAssessmentV2({
+  return signContinuityAssessmentV2({target_event_commitment: input.target_event_commitment,
     subject: input.subject,
     issuer: scoringProfile.provider,
     domain: domainPolicy.domain,
     scoring_profile_id: scoringProfile.profile_id,
     gate_result: gate,
-    score_bps: calibrated_bps,
+    continuity_bps: calibrated_bps,
     confidence_interval_bps: confidence,
     coverage_bps: coverage.coverage_bps,
     label: label,
@@ -6351,7 +6414,7 @@ function constructGraphV0(events, receipts, attestations, delegations, graphProf
   for event in events:
     if verifyEvent(event, atTime).cryptographic_validity == true:
       verifiedEvents.append(event)
-  sort verifiedEvents by (event.timestamp, canonicalHash(event))
+  sort verifiedEvents by (trustedEventTime(event), canonicalHash(event))
 
   for event in verifiedEvents:
     if event.receiver_disclosed == false:
@@ -6360,19 +6423,20 @@ function constructGraphV0(events, receipts, attestations, delegations, graphProf
       src: event.sender,
       dst: event.receiver,
       type: "signed_event",
-      timestamp: event.timestamp,
+      timestamp: trustedEventTime(event),
       base_weight_bps: graphProfile.edge_weights.signed_event_bps,
       evidence_hash: canonicalHash(event)
     })
 
-  verifiedReceipts = filterVerifyAndSort(receipts, atTime)
+  verifiedReceipts = filterVerifyDisclosedReceiptsAndSort(receipts, atTime)
+  # Opaque public receipt log entries are not graph edges.
   for receipt in verifiedReceipts:
     linkedSender = senderOf(receipt.event_commitment)
     G.addEdge({
       src: receipt.receiver,
       dst: linkedSender,
       type: receipt.receipt_class,
-      timestamp: receipt.timestamp,
+      timestamp: trustedReceiptTime(receipt),
       base_weight_bps: graphProfile.edge_weights[receipt.receipt_class],
       evidence_hash: canonicalHash(receipt)
     })
@@ -6500,18 +6564,19 @@ function computeMetadataFingerprintCommitmentV0(metadata, masterKey, context, ve
 \subsubsection{Delegated Agent Authorization v0}
 
 \begin{lstlisting}[style=tslcode]
-function verifyDelegatedAgentActionV0(action, delegationChain, resolver, atTime): AuthorizationResult {
+function verifyDelegatedAgentActionV0(action, relayReceipt, checkpoint, delegationChain, resolver, atTime): AuthorizationResult {
   assert action.type == "tsl.agent_action.v2"
   assert verifySignature(action.agent, canonicalHashWithoutSignature(action), action.signature)
+  trustedTime = verifyTrustedActionTime(action, relayReceipt, checkpoint)
 
   effectiveScope = universalAllowScope()
 
   for policy in delegationChain ordered from principal to final delegate:
     if verifySignature(policy.principal, canonicalHashWithoutSignature(policy), policy.signature) == false:
       return fail("TSL_DELEGATION_SIGNATURE_INVALID")
-    if atTime < policy.valid_from or atTime >= policy.valid_until:
+    if trustedTime < policy.valid_from or trustedTime >= policy.valid_until:
       return fail("TSL_DELEGATION_EXPIRED")
-    if resolver.isRevoked(policy.revocation_pointer, atTime):
+    if resolver.isRevoked(policy.revocation_pointer, trustedTime):
       return fail("TSL_DELEGATION_REVOKED")
     if policy.delegate != nextActorInChain(policy, delegationChain, action):
       return fail("TSL_DELEGATION_CHAIN_BROKEN")
@@ -6546,8 +6611,8 @@ scoring_profile.v2/invalid-float.json
 domain_policy.v1/agent-payments.json
   Assert: requires settlement, delegation check, and value-based step-up.
 
-trust_assessment.v2/cryptographic-failure.json
-  Assert: contains no ordinary numeric trust score and preserves failed gate result.
+continuity_assessment.v2/cryptographic-failure.json
+  Assert: contains no ordinary continuity value and preserves failed gate result.
 
 metadata_fingerprint_commitment.v1/pairwise.json
   Assert: same metadata under two verifier domains produces unlinkable commitments.
@@ -6597,9 +6662,9 @@ Every test vector directory MUST contain a manifest with the following structure
   "vector_id": "scoring_profile.v2/valid-transparent",
   "spec_version": "3.0.0",
   "object_type": "tsl.scoring_profile.v2",
-  "canonicalization": "tsl-json-c14n-v1",
-  "hash_suite": "sha256-domain-v1",
-  "signature_suite": "ed25519-v1",
+  "canonicalization": "RFC8785-JCS",
+  "hash_suite": "sha256-domain-v1+rfc9162-sha256",
+  "signature_suite": "RFC8032-Ed25519",
   "input_files": ["input.json"],
   "expected": {
     "schema_valid": true,
@@ -6651,7 +6716,7 @@ Revoked object version & Reject new issuance and warn on historical verification
 \toprule
 Migration & Required Rule \\
 \midrule
-\texttt{trust\_assessment.v1} to \texttt{trust\_assessment.v2} & Preserve the v1 assessment hash as \texttt{legacy\_assessment\_hash}; map \texttt{score} to \texttt{score\_bps = score * 100}; map \texttt{label} to the domain-policy label; add confidence interval, evidence coverage, scoring profile ID, and expiration. \\
+\texttt{continuity\_assessment.v1} to \texttt{continuity\_assessment.v2} & Preserve the v1 assessment hash as \texttt{legacy\_assessment\_hash}; map the legacy numeric field to \texttt{continuity\_bps = score * 100} only inside a named domain migration profile; map \texttt{label} to the domain-policy label; add target event, domain policy, confidence interval, evidence coverage, scoring profile ID, and expiration. \\
 \texttt{attestation.v1} to \texttt{attestation.v2} & Preserve issuer, subject, claim commitment, visibility, timestamps, and signature evidence; add claim class severity, appeal pointer, evidence class, reversal status, and issuer-quality reference. \\
 \texttt{agent\_delegation.v1} to \texttt{delegation\_policy.v2} & Convert a monolithic delegation into canonical policy fields: \texttt{policy\_id}, principal, delegate, resources, actions, constraints, valid window, subdelegation policy, revocation pointer, nonce, and principal signature. \\
 Agent action migration & A v2 \texttt{agent\_action.v2} MUST reference the relevant delegation chain root and use \texttt{issued\_at} plus \texttt{parameters\_commitment}; verifiers MUST reject legacy \texttt{timestamp} or singular \texttt{parameter\_commitment} in v2 actions. \\
@@ -6678,7 +6743,7 @@ State & Meaning \\
 
 \subsection{Product UX Requirements}
 
-Trust UX is part of the security model. The interface MUST not collapse cryptographic validity, trust score, and safety into one misleading green checkmark.
+Continuity and risk UX is part of the security model. The interface MUST not collapse protocol validity, domain-specific assessment, and safety into one misleading green checkmark.
 
 \subsubsection{Required Verifier States}
 
@@ -6691,7 +6756,7 @@ State & Required UX Meaning \\
 \texttt{invalid\_signature} & The payload does not verify against the claimed key. Treat as invalid. \\
 \texttt{revoked\_key} & The signing key was revoked before the relevant event time or is currently revoked. \\
 \texttt{unknown\_identity} & The identity has insufficient continuity or cannot be resolved under current policy. \\
-\texttt{insufficient\_evidence} & The score provider abstained because evidence coverage was too low. This MUST NOT be rendered as malicious. \\
+\texttt{insufficient\_evidence} & The assessment provider abstained because evidence coverage was too low. This MUST NOT be rendered as malicious. \\
 \texttt{high\_risk} & Risk model or hard security checks indicate elevated risk. UI MUST show specific reasons. \\
 \texttt{appealed\_negative\_claim} & A negative claim exists but has active appeal or reversal context. \\
 \texttt{agent\_inside\_scope} & Agent action was authorized under current delegation policy. \\
@@ -6735,7 +6800,7 @@ A proof-link verifier MUST show, at minimum:
     \item whether raw content was opened or only commitment was checked;
     \item revocation status at event time and current time;
     \item checkpoint status and settlement backend;
-    \item optional trust assessment provider, model version, score label, confidence, expiration, and appeal link;
+    \item optional continuity-assessment provider, target action, policy, model version, label, confidence, expiration, and appeal link;
     \item clear separation between protocol checks and risk assessment;
     \item a shareable verification bundle export.
 \end{enumerate}
@@ -6937,7 +7002,7 @@ Conformance Level & Required Scope & Excluded or Optional Scope \\
 \midrule
 \texttt{TSL-RC0} & Identity, event commitment, canonicalization, signatures, proof links, local verification & No graph scoring, no ZK, no Sybil assessment. \\
 \texttt{TSL-RC1} & Receipts, Merkle log, inclusion proof, checkpoint registry, revocation registry & No public negative claims, no advanced scoring. \\
-\texttt{TSL-RC2} & Reference feature extractor, \texttt{TrustAssessmentV2}, model card, evaluation report & Advanced private graph proofs optional. \\
+\texttt{TSL-RC2} & Reference feature extractor, \texttt{ContinuityAssessmentV2}, model card, evaluation report & Advanced private graph proofs optional. \\
 \texttt{TSL-RC3} & Metadata fingerprint commitments, graph profile, Sybil assessment, drift report & ZK graph distance optional. \\
 \texttt{TSL-RC4} & Delegation policy v2, agent action v2, inside-scope verifier & Multi-agent ZK proof optional. \\
 \texttt{TSL-MAINNET} & Audits, runbooks, provider governance, appeal process, monitoring, production SLOs, approved ZK ceremony evidence, and mainnet-grade settlement evidence & Research-only circuits optional; dev fixtures never satisfy production ZK. \\
@@ -7000,30 +7065,28 @@ The \texttt{TSL-MAINNET} conformance gate MUST remain red while any of these ite
 
 \subsection{Product Requirements Document Annex}
 
-The first product milestone SHOULD be a focused proof-link and agent-verification product, not the entire graph/ZK/scoring ecosystem.
+The first product milestone SHOULD be a focused open-source release proof and continuity-verification product, not the entire cross-domain graph/ZK/agent ecosystem.
 
 \subsubsection{MVP User Stories}
 
 \begin{enumerate}
-    \item As a user, I can create a \TrustID{} locally or through a smart account.
-    \item As a user, I can sign a message, claim, or action commitment.
-    \item As a user, I can generate a portable proof link.
-    \item As a recipient, I can open a proof link and verify signature, key state, revocation, inclusion, and checkpoint.
-    \item As a recipient, I can co-sign a receipt for an interaction.
-    \item As a user, I can revoke a compromised key.
-    \item As an AI-agent developer, I can create an agent identity and scoped delegation policy.
-    \item As a verifier, I can determine whether an agent action was inside delegated scope.
-    \item As an enterprise or marketplace, I can request an optional signed assessment without making scoring necessary for core verification.
+    \item As a maintainer, I can create or bind a \TrustID{} and signing key.
+    \item As a maintainer, I can sign a code-release commitment with \texttt{issued\_at}.
+    \item As a relay, I can issue trusted receive-time evidence and append the release to a cumulative RFC 9162 log.
+    \item As a verifier, I can check JCS bytes, Ed25519 signature, three-time revocation binding, inclusion, consistency context, and checkpoint settlement.
+    \item As a reviewer, I can co-sign a private receipt whose public log entry reveals only a salted opaque commitment.
+    \item As a maintainer, I can rotate or revoke a compromised key without allowing later backdated submissions.
+    \item As a project or package consumer, I can request an optional open-source release-continuity assessment that is bound to the target release and policy.
 \end{enumerate}
 
 \subsubsection{MVP Non-Goals}
 
 \begin{itemize}
     \item No global social graph browser.
-    \item No universal human-worth score.
+    \item No universal trust, human-worth, or cross-domain reputation score.
     \item No mandatory KYC.
     \item No public exposure of raw messages or exact counterparties by default.
-    \item No ZK graph-distance proof as an MVP dependency.
+    \item No graph reputation, recursive neighbor mass, or ZK graph-distance proof as an MVP dependency.
     \item No token requirement for core verification.
 \end{itemize}
 
@@ -7063,17 +7126,17 @@ This specification is technical architecture, not legal advice. High-impact labe
 The next implementation document SHOULD NOT be another broad architecture paper. The next document SHOULD be:
 
 \begin{quote}
-\textbf{TSL Open Reference Scoring Algorithm: v0 Deterministic Implementation + Test Vectors}
+\textbf{TSL Open-Source Maintainer Continuity Profile v0: Deterministic Implementation, Calibration Plan, and Test Vectors}
 \end{quote}
 
 That document MUST define:
 
 \begin{enumerate}
-    \item exact v0 input object set;
+    \item exact target release and v0 input object set;
     \item feature extraction algorithms;
     \item normalization formulas;
     \item graph construction rules;
-    \item scoring weights;
+    \item domain-specific evidence weights with cryptographic validity excluded as a feature;
     \item calibration method;
     \item confidence interval method;
     \item abstention rules;
@@ -7081,11 +7144,11 @@ That document MUST define:
     \item deterministic test vectors;
     \item benchmark promotion gates;
     \item privacy leakage scoring;
-    \item known limitations.
+    \item known limitations, seed-governance status, and claims that are explicitly out of scope.
 \end{enumerate}
 
 \begin{principlebox}{Final Implementation Direction}
-The strongest product path is staged: ship proof links, verification, receipts, revocation, logs, checkpoints, and agent delegation first; then add transparent reference scoring; then add graph/Sybil/drift models; then add advanced privacy proofs. Do not make graph scoring, ZK, or global provider governance blocking requirements for the first useful product.
+The strongest product path is staged: ship open-source release proof links, verification, private receipts, revocation, cumulative logs, checkpoints, and the transparent release-continuity profile first; then evaluate graph/Sybil/drift methods; then add other domains and advanced privacy proofs. Do not make graph scoring, ZK, or global provider governance blocking requirements for the first useful product.
 \end{principlebox}
 
 
@@ -7095,7 +7158,7 @@ The strongest product path is staged: ship proof links, verification, receipts, 
 
 \TSL{} is not another messaging app. It is not a KYC company. It is not a single reputation score. It is not ``messages on blockchain.''
 
-\TSL{} is a trust settlement protocol for the AI internet.
+\TSL{} is a protocol for settling continuity evidence. The initial validated use is open-source maintainer and release continuity.
 
 Its key ideas are:
 
@@ -7106,11 +7169,11 @@ Its key ideas are:
     \item receipts make interactions mutually witnessed,
     \item append-only logs make history auditable,
     \item blockchain checkpoints make state durable and portable,
-    \item graph intelligence makes adversarial behavior legible,
-    \item scoring is plural, signed, explainable, and contestable.
+    \item domain-specific models may estimate defined compromise risks,
+    \item assessments are domain-bound, signed, calibrated, expiring, explainable, and contestable.
 \end{itemize}
 
-The internet's old trust signals are being commoditized by AI. The new scarce signal is durable, organic, cryptographic continuity.
+The research question is whether durable, time-bound cryptographic continuity improves decisions for a specified action and policy. The first paper tests that question for open-source releases.
 
 
 
@@ -7134,7 +7197,7 @@ Level & Product Meaning \\
 \end{center}
 
 \begin{principlebox}{Guiding Principle}
-Trust the trajectory, not the profile.
+Verify the evidence, bind it to trusted time, and assess only the named action and policy.
 \end{principlebox}
 
 \newpage
@@ -7148,6 +7211,12 @@ World Wide Web Consortium, \textit{Verifiable Credentials Data Model v2.0}, W3C 
 
 \bibitem{erc4337}
 Ethereum Improvement Proposals, \textit{ERC-4337: Account Abstraction Using Alt Mempool}. \url{https://eips.ethereum.org/EIPS/eip-4337}
+
+\bibitem{jcs}
+A. Rundgren, B. Jordan, and S. Erdtman, \textit{RFC 8785: JSON Canonicalization Scheme (JCS)}. \url{https://www.rfc-editor.org/rfc/rfc8785.html}
+
+\bibitem{eddsa}
+S. Josefsson and I. Liusvaara, \textit{RFC 8032: Edwards-Curve Digital Signature Algorithm (EdDSA)}. \url{https://www.rfc-editor.org/rfc/rfc8032.html}
 
 \bibitem{ctv2}
 IETF, \textit{RFC 9162: Certificate Transparency Version 2.0}. \url{https://www.rfc-editor.org/rfc/rfc9162.html}
